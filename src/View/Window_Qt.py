@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QMessageBox, QLineEdit
+from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QMessageBox, QLineEdit, QHBoxLayout
 from PyQt5.QtCore import Qt
 from View.Button import Button
 from View.Console import Console
@@ -154,23 +154,24 @@ class Window_Qt(QMainWindow):
         self.setGeometry(x, y, w, h)
         self.setWindowTitle("MySGI")
         
+        sidebar_width = 250
+        
         self.__sidebar = QWidget(self)
-        self.__sidebar.setGeometry(0, 0, 200, h)
+        self.__sidebar.setGeometry(0, 0, sidebar_width, h)
         self.__sidebar.setStyleSheet("border: 1px solid black;")
         
         QVBoxLayout(self.__sidebar)
         
         # TODO: Change to Enum or Object after model is implemented
-        self.__addSidebarBox("Objetos", ["Ponto", "Reta", "Polígono"])
-        
-        self.__addSidebarLabel("Window")
+        self.__addSidebarObjBox("Objetos", ["Ponto", "Reta", "Polígono"])
+        self.__addSidebarWindowBox()
                 
         self.__console = Console(self)
-        self.__console.setGeometry(200, h - 200, w - 200, 200)
+        self.__console.setGeometry(sidebar_width, h - sidebar_width, w - sidebar_width, sidebar_width)
         
         self.__canvas = QLabel(self)
         self.__canvas.setStyleSheet("background-color: white; border: 1px solid black;")
-        self.__canvas.setGeometry(200, 0, w - 200, h - 200)
+        self.__canvas.setGeometry(sidebar_width, 0, w - sidebar_width, h - sidebar_width)
         
         self.__widgets["sidebar"] = self.__sidebar
         self.__widgets["console"] = self.__console
@@ -178,14 +179,50 @@ class Window_Qt(QMainWindow):
         
         self.show()
         
-    def __addSidebarLabel(self, text: str):
-        label = QLabel(text)
-        label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.__sidebar.layout().addWidget(label)
+    def __addSidebarWindowBox(self):
+        window_box = QLabel("Window")
+        window_box.setLayout(QVBoxLayout())
+        window_box.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.__sidebar.layout().addWidget(window_box)
+        
+        window_control_box = QGroupBox()
+        window_control_box.setStyleSheet("border: transparent;")
+        window_control_box.setGeometry(0, 0, 180, 100)
+        window_control_box.setLayout(QHBoxLayout())
+        
+        window_box.layout().addWidget(window_control_box)
+        
+        arrows = ArrowButtonWidget("Mover", window_control_box)
+        arrows.setGeometry(0, 10, 100, 100)
+        
+        in_out_box = QGroupBox(window_control_box)
+        in_out_box.setLayout(QVBoxLayout())
+        in_out_box.layout().addWidget(Button("Frente", lambda: print("Frente")))
+        in_out_box.layout().addWidget(Button("Trás", lambda: print("Trás")))
+        in_out_box.setGeometry(100, 10, 100, 100)
+        
+        zoom_box = QGroupBox(window_box)
+        zoom_box.setStyleSheet("border: transparent;")
+        zoom_box.setGeometry(0, 100, 180, 100)
+        zoom_box.setLayout(QHBoxLayout())
+        
+        zoom_box_label = QLabel("Zoom")
+        zoom_box_label.setAlignment(Qt.AlignCenter)
+        zoom_box.layout().addWidget(zoom_box_label)
+        
+        zoom_in_button = Button("+", lambda: print("Zoom in"))
+        zoom_out_button = Button("-", lambda: print("Zoom out"))
+        
+        zoom_in_button.setFixedSize(25, 25)
+        zoom_out_button.setFixedSize(25, 25)
+        
+        zoom_box.layout().addWidget(zoom_in_button)
+        zoom_box.layout().addWidget(zoom_out_button)
+        
                 
-    def __addSidebarBox(self, title: str, items: list):
+    def __addSidebarObjBox(self, title: str, items: list):
         box = QGroupBox(title)
-        box.setGeometry(10, 60, 180, 150)
+        box.setGeometry(10, 60, 180, 100)
         self.__sidebar.layout().addWidget(box)
         
         layout = QVBoxLayout(box)
@@ -193,8 +230,3 @@ class Window_Qt(QMainWindow):
         for item in items:
             button = Button(item, lambda checked, item=item: self.__objWinFactory(item))
             layout.addWidget(button)
-        
-    def __addButtonToWidget(self, widget: QWidget, text: str, callback):
-        button = Button(text, callback)
-        widget.layout().addWidget(button)
-        return button
