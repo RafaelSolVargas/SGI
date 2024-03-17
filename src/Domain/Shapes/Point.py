@@ -1,5 +1,6 @@
 from Domain.Utils.Coordinates import Dimensions3D, Position3D
 from Domain.Shapes.SGIObject import SGIObject
+from Domain.Utils.Enums import ObjectsTypes
 
 
 class Point(SGIObject):
@@ -7,4 +8,4 @@ class Point(SGIObject):
         dimensions = Dimensions3D(1, 1, 1)
         position = Position3D(axisX, axisY, axisZ)
         
-        super().__init__("Point", dimensions, position)
+        super().__init__(ObjectsTypes.POINT, "Point", dimensions, position)

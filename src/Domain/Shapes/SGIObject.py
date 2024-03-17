@@ -1,12 +1,18 @@
 from Domain.Utils.Coordinates import Dimensions3D, Position3D
+from Domain.Utils.Enums import ObjectsTypes
 from Domain.Utils.IdGenerator import IdGenerator
 
 class SGIObject:
-    def __init__(self, name: str, dimensions: Dimensions3D, position: Position3D) -> None:
+    def __init__(self, type: ObjectsTypes, name: str, dimensions: Dimensions3D, position: Position3D) -> None:
         self.__id = IdGenerator.generate_id()
         self.__name = name
         self.__position: Position3D = position
         self.__dimensions: Dimensions3D = dimensions
+        self.__type = type
+
+    @property
+    def type(self) -> ObjectsTypes:
+        return self.__type
 
     @property
     def centralPoint(self) -> Position3D:
