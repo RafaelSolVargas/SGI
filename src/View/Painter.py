@@ -1,31 +1,37 @@
 import sys
 from typing import List
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtGui import QPainter, QColor, QPen
-from PyQt5.QtCore import QPoint
+from PyQt5.QtWidgets import QWidget, QLabel
+from PyQt5.QtGui import QPainter, QColor, QPen, QColor, QPixmap
+from PyQt5.QtCore import QPoint, QPointF, Qt
+from Domain.Shapes.Polygon import Polygon
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Enums import ObjectsTypes
+from Domain.Utils.Constants import Constants
 
-
-class Painter(QWidget):
+class Canvas(QLabel):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__obj_list: List[SGIObject] = []
         
-    def setObjList(self, obj_list: List[SGIObject]):
+        pixmap = QPixmap(Constants.VIEWPORT_LENGTH, Constants.VIEWPORT_WIDTH)
+        pixmap.fill(Qt.white)
+        self.setPixmap(pixmap)
+        self.setGeometry(Constants.SIDEBAR_SIZE, 0, Constants.VIEWPORT_LENGTH, Constants.VIEWPORT_WIDTH)
+        
+        self.__pen_color = QColor(0, 0, 0)
+        
+    def draw(self, obj_list: List[SGIObject]):
         self.__obj_list = obj_list
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        # Set pen color and width
-        pen = QPen()
-        pen.setColor(QColor(0, 0, 0))
-        pen.setWidth(5)
-        painter.setPen(pen)
+        self.paint()
+        
+    def paint(self):
+        painter = QPainter(self.pixmap())
+        p = painter.pen()
+        p.setColor(self.__pen_color)
+        p.setWidth(2)
+        painter.setPen(p)
 
         for obj in self.__obj_list:
             if obj.type == ObjectsTypes.POINT:
@@ -34,14 +40,23 @@ class Painter(QWidget):
                 self.__paintLine(painter, obj)
     
         painter.end()
+        self.update()
             
     @classmethod
     def __paintPoint(cls, canvas: QPainter, point: Point):
         print(f'Pintando ponto em {point.position.axisX}, {point.position.axisY}')
-        canvas.drawPoint(QPoint(point.position.axisX, point.position.axisY))
+        canvas.drawPoint(QPointF(point.position.axisX, point.position.axisY))
 
     @classmethod
     def __paintLine(cls, canvas: QPainter, line: Line):
         print(f'Pintando linha de {line.pointOne.position.axisX}, {line.pointOne.position.axisY} para {line.pointTwo.position.axisX}, {line.pointTwo.position.axisY}')
         canvas.drawLine(line.pointOne.position.axisX, line.pointOne.position.axisY,
                         line.pointTwo.position.axisX, line.pointTwo.position.axisY)
+        
+    @classmethod
+    def __paintPolygon(cls, canvas: QPainter, polygon: Polygon):
+        print(f'Pintando poligono')
+        positions = polygon.positions
+        qpositions = [QPointF(position.axisX, position.axisY) for position in positions]
+        
+        canvas.drawPolygon(qpositions)

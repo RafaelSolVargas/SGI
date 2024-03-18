@@ -1,10 +1,11 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QMessageBox, QLineEdit, QHBoxLayout
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPixmap
 from Domain.Utils.Coordinates import Position3D
 from View.Button import Button
 from View.Console import Console
 from View.ArrowButtonWidget import ArrowButtonWidget
-from View.Painter import Painter
+from View.Painter import Painter, Canvas
 from Domain.Shapes.Point import Point
 from Domain.Utils.Constants import Constants
 from Handlers.WorldHandler import WorldHandler
@@ -49,6 +50,7 @@ class ObjectWindowFactory:
         layout.addWidget(z_label)
         
         z_field = QLineEdit()
+        z_field.setText("0")
         layout.addWidget(z_field)
         
         # TODO: Add draw function to the callback
@@ -91,6 +93,7 @@ class ObjectWindowFactory:
         
         z1_field = QLineEdit()
         layout.addWidget(z1_field)
+        z1_field.setText("0")
         
         # Second row
         x2_label = QLabel("Coordenada X2:")
@@ -109,6 +112,7 @@ class ObjectWindowFactory:
         layout.addWidget(z2_label)
         
         z2_field = QLineEdit()
+        z2_field.setText("0")
         layout.addWidget(z2_field)
         
         # TODO: Add draw function to the callback
@@ -185,13 +189,8 @@ class Window_Qt(QMainWindow):
         self.__console = Console(self)
         self.__console.setGeometry(Constants.SIDEBAR_SIZE, h - Constants.SIDEBAR_SIZE, w - Constants.SIDEBAR_SIZE, Constants.SIDEBAR_SIZE)
         
-        self.__canvas = Painter(self)
+        self.__canvas = Canvas(self)
         self.__canvas.setStyleSheet("background-color: white; border: 1px solid black;")
-        self.__canvas.setGeometry(Constants.SIDEBAR_SIZE, 0, Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_LENGTH)
-        
-        #self.__painter = Painter(self.__canvas)
-        
-        #self.__painter.setGeometry(0, 0, self.__canvas.width(), self.__canvas.height())
         
         self.show()
     
@@ -199,9 +198,7 @@ class Window_Qt(QMainWindow):
         print("Updating")
         
         obj_list = WorldHandler.getHandler().objectHandler.getObjectsViewport()
-        
-        self.__canvas.setObjList(obj_list)
-        self.__canvas.update()
+        self.__canvas.draw(obj_list)
     
     def __addSidebarWindowBox(self):
         window_box = QLabel("Window")
