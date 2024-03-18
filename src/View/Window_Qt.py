@@ -1,10 +1,13 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QMessageBox, QLineEdit, QHBoxLayout
 from PyQt5.QtCore import Qt
 from Domain.Utils.Coordinates import Position3D
-from Handlers.WorldHandler import WorldHandler
 from View.Button import Button
 from View.Console import Console
 from View.ArrowButtonWidget import ArrowButtonWidget
+from View.Painter import Painter
+from Domain.Shapes.Point import Point
+from Domain.Utils.Constants import Constants
+from Handlers.WorldHandler import WorldHandler
 
 # Returns a function that creates a new window according to the object given
 class ObjectWindowFactory:
@@ -53,9 +56,9 @@ class ObjectWindowFactory:
                                                         .getHandler()
                                                         .objectHandler
                                                         .addPoint(
-                                                            Position3D(float(x_field.text()), float(y_field.text()), float(z_field.text()))
+                                                            Position3D(int(x_field.text()), int(y_field.text()), int(z_field.text()))
                                                         ), 
-                                window.close()))
+                                window.close(), self.__parent.update()))
         layout.addWidget(confirm_button)
           
         window.show()
@@ -109,7 +112,14 @@ class ObjectWindowFactory:
         layout.addWidget(z2_field)
         
         # TODO: Add draw function to the callback
-        confirm_button = Button("Confirmar", lambda: (print(f"Criou reta: ({x1_field.text()}, {y1_field.text()}, {z1_field.text()}), ({x2_field.text()}, {y2_field.text()}, {z2_field.text()})"), window.close()))
+        confirm_button = Button("Confirmar", lambda: (WorldHandler
+                                .getHandler()
+                                .objectHandler
+                                .addLine(
+                                    Point(int(x1_field.text()), int(y1_field.text()), int(z1_field.text())),
+                                    Point(int(x2_field.text()), int(y2_field.text()), int(z2_field.text()))
+                                ),
+                    window.close(), self.__parent.update()))
         layout.addWidget(confirm_button)
           
         window.show()
@@ -162,10 +172,8 @@ class Window_Qt(QMainWindow):
         self.setGeometry(x, y, w, h)
         self.setWindowTitle("MySGI")
         
-        sidebar_width = 250
-        
         self.__sidebar = QWidget(self)
-        self.__sidebar.setGeometry(0, 0, sidebar_width, h)
+        self.__sidebar.setGeometry(0, 0, Constants.SIDEBAR_SIZE, Constants.SCREEN_HEIGHT)
         self.__sidebar.setStyleSheet("border: 1px solid black;")
         
         QVBoxLayout(self.__sidebar)
@@ -175,18 +183,24 @@ class Window_Qt(QMainWindow):
         self.__addSidebarWindowBox()
                 
         self.__console = Console(self)
-        self.__console.setGeometry(sidebar_width, h - sidebar_width, w - sidebar_width, sidebar_width)
+        self.__console.setGeometry(Constants.SIDEBAR_SIZE, h - Constants.SIDEBAR_SIZE, w - Constants.SIDEBAR_SIZE, Constants.SIDEBAR_SIZE)
         
         self.__canvas = QLabel(self)
         self.__canvas.setStyleSheet("background-color: white; border: 1px solid black;")
-        self.__canvas.setGeometry(sidebar_width, 0, w - sidebar_width, h - sidebar_width)
+        self.__canvas.setGeometry(Constants.SIDEBAR_SIZE, 0, Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_LENGTH)
         
-        self.__widgets["sidebar"] = self.__sidebar
-        self.__widgets["console"] = self.__console
-        self.__widgets["canvas"] = self.__canvas
+        self.__painter = Painter(self.__canvas)
         
         self.show()
+    
+    def update(self):
+        print("Updating")
         
+        obj_list = WorldHandler.getHandler().objectHandler.getObjectsViewport()
+        
+        self.__painter.setObjList(obj_list)
+        self.__painter.update()
+    
     def __addSidebarWindowBox(self):
         window_box = QLabel("Window")
         window_box.setLayout(QVBoxLayout())

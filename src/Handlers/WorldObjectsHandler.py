@@ -3,6 +3,7 @@ from Domain.Management.Window import Window
 from Domain.Management.World import World
 from Domain.Shapes.Line import Line
 from Domain.Shapes.Point import Point
+from Domain.Shapes.Point import Point
 from Domain.Utils.Coordinates import Position3D
 
 
@@ -23,3 +24,10 @@ class WorldObjectsHandler:
         point = Point(position.axisX, position.axisY, position.axisZ)
 
         self.__world.addObject(point)
+    
+    def __viewportTransform(self, point: Point) -> Point:
+        pass
+       
+    def getObjectsViewport(self):
+        # TODO: Add the viewport transform
+        return self.__world.objects

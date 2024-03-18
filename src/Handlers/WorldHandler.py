@@ -3,6 +3,7 @@ from Domain.Management.Window import Window
 from Domain.Management.World import World
 from Domain.Utils.Enums import ObjectsTypes
 from Handlers.WorldObjectsHandler import WorldObjectsHandler
+from Domain.Utils.Constants import Constants
 
 
 class WorldHandler:
@@ -15,13 +16,13 @@ class WorldHandler:
     @classmethod
     def getHandler(cls) -> 'WorldHandler':
         if cls.__instance is None:
-            cls.__instance = WorldHandler()
+            cls.__instance = WorldHandler(Constants.VIEWPORT_LENGTH, Constants.VIEWPORT_WIDTH)
 
         return cls.__instance
     
-    def __init__(self) -> None:
-        self.__viewport = ViewPort(self.VIEWPORT_LENGHT, self.VIEWPORT_WIDTH, self.VIEWPORT_HEIGHT)
-        self.__window = Window(self.VIEWPORT_LENGHT, self.VIEWPORT_WIDTH, self.VIEWPORT_HEIGHT)
+    def __init__(self, viewport_length: int, viewport_width: int) -> None:
+        self.__viewport = ViewPort(viewport_length, viewport_width)
+        self.__window = Window(viewport_length, viewport_width, self.VIEWPORT_HEIGHT)
         self.__world = World()
         self.__objectsHandler = WorldObjectsHandler(self.__viewport, self.__window, self.__world)
 
@@ -34,6 +35,6 @@ class WorldHandler:
         return self.__window
 
     @property
-    def viewPort(self):
+    def viewport(self):
         return self.__viewport
 
