@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QMessageBox, QLineEdit, QHBoxLayout
 from PyQt5.QtCore import Qt
+from Domain.Utils.Coordinates import Position3D
+from Handlers.WorldHandler import WorldHandler
 from View.Button import Button
 from View.Console import Console
 from View.ArrowButtonWidget import ArrowButtonWidget
@@ -47,11 +49,17 @@ class ObjectWindowFactory:
         layout.addWidget(z_field)
         
         # TODO: Add draw function to the callback
-        confirm_button = Button("Confirmar", lambda: (print(f"Criou ponto: ({x_field.text()}, {y_field.text()}, {z_field.text()})"), window.close()))
+        confirm_button = Button("Confirmar", lambda:  (WorldHandler
+                                                        .getHandler()
+                                                        .objectHandler
+                                                        .addPoint(
+                                                            Position3D(float(x_field.text()), float(y_field.text()), float(z_field.text()))
+                                                        ), 
+                                window.close()))
         layout.addWidget(confirm_button)
           
         window.show()
-    
+        
     def __createLineWindow(self):
         window = QMainWindow(self.__parent)
         window.setWindowTitle("Criar Linha")

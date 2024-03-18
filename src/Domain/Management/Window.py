@@ -1,5 +1,6 @@
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Dimensions3D, Position3D
+from Domain.Utils.Enums import ObjectsTypes
 
 
 class Window(SGIObject):
@@ -10,11 +11,11 @@ class Window(SGIObject):
     The space from the world to be drawn, it should be available to zoom in and zoom out
     and move in all 3 dimensions
     """
-    def __init__(self, name: str, lenght: int, width: int, height: int) -> None:
+    def __init__(self, lenght: int, width: int, height: int) -> None:
         dimensions = Dimensions3D(lenght, width, height)
         position = Position3D(0, 0, 0)
 
-        super().__init__(name, dimensions, position)
+        super().__init__(ObjectsTypes.WINDOW, "Window", dimensions, position)
 
     def zoomIn(self) -> None:
         """

@@ -1,5 +1,6 @@
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Dimensions3D, Position3D
+from Domain.Utils.Enums import ObjectsTypes
 
 
 class ViewPort(SGIObject):
@@ -10,4 +11,4 @@ class ViewPort(SGIObject):
         dimensions = Dimensions3D(lenght, width, height)
         position = Position3D(0, 0, 0)    
 
-        super().__init__("ViewPort", dimensions, position)
+        super().__init__(ObjectsTypes.VIEWPORT, "ViewPort", dimensions, position)

@@ -2,6 +2,7 @@ from Domain.Management.Viewport import ViewPort
 from Domain.Management.Window import Window
 from Domain.Management.World import World
 from Domain.Shapes.Line import Line
+from Domain.Shapes.Point import Point
 from Domain.Utils.Coordinates import Position3D
 
 
@@ -16,5 +17,9 @@ class WorldObjectsHandler:
 
         self.__world.addObject(line)
 
-    def addPoint(self, point: Position3D) -> None:
+    def addPoint(self, position: Position3D) -> None:
+        print(f'Ponto adicionado {position.axisX}, {position.axisY}, {position.axisZ}')
+
+        point = Point(position.axisX, position.axisY, position.axisZ)
+
         self.__world.addObject(point)
