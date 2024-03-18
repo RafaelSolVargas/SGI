@@ -1,9 +1,12 @@
+from copy import copy
+from typing import List
 from Domain.Management.Viewport import ViewPort
 from Domain.Management.Window import Window
 from Domain.Management.World import World
 from Domain.Shapes.Line import Line
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Point import Point
+from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
 
 
@@ -25,9 +28,40 @@ class WorldObjectsHandler:
 
         self.__world.addObject(point)
     
-    def __viewportTransform(self, point: Point) -> Point:
-        pass
+    def __viewportTransform(self, point: Position3D) -> Position3D:
+        xW = point.axisX
+
+        xVP = ((xW - self.__window.Xmin) / (self.__window.dimensions.lenght)) * (self.__viewport.dimensions.lenght)
+
+        print(self.__window.Xmin)
+        print(self.__window.dimensions.lenght)
+        print(self.__viewport.dimensions.lenght)
+
+
+        print(self.__window.Ymin)
+        print(self.__window.dimensions.width)
+        print(self.__viewport.dimensions.width)
+
+        yW = point.axisY
+
+        yVP = (1 - ((yW - self.__window.Ymin) / (self.__window.dimensions.width))) * (self.__viewport.dimensions.width)
        
-    def getObjectsViewport(self):
-        # TODO: Add the viewport transform
-        return self.__world.objects
+        pointTransformed = Position3D(round(xVP), round(yVP), 1)
+
+        print(f'Transforming ({point.axisX}, {point.axisY}, {point.axisZ}) into ({pointTransformed.axisX}, {pointTransformed.axisY}, {pointTransformed.axisZ})')
+
+        return pointTransformed
+
+    def getObjectsViewport(self) -> List[SGIObject]:
+        objectsToShow: List[SGIObject] = []
+        
+        for obj in self.__world.objects:
+            # Creates a copy to not change the Domain value
+            objCopy = copy(obj)
+
+            # Recalculate the position of object
+            objCopy.position = self.__viewportTransform(obj.position)
+
+            objectsToShow.append(objCopy)
+
+        return objectsToShow

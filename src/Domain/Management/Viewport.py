@@ -12,3 +12,19 @@ class ViewPort(SGIObject):
         position = Position3D(0, 0, 0)    
 
         super().__init__(ObjectsTypes.VIEWPORT, "ViewPort", dimensions, position)
+
+    @property
+    def Xmin(self) -> float:
+        return self.position.axisX
+    
+    @property
+    def Xmax(self) -> float:
+        return self.position.axisX + self.dimensions.lenght
+    
+    @property
+    def Ymin(self) -> float:
+        return self.position.axisY
+    
+    @property
+    def Ymax(self) -> float:
+        return self.position.axisY + self.dimensions.width

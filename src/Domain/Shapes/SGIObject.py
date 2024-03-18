@@ -37,6 +37,10 @@ class SGIObject:
     def position(self) -> Position3D:
         return self.__position
     
+    @position.setter
+    def position(self, value: Position3D) -> None:
+        self.__position = value
+    
     @property
     def id(self) -> int:
         return self.__id

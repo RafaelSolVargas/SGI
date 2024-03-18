@@ -7,10 +7,6 @@ from Domain.Utils.Constants import Constants
 
 
 class WorldHandler:
-    VIEWPORT_LENGHT = 600
-    VIEWPORT_WIDTH = 800
-    VIEWPORT_HEIGHT = 600
-
     __instance: 'WorldHandler' = None
 
     @classmethod
@@ -22,7 +18,7 @@ class WorldHandler:
     
     def __init__(self, viewport_length: int, viewport_width: int) -> None:
         self.__viewport = ViewPort(viewport_length, viewport_width)
-        self.__window = Window(viewport_length, viewport_width, self.VIEWPORT_HEIGHT)
+        self.__window = Window(viewport_length, viewport_width, Constants.VIEWPORT_HEIGHT)
         self.__world = World()
         self.__objectsHandler = WorldObjectsHandler(self.__viewport, self.__window, self.__world)
 

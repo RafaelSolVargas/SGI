@@ -1,17 +1,19 @@
 import sys
+from typing import List
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
 from PyQt5.QtGui import QPainter, QColor, QPen
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
+from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Enums import ObjectsTypes
 
 
 class Painter(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.__obj_list = []
+        self.__obj_list: List[SGIObject] = []
         
-    def setObjList(self, obj_list):
+    def setObjList(self, obj_list: List[SGIObject]):
         self.__obj_list = obj_list
 
     def paintEvent(self, event):
