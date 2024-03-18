@@ -185,11 +185,13 @@ class Window_Qt(QMainWindow):
         self.__console = Console(self)
         self.__console.setGeometry(Constants.SIDEBAR_SIZE, h - Constants.SIDEBAR_SIZE, w - Constants.SIDEBAR_SIZE, Constants.SIDEBAR_SIZE)
         
-        self.__canvas = QLabel(self)
+        self.__canvas = Painter(self)
         self.__canvas.setStyleSheet("background-color: white; border: 1px solid black;")
         self.__canvas.setGeometry(Constants.SIDEBAR_SIZE, 0, Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_LENGTH)
         
-        self.__painter = Painter(self.__canvas)
+        #self.__painter = Painter(self.__canvas)
+        
+        #self.__painter.setGeometry(0, 0, self.__canvas.width(), self.__canvas.height())
         
         self.show()
     
@@ -198,8 +200,8 @@ class Window_Qt(QMainWindow):
         
         obj_list = WorldHandler.getHandler().objectHandler.getObjectsViewport()
         
-        self.__painter.setObjList(obj_list)
-        self.__painter.update()
+        self.__canvas.setObjList(obj_list)
+        self.__canvas.update()
     
     def __addSidebarWindowBox(self):
         window_box = QLabel("Window")

@@ -1,7 +1,8 @@
 import sys
 from typing import List
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QPainter, QColor, QPen
+from PyQt5.QtCore import QPoint
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
 from Domain.Shapes.SGIObject import SGIObject
@@ -23,7 +24,7 @@ class Painter(QWidget):
         # Set pen color and width
         pen = QPen()
         pen.setColor(QColor(0, 0, 0))
-        pen.setWidth(20)
+        pen.setWidth(5)
         painter.setPen(pen)
 
         for obj in self.__obj_list:
@@ -37,7 +38,7 @@ class Painter(QWidget):
     @classmethod
     def __paintPoint(cls, canvas: QPainter, point: Point):
         print(f'Pintando ponto em {point.position.axisX}, {point.position.axisY}')
-        canvas.drawPoint(point.position.axisX, point.position.axisY)
+        canvas.drawPoint(QPoint(point.position.axisX, point.position.axisY))
 
     @classmethod
     def __paintLine(cls, canvas: QPainter, line: Line):
