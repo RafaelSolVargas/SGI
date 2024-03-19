@@ -28,13 +28,13 @@ class Dimensions3D:
     def height(self, value) -> None:
         self.__height = value
 
-    def central_point(self) -> 'Dimensions3D':
-        half_length = self.__length / 2
-        half_width = self.__width / 2
-        half_height = self.__height / 2
+    def central_point(self, base: 'Position3D') -> 'Position3D':
+        half_length = self.__length / 2 + base.axisX
+        half_width = self.__width / 2 + base.axisY
+        half_height = self.__height / 2 + base.axisZ
+        print("Central point: ", half_length, half_width, half_height)
     
         return Position3D(half_length, half_width, half_height)
-    
 
 class Position3D:
     __MOVE_LENGTH = 1

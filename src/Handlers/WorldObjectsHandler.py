@@ -68,6 +68,9 @@ class WorldObjectsHandler:
             objCopy = deepcopy(obj)
 
             for position in objCopy.getPositions():
+                position.axisX = position.axisX - self.__window.Xmin
+                position.axisY = position.axisY - self.__window.Ymin
+                
                 transformedPosition = self.__transformPositionToViewPort(position)
 
                 position.axisX = transformedPosition.axisX

@@ -27,6 +27,8 @@ class Canvas(QLabel):
         self.paint()
         
     def paint(self):
+        self.__clear_pixmap()
+        
         painter = QPainter(self.pixmap())
         p = painter.pen()
         p.setColor(self.__pen_color)
@@ -41,6 +43,15 @@ class Canvas(QLabel):
     
         painter.end()
         self.update()
+        
+    def __clear_pixmap(self):
+        # Create a new blank pixmap with the same size as the original
+        new_pixmap = QPixmap(self.pixmap().size())
+        # Fill the new pixmap with transparent color
+        new_pixmap.fill(QColor(0, 0, 0, 0))  # Transparent color
+
+        # Assign the new pixmap to the original one
+        self.pixmap().swap(new_pixmap)
             
     @classmethod
     def __paintPoint(cls, canvas: QPainter, point: Point):

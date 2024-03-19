@@ -37,8 +37,6 @@ class Window(SGIObject):
         """
         Decrease the dimensions from the window keeping the central point        
         """
-        # Armazena o ponto central atual
-        central_point = self.dimensions.central_point()
 
         if self.dimensions.width > self.MIN_SIZE:
             self.dimensions.width -= self.ZOOM_MOVE
@@ -50,14 +48,12 @@ class Window(SGIObject):
             self.dimensions.height -= self.ZOOM_MOVE
 
         # Reset the central point with the previous
-        self.setCentralPoint(central_point)
+        self.setCentralPoint(self.position)
 
     def zoomOut(self) -> None:
         """
         Increase the dimensions from the window keeping the central point        
         """
-        # Save the current central point
-        central_point = self.dimensions.central_point
 
         if self.dimensions.width < self.MIN_SIZE:
             self.dimensions.width += self.ZOOM_MOVE
@@ -69,20 +65,24 @@ class Window(SGIObject):
             self.dimensions.height += self.ZOOM_MOVE
 
         # Reset the central point with the previous
-        self.setCentralPoint(central_point)
+        self.setCentralPoint(self.position)
         
     def moveUp(self) -> None:
         self.position.axisY += self.ZOOM_MOVE
-        self.setCentralPoint(self.dimensions.central_point())
+        print("Move up: ", self.position.axisY, self.ZOOM_MOVE)
+        self.setCentralPoint(self.dimensions.central_point(self.position))
     
     def moveDown(self) -> None:
         self.position.axisY -= self.ZOOM_MOVE
-        self.setCentralPoint(self.dimensions.central_point())
+        print("Move down: ", self.position.axisY, self.ZOOM_MOVE)
+        self.setCentralPoint(self.dimensions.central_point(self.position))
     
     def moveLeft(self) -> None:
         self.position.axisX -= self.ZOOM_MOVE
-        self.setCentralPoint(self.dimensions.central_point())
+        print("Move left: ", self.position.axisX, self.ZOOM_MOVE)
+        self.setCentralPoint(self.dimensions.central_point(self.position))
         
     def moveRight(self) -> None:
         self.position.axisX += self.ZOOM_MOVE
-        self.setCentralPoint(self.dimensions.central_point())
+        print("Move right: ", self.position.axisX, self.ZOOM_MOVE)
+        self.setCentralPoint(self.dimensions.central_point(self.position))
