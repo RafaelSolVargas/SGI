@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy, deepcopy
 from typing import List
 from Domain.Management.Viewport import ViewPort
 from Domain.Management.Window import Window
@@ -43,39 +43,32 @@ class WorldObjectsHandler:
         self.__world.addObject(polygon)
         self.__tempPolygon = []
     
-    def __viewportTransform(self, point: Position3D) -> Position3D:
-        xW = point.axisX
+    def __transformPositionToViewPort(self, position: Position3D) -> Position3D:
+        xW = position.axisX
 
         xVP = ((xW - self.__window.Xmin) / (self.__window.dimensions.length)) * (self.__viewport.dimensions.length)
 
-        print(self.__window.Xmin)
-        print(self.__window.dimensions.length)
-        print(self.__viewport.dimensions.length)
-
-
-        print(self.__window.Ymin)
-        print(self.__window.dimensions.width)
-        print(self.__viewport.dimensions.width)
-
-        yW = point.axisY
+        yW = position.axisY
 
         yVP = (1 - ((yW - self.__window.Ymin) / (self.__window.dimensions.width))) * (self.__viewport.dimensions.width)
        
         pointTransformed = Position3D(round(xVP), round(yVP), 1)
 
-        print(f'Transforming ({point.axisX}, {point.axisY}, {point.axisZ}) into ({pointTransformed.axisX}, {pointTransformed.axisY}, {pointTransformed.axisZ})')
+        print(f'Transforming ({position.axisX}, {position.axisY}, {position.axisZ}) into ({pointTransformed.axisX}, {pointTransformed.axisY}, {pointTransformed.axisZ})')
 
         return pointTransformed
 
     def getObjectsViewport(self) -> List[SGIObject]:
         objectsToShow: List[SGIObject] = []
-        
+
+        print(f'Starting the transformantions of {len(self.__world.objects)} objects')
+
         for obj in self.__world.objects:
             # Creates a copy to not change the Domain value
-            objCopy = copy(obj)
+            objCopy = deepcopy(obj)
 
             for position in objCopy.getPositions():
-                transformedPosition = self.__viewportTransform(position)
+                transformedPosition = self.__transformPositionToViewPort(position)
 
                 position.axisX = transformedPosition.axisX
                 position.axisY = transformedPosition.axisY
