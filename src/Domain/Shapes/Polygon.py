@@ -14,14 +14,13 @@ class Polygon(SGIObject):
         super().__init__(ObjectsTypes.POLYGON, name, dimensions, position)
         self.__points = []
         
-    def __init__(self, name: str, dimensions: Dimensions3D, position: Position3D, positions: list[Point]) -> None:
-        super().__init__(ObjectsTypes.POLYGON, name, dimensions, position)
+    def __init__(self, name: str, positions: list[Point]) -> None:
+        super().__init__(ObjectsTypes.POLYGON, name, Dimensions3D(0, 0, 0), Position3D(0, 0, 0))
         self.__points = positions
         
     def addPoint(self, point: Point) -> None:
         self.__points.append(point)
         
-    @property
     def getPositions(self) -> List[Position3D]:
         positions: List[Position3D] = []
         

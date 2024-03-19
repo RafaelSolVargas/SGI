@@ -6,7 +6,7 @@ from Domain.Utils.Enums import ObjectsTypes
 class Window(SGIObject):
     ZOOM_MOVE: int = 10
     MIN_SIZE: int = 50
-    MAX_SIZE: int = 600
+    MAX_SIZE: int = 8000
     """
     The space from the world to be drawn, it should be available to zoom in and zoom out
     and move in all 3 dimensions
@@ -55,13 +55,13 @@ class Window(SGIObject):
         Increase the dimensions from the window keeping the central point        
         """
 
-        if self.dimensions.width < self.MIN_SIZE:
+        if self.dimensions.width < self.MAX_SIZE:
             self.dimensions.width += self.ZOOM_MOVE
 
-        if self.dimensions.length < self.MIN_SIZE:
+        if self.dimensions.length < self.MAX_SIZE:
             self.dimensions.length += self.ZOOM_MOVE
         
-        if self.dimensions.height < self.MIN_SIZE:
+        if self.dimensions.height < self.MAX_SIZE:
             self.dimensions.height += self.ZOOM_MOVE
 
         # Reset the central point with the previous

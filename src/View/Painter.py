@@ -40,6 +40,8 @@ class Canvas(QLabel):
                 self.__paintPoint(painter, obj)
             elif obj.type == ObjectsTypes.LINE:
                 self.__paintLine(painter, obj)
+            elif obj.type == ObjectsTypes.POLYGON:
+                self.__paintPolygon(painter, obj)
     
         painter.end()
         self.update()
@@ -67,7 +69,7 @@ class Canvas(QLabel):
     @classmethod
     def __paintPolygon(cls, canvas: QPainter, polygon: Polygon):
         print(f'Pintando poligono')
-        positions = polygon.positions
+        positions = polygon.getPositions()
         qpositions = [QPointF(position.axisX, position.axisY) for position in positions]
         
         canvas.drawPolygon(qpositions)
