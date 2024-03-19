@@ -213,7 +213,7 @@ class Window_Qt(QMainWindow):
         
         window_box.layout().addWidget(window_control_box)
         
-        arrows = ArrowButtonWidget("Mover", window_control_box)
+        arrows = ArrowButtonWidget(self.update, "Mover", window_control_box)
         arrows.setGeometry(0, 10, 100, 100)
         
         in_out_box = QGroupBox(window_control_box)

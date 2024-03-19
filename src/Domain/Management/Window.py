@@ -4,7 +4,7 @@ from Domain.Utils.Enums import ObjectsTypes
 
 
 class Window(SGIObject):
-    ZOOM_MOVE: int = 1
+    ZOOM_MOVE: int = 10
     MIN_SIZE: int = 50
     MAX_SIZE: int = 600
     """
@@ -70,3 +70,19 @@ class Window(SGIObject):
 
         # Reset the central point with the previous
         self.setCentralPoint(central_point)
+        
+    def moveUp(self) -> None:
+        self.position.axisY += self.ZOOM_MOVE
+        self.setCentralPoint(self.dimensions.central_point())
+    
+    def moveDown(self) -> None:
+        self.position.axisY -= self.ZOOM_MOVE
+        self.setCentralPoint(self.dimensions.central_point())
+    
+    def moveLeft(self) -> None:
+        self.position.axisX -= self.ZOOM_MOVE
+        self.setCentralPoint(self.dimensions.central_point())
+        
+    def moveRight(self) -> None:
+        self.position.axisX += self.ZOOM_MOVE
+        self.setCentralPoint(self.dimensions.central_point())

@@ -1,20 +1,21 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PyQt5.QtCore import Qt
 from View.Button import Button
+from Handlers.WorldHandler import WorldHandler
 
 # TODO: Add a way to pass the callback to the buttons
 class ArrowButtonWidget(QWidget):
-    def __init__(self, text: str = "", parent=None):
+    def __init__(self, update_function: callable, text: str = "", parent=None):
         super().__init__(parent)
 
         self.label = QLabel(text)
         self.label.setAlignment(Qt.AlignCenter)
 
         # Create buttons
-        self.up_button = Button("^", lambda: print("Up button clicked"))
-        self.down_button = Button("v", lambda: print("Down button clicked"))
-        self.left_button = Button("<", lambda: print("Left button clicked"))
-        self.right_button = Button(">", lambda: print("Right button clicked"))
+        self.up_button = Button("^", lambda: (WorldHandler.getHandler().window.moveUp(), update_function()))
+        self.down_button = Button("v", lambda: (WorldHandler.getHandler().window.moveDown(), update_function()))
+        self.left_button = Button("<", lambda: (WorldHandler.getHandler().window.moveLeft(), update_function()))
+        self.right_button = Button(">", lambda: (WorldHandler.getHandler().window.moveRight(), update_function()))
 
         # Set button sizes
         button_width = 25

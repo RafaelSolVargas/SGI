@@ -46,11 +46,11 @@ class WorldObjectsHandler:
     def __viewportTransform(self, point: Position3D) -> Position3D:
         xW = point.axisX
 
-        xVP = ((xW - self.__window.Xmin) / (self.__window.dimensions.lenght)) * (self.__viewport.dimensions.lenght)
+        xVP = ((xW - self.__window.Xmin) / (self.__window.dimensions.length)) * (self.__viewport.dimensions.length)
 
         print(self.__window.Xmin)
-        print(self.__window.dimensions.lenght)
-        print(self.__viewport.dimensions.lenght)
+        print(self.__window.dimensions.length)
+        print(self.__viewport.dimensions.length)
 
 
         print(self.__window.Ymin)

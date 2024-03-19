@@ -1,16 +1,16 @@
 class Dimensions3D:
-    def __init__(self, lenght: int, width: int, height: int) -> None:
+    def __init__(self, length: int, width: int, height: int) -> None:
         self.__height = height
         self.__width = width
-        self.__lenght = lenght
+        self.__length = length
 
     @property
-    def lenght(self) -> int:
-        return self.__lenght
+    def length(self) -> int:
+        return self.__length
     
-    @lenght.setter
-    def lenght(self, value) -> None:
-        self.__lenght = value
+    @length.setter
+    def length(self, value) -> None:
+        self.__length = value
 
     @property
     def width(self) -> int:
@@ -33,11 +33,11 @@ class Dimensions3D:
         half_width = self.__width / 2
         half_height = self.__height / 2
     
-        return Dimensions3D(half_length, half_width, half_height)
+        return Position3D(half_length, half_width, half_height)
     
 
 class Position3D:
-    __MOVE_LENGHT = 1
+    __MOVE_LENGTH = 1
     def __init__(self, axisX: int, axisY: int, axisZ: int) -> None:
         self.__axisX = axisX
         self.__axisY = axisY
@@ -51,10 +51,10 @@ class Position3D:
     def axisX(self, value) -> None:
         self.__axisX = value
 
-    def moveLeft(self, value = __MOVE_LENGHT) -> None:
+    def moveLeft(self, value = __MOVE_LENGTH) -> None:
         self.__axisX -= value
 
-    def moveRight(self, value = __MOVE_LENGHT) -> None:
+    def moveRight(self, value = __MOVE_LENGTH) -> None:
         self.__axisX += value
 
     @property
@@ -65,10 +65,10 @@ class Position3D:
     def axisY(self, value) -> None:
         self.__axisY = value
 
-    def moveUp(self, value = __MOVE_LENGHT) -> None:
+    def moveUp(self, value = __MOVE_LENGTH) -> None:
         self.__axisY -= value
 
-    def moveDown(self, value = __MOVE_LENGHT) -> None:
+    def moveDown(self, value = __MOVE_LENGTH) -> None:
         self.__axisY += value
 
     @property
@@ -79,8 +79,8 @@ class Position3D:
     def axisZ(self, value) -> None:
         self.__axisZ = value
 
-    def moveFront(self, value = __MOVE_LENGHT) -> None:
+    def moveFront(self, value = __MOVE_LENGTH) -> None:
         self.__axisZ -= value
 
-    def moveBack(self, value = __MOVE_LENGHT) -> None:
+    def moveBack(self, value = __MOVE_LENGTH) -> None:
         self.__axisZ += value
