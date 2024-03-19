@@ -48,7 +48,7 @@ class Window(SGIObject):
             self.dimensions.height -= self.ZOOM_MOVE
 
         # Reset the central point with the previous
-        self.setCentralPoint(self.position)
+        self.setCentralPoint(self.dimensions.central_point(self.position))
 
     def zoomOut(self) -> None:
         """
@@ -65,7 +65,7 @@ class Window(SGIObject):
             self.dimensions.height += self.ZOOM_MOVE
 
         # Reset the central point with the previous
-        self.setCentralPoint(self.position)
+        self.setCentralPoint(self.dimensions.central_point(self.position))
         
     def moveUp(self) -> None:
         self.position.axisY += self.ZOOM_MOVE
