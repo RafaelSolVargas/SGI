@@ -23,7 +23,7 @@ class Window(SGIObject):
     
     @property
     def Xmax(self) -> float:
-        return self.position.axisX + self.dimensions.lenght
+        return self.position.axisX + self.dimensions.length
     
     @property
     def Ymin(self) -> float:
@@ -41,8 +41,8 @@ class Window(SGIObject):
         if self.dimensions.width > self.MIN_SIZE:
             self.dimensions.width -= self.ZOOM_MOVE
 
-        if self.dimensions.lenght > self.MIN_SIZE:
-            self.dimensions.lenght -= self.ZOOM_MOVE
+        if self.dimensions.length > self.MIN_SIZE:
+            self.dimensions.length -= self.ZOOM_MOVE
         
         if self.dimensions.height > self.MIN_SIZE:
             self.dimensions.height -= self.ZOOM_MOVE
@@ -58,8 +58,8 @@ class Window(SGIObject):
         if self.dimensions.width < self.MIN_SIZE:
             self.dimensions.width += self.ZOOM_MOVE
 
-        if self.dimensions.lenght < self.MIN_SIZE:
-            self.dimensions.lenght += self.ZOOM_MOVE
+        if self.dimensions.length < self.MIN_SIZE:
+            self.dimensions.length += self.ZOOM_MOVE
         
         if self.dimensions.height < self.MIN_SIZE:
             self.dimensions.height += self.ZOOM_MOVE

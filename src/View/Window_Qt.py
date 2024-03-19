@@ -216,13 +216,23 @@ class Window_Qt(QMainWindow):
         arrows = ArrowButtonWidget(self.update, "Mover", window_control_box)
         arrows.setGeometry(0, 10, 100, 100)
         
-        in_out_box = QGroupBox(window_control_box)
-        in_out_box.setLayout(QVBoxLayout())
-        in_out_box.layout().addWidget(Button("Frente", lambda: print("Frente")))
-        in_out_box.layout().addWidget(Button("Trás", lambda: print("Trás")))
-        in_out_box.setGeometry(100, 10, 100, 100)
+        zoom_window_box = QGroupBox(window_control_box)
+        zoom_window_box.setLayout(QVBoxLayout())
+        zoom_window_box.setGeometry(100, 0, 100, 100)
         
-        zoom_box = QGroupBox(window_box)
+        zoom_window_label = QLabel("Zoom")
+        zoom_window_label.setAlignment(Qt.AlignCenter)
+        zoom_window_box.layout().addWidget(zoom_window_label)
+        
+        zoom_window_layout = QHBoxLayout()
+        zoom_window_layout.addWidget(Button("+", lambda: (WorldHandler.getHandler().window.zoomIn(), self.update())))
+        zoom_window_layout.addWidget(Button("-", lambda: (WorldHandler.getHandler().window.zoomOut(), self.update())))
+        
+        zoom_window_widget = QWidget(zoom_window_box)
+        zoom_window_widget.setLayout(zoom_window_layout)
+        zoom_window_box.layout().addWidget(zoom_window_widget)
+        
+        """ zoom_box = QGroupBox(window_box)
         zoom_box.setStyleSheet("border: transparent;")
         zoom_box.setGeometry(0, 100, 180, 100)
         zoom_box.setLayout(QHBoxLayout())
@@ -238,7 +248,7 @@ class Window_Qt(QMainWindow):
         zoom_out_button.setFixedSize(25, 25)
         
         zoom_box.layout().addWidget(zoom_in_button)
-        zoom_box.layout().addWidget(zoom_out_button)
+        zoom_box.layout().addWidget(zoom_out_button) """
         
                 
     def __addSidebarObjBox(self, title: str, items: list):
