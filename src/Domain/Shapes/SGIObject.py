@@ -1,3 +1,4 @@
+from typing import List
 from Domain.Utils.Coordinates import Dimensions3D, Position3D
 from Domain.Utils.Enums import ObjectsTypes
 from Domain.Utils.IdGenerator import IdGenerator
@@ -13,6 +14,9 @@ class SGIObject:
     @property
     def type(self) -> ObjectsTypes:
         return self.__type
+    
+    def getPositions(self) -> List[Position3D]:
+        return [self.__position]
 
     @property
     def centralPoint(self) -> Position3D:

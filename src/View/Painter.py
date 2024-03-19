@@ -2,7 +2,7 @@ import sys
 from typing import List
 from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5.QtGui import QPainter, QColor, QPen, QColor, QPixmap
-from PyQt5.QtCore import QPoint, QPointF, Qt
+from PyQt5.QtCore import QPointF, Qt
 from Domain.Shapes.Polygon import Polygon
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line

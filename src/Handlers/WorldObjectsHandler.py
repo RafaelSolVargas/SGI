@@ -74,8 +74,12 @@ class WorldObjectsHandler:
             # Creates a copy to not change the Domain value
             objCopy = copy(obj)
 
-            # Recalculate the position of object
-            objCopy.position = self.__viewportTransform(obj.position)
+            for position in objCopy.getPositions():
+                transformedPosition = self.__viewportTransform(position)
+
+                position.axisX = transformedPosition.axisX
+                position.axisY = transformedPosition.axisY
+                position.axisZ = transformedPosition.axisZ
 
             objectsToShow.append(objCopy)
 

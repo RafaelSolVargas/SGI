@@ -1,3 +1,4 @@
+from typing import List
 from Domain.Utils.Coordinates import Dimensions3D, Position3D
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Enums import ObjectsTypes
@@ -9,3 +10,7 @@ class Point(SGIObject):
         position = Position3D(axisX, axisY, axisZ)
         
         super().__init__(ObjectsTypes.POINT, "Point", dimensions, position)
+
+    def getPositions(self) -> List[Position3D]:
+        return [self.position]
+    
