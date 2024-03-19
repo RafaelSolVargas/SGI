@@ -5,7 +5,7 @@ from Domain.Utils.Coordinates import Position3D
 from View.Button import Button
 from View.Console import Console
 from View.ArrowButtonWidget import ArrowButtonWidget
-from View.Painter import Painter, Canvas
+from View.Painter import Canvas
 from Domain.Shapes.Point import Point
 from Domain.Utils.Constants import Constants
 from Handlers.WorldHandler import WorldHandler
