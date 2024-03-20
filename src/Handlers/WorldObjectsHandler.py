@@ -15,7 +15,7 @@ class WorldObjectsHandler:
         self.__viewport = viewPort
         self.__window = window
         self.__world = world
-        self.__tempPolygon = []
+        self.__tempPolygonPoints: List[Point] = []
 
     def addLine(self, pointOne: Position3D, pointTwo: Position3D) -> None:
         line = Line(pointOne, pointTwo)
@@ -30,18 +30,22 @@ class WorldObjectsHandler:
         self.__world.addObject(point)
 
         
-    def addPointPolygon(self, position: Position3D) -> None:
+    def addTempPointPolygon(self, position: Position3D) -> None:
         print(f'Ponto adicionado ao poligono {position.axisX}, {position.axisY}, {position.axisZ}')
 
         point = Point(position.axisX, position.axisY, position.axisZ)
         
-        self.__tempPolygon.append(point)
+        self.__tempPolygonPoints.append(point)
         
-    def commitPolygon(self) -> None:
-        print('Confirmando poligono')
-        polygon = Polygon('Poligono', self.__tempPolygon)
+    def commitPolygonCreation(self) -> None:
+        if len(self.__tempPolygonPoints) == 0:
+            return
+
+        polygon = Polygon('Poligono', copy(self.__tempPolygonPoints))
+
         self.__world.addObject(polygon)
-        self.__tempPolygon = []
+        
+        self.__tempPolygonPoints.clear()
     
     def __transformPositionToViewPort(self, position: Position3D) -> Position3D:
         xW = position.axisX

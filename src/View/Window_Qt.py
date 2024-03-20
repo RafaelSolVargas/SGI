@@ -129,9 +129,9 @@ class ObjectWindowFactory:
         window.show()
     
     def __createPolygonWindow(self):
-        def addPointCallback(x, y, z):
+        def addTempPoint(x, y, z):
             print(f"Adicionou ponto: ({x}, {y}, {z})")
-            WorldHandler.getHandler().objectHandler.addPoint(Position3D(int(x), int(y), int(z)))
+            WorldHandler.getHandler().objectHandler.addTempPointPolygon(Position3D(int(x), int(y), int(z)))
         
         window = QMainWindow(self.__parent)
         window.setWindowTitle("Criar Polígono")
@@ -161,10 +161,10 @@ class ObjectWindowFactory:
         z_field.setText("0")
         layout.addWidget(z_field)
         
-        add_button = Button("Adicionar", lambda: (addPointCallback(x_field.text(), y_field.text(), z_field.text()), x_field.clear(), y_field.clear()))
+        add_button = Button("Adicionar", lambda: (addTempPoint(x_field.text(), y_field.text(), z_field.text()), x_field.clear(), y_field.clear()))
         layout.addWidget(add_button)
         
-        confirm_button = Button("Confirmar", lambda: (WorldHandler.getHandler().objectHandler.commitPolygon(), window.close(), self.__parent.update()))
+        confirm_button = Button("Confirmar", lambda: (WorldHandler.getHandler().objectHandler.commitPolygonCreation(), window.close(), self.__parent.update()))
         layout.addWidget(confirm_button)
             
         window.show()

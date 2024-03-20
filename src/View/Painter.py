@@ -58,6 +58,7 @@ class Canvas(QLabel):
     @classmethod
     def __paintPoint(cls, canvas: QPainter, point: Point):
         print(f'Pintando ponto em {point.position.axisX}, {point.position.axisY}')
+
         canvas.drawPoint(QPointF(point.position.axisX, point.position.axisY))
 
     @classmethod
@@ -70,6 +71,24 @@ class Canvas(QLabel):
     def __paintPolygon(cls, canvas: QPainter, polygon: Polygon):
         print(f'Pintando poligono')
         positions = polygon.getPositions()
-        qpositions = [QPointF(position.axisX, position.axisY) for position in positions]
         
-        canvas.drawPolygon(qpositions)
+        if (len(positions) == 0):
+            return
+
+        if (len(positions) == 1):
+            canvas.drawPoint(positions[0].axisX, positions[0].axisY)
+            return
+
+        if (len(positions) == 2):
+            canvas.drawLine(positions[0].axisX, positions[0].axisY, positions[1].axisX, positions[1].axisY)
+
+        # Adiciona o primeiro ponto como último ponto para fechar automaticamente o polígono
+        positions.append(positions[0])
+
+        for index, curPosition in enumerate(positions):
+            # Não executa nada caso seja o último
+            if index != len(positions) - 1:
+                nextPosition = positions[index+1]
+
+                canvas.drawLine(curPosition.axisX, curPosition.axisY, 
+                                nextPosition.axisX, nextPosition.axisY)
