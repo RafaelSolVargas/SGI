@@ -53,12 +53,18 @@ class ObjectWindowFactory:
         z_field.setText("0")
         layout.addWidget(z_field)
         
-        # TODO: Add draw function to the callback
+        name_label = QLabel("Nome do ponto:")
+        layout.addWidget(name_label)
+        
+        name_field = QLineEdit()
+        name_field.setText("Ponto")
+        layout.addWidget(name_field)
+
         confirm_button = Button("Confirmar", lambda:  (WorldHandler
                                                         .getHandler()
                                                         .objectHandler
                                                         .addPoint(
-                                                            Position3D(int(x_field.text()), int(y_field.text()), int(z_field.text()))
+                                                            Position3D(int(x_field.text()), int(y_field.text()), int(z_field.text())), name_field.text()
                                                         ), 
                                 window.close(), self.__parent.update()))
         layout.addWidget(confirm_button)
@@ -115,13 +121,21 @@ class ObjectWindowFactory:
         z2_field.setText("0")
         layout.addWidget(z2_field)
         
-        # TODO: Add draw function to the callback
+        # Line name
+        name_label = QLabel("Nome da linha:")
+        layout.addWidget(name_label)
+        
+        name_field = QLineEdit()
+        name_field.setText("Linha")
+        layout.addWidget(name_field)
+
         confirm_button = Button("Confirmar", lambda: (WorldHandler
                                 .getHandler()
                                 .objectHandler
                                 .addLine(
                                     Point(int(x1_field.text()), int(y1_field.text()), int(z1_field.text())),
-                                    Point(int(x2_field.text()), int(y2_field.text()), int(z2_field.text()))
+                                    Point(int(x2_field.text()), int(y2_field.text()), int(z2_field.text())),
+                                    name_field.text()
                                 ),
                     window.close(), self.__parent.update()))
         layout.addWidget(confirm_button)
@@ -161,10 +175,18 @@ class ObjectWindowFactory:
         z_field.setText("0")
         layout.addWidget(z_field)
         
-        add_button = Button("Adicionar", lambda: (addTempPoint(x_field.text(), y_field.text(), z_field.text()), x_field.clear(), y_field.clear()))
+        # Wireframe name
+        name_label = QLabel("Nome do Wireframe:")
+        layout.addWidget(name_label)
+        
+        name_field = QLineEdit()
+        name_field.setText("Wireframe")
+        layout.addWidget(name_field)
+
+        add_button = Button("Adicionar ponto ao wireframe", lambda: (addTempPoint(x_field.text(), y_field.text(), z_field.text()), x_field.clear(), y_field.clear()))
         layout.addWidget(add_button)
         
-        confirm_button = Button("Confirmar", lambda: (WorldHandler.getHandler().objectHandler.commitWireframeCreation(), window.close(), self.__parent.update()))
+        confirm_button = Button("Confirmar criação", lambda: (WorldHandler.getHandler().objectHandler.commitWireframeCreation(name_field.text()), window.close(), self.__parent.update()))
         layout.addWidget(confirm_button)
             
         window.show()
@@ -236,24 +258,6 @@ class Window_Qt(QMainWindow):
         zoom_window_widget = QWidget(zoom_window_box)
         zoom_window_widget.setLayout(zoom_window_layout)
         zoom_window_box.layout().addWidget(zoom_window_widget)
-        
-        """ zoom_box = QGroupBox(window_box)
-        zoom_box.setStyleSheet("border: transparent;")
-        zoom_box.setGeometry(0, 100, 180, 100)
-        zoom_box.setLayout(QHBoxLayout())
-        
-        zoom_box_label = QLabel("Zoom")
-        zoom_box_label.setAlignment(Qt.AlignCenter)
-        zoom_box.layout().addWidget(zoom_box_label)
-        
-        zoom_in_button = Button("+", lambda: print("Zoom in"))
-        zoom_out_button = Button("-", lambda: print("Zoom out"))
-        
-        zoom_in_button.setFixedSize(25, 25)
-        zoom_out_button.setFixedSize(25, 25)
-        
-        zoom_box.layout().addWidget(zoom_in_button)
-        zoom_box.layout().addWidget(zoom_out_button) """
         
                 
     def __addSidebarObjBox(self, title: str, items: list):

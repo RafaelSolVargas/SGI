@@ -7,13 +7,13 @@ from Domain.Utils.Coordinates import Position3D
 
 
 class Line(SGIObject):
-    def __init__(self, pointOne: Point, pointTwo: Point) -> None:
+    def __init__(self, pointOne: Point, pointTwo: Point, name: str = "Linha") -> None:
         dimensions = Dimensions3D(1, 1, 1)
 
         self.__pointOne = pointOne
         self.__pointTwo = pointTwo
 
-        super().__init__(ObjectsTypes.LINE, "Line", dimensions, pointOne.position)
+        super().__init__(ObjectsTypes.LINE, name, dimensions, pointOne.position)
 
     def getPositions(self) -> List[Position3D]:
         return [self.pointOne.position, self.pointTwo.position]

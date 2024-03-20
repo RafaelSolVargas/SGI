@@ -17,15 +17,15 @@ class WorldObjectsHandler:
         self.__world = world
         self.__tempWireframePoints: List[Point] = []
 
-    def addLine(self, pointOne: Position3D, pointTwo: Position3D) -> None:
-        line = Line(pointOne, pointTwo)
+    def addLine(self, pointOne: Position3D, pointTwo: Position3D, name: str = "Linha") -> None:
+        line = Line(pointOne, pointTwo, name)
 
         self.__world.addObject(line)
 
-    def addPoint(self, position: Position3D) -> None:
+    def addPoint(self, position: Position3D, name: str = 'Ponto') -> None:
         print(f'Ponto adicionado {position.axisX}, {position.axisY}, {position.axisZ}')
 
-        point = Point(position.axisX, position.axisY, position.axisZ)
+        point = Point(position.axisX, position.axisY, position.axisZ, name)
 
         self.__world.addObject(point)
 
@@ -33,15 +33,15 @@ class WorldObjectsHandler:
     def addTempPointWireframe(self, position: Position3D) -> None:
         print(f'Ponto adicionado ao wireframe {position.axisX}, {position.axisY}, {position.axisZ}')
 
-        point = Point(position.axisX, position.axisY, position.axisZ)
+        point = Point(position.axisX, position.axisY, position.axisZ, "Ponto do polígono")
         
         self.__tempWireframePoints.append(point)
         
-    def commitWireframeCreation(self) -> None:
+    def commitWireframeCreation(self, name: str = "Wireframe") -> None:
         if len(self.__tempWireframePoints) == 0:
             return
 
-        wireFrame = WireFrame('Wireframe', copy(self.__tempWireframePoints))
+        wireFrame = WireFrame(name, copy(self.__tempWireframePoints))
 
         self.__world.addObject(wireFrame)
         

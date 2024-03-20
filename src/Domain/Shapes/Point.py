@@ -5,11 +5,11 @@ from Domain.Utils.Enums import ObjectsTypes
 
 
 class Point(SGIObject):
-    def __init__(self, axisX: int, axisY: int, axisZ: int) -> None:
+    def __init__(self, axisX: int, axisY: int, axisZ: int, name: str = "Ponto") -> None:
         dimensions = Dimensions3D(1, 1, 1)
         position = Position3D(axisX, axisY, axisZ)
         
-        super().__init__(ObjectsTypes.POINT, "Point", dimensions, position)
+        super().__init__(ObjectsTypes.POINT, name, dimensions, position)
 
     def getPositions(self) -> List[Position3D]:
         return [self.position]
