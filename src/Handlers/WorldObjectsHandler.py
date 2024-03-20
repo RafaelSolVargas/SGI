@@ -5,7 +5,7 @@ from Domain.Management.Window import Window
 from Domain.Management.World import World
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
-from Domain.Shapes.Polygon import Polygon
+from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
 
@@ -15,7 +15,7 @@ class WorldObjectsHandler:
         self.__viewport = viewPort
         self.__window = window
         self.__world = world
-        self.__tempPolygonPoints: List[Point] = []
+        self.__tempWireframePoints: List[Point] = []
 
     def addLine(self, pointOne: Position3D, pointTwo: Position3D) -> None:
         line = Line(pointOne, pointTwo)
@@ -30,22 +30,22 @@ class WorldObjectsHandler:
         self.__world.addObject(point)
 
         
-    def addTempPointPolygon(self, position: Position3D) -> None:
-        print(f'Ponto adicionado ao poligono {position.axisX}, {position.axisY}, {position.axisZ}')
+    def addTempPointWireframe(self, position: Position3D) -> None:
+        print(f'Ponto adicionado ao wireframe {position.axisX}, {position.axisY}, {position.axisZ}')
 
         point = Point(position.axisX, position.axisY, position.axisZ)
         
-        self.__tempPolygonPoints.append(point)
+        self.__tempWireframePoints.append(point)
         
-    def commitPolygonCreation(self) -> None:
-        if len(self.__tempPolygonPoints) == 0:
+    def commitWireframeCreation(self) -> None:
+        if len(self.__tempWireframePoints) == 0:
             return
 
-        polygon = Polygon('Poligono', copy(self.__tempPolygonPoints))
+        wireFrame = WireFrame('Wireframe', copy(self.__tempWireframePoints))
 
-        self.__world.addObject(polygon)
+        self.__world.addObject(wireFrame)
         
-        self.__tempPolygonPoints.clear()
+        self.__tempWireframePoints.clear()
     
     def __transformPositionToViewPort(self, position: Position3D) -> Position3D:
         xW = position.axisX
@@ -65,7 +65,7 @@ class WorldObjectsHandler:
     def getObjectsViewport(self) -> List[SGIObject]:
         objectsToShow: List[SGIObject] = []
 
-        print(f'Starting the transformantions of {len(self.__world.objects)} objects')
+        print(f'----> Starting the transformantions of {len(self.__world.objects)} objects')
 
         for obj in self.__world.objects:
             # Creates a copy to not change the Domain value
@@ -82,5 +82,7 @@ class WorldObjectsHandler:
                 position.axisZ = transformedPosition.axisZ
 
             objectsToShow.append(objCopy)
+
+        print(f'<---- Finished transformations')
 
         return objectsToShow

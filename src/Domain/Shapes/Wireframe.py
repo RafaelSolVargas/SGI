@@ -5,9 +5,9 @@ from Domain.Utils.Enums import ObjectsTypes
 from Domain.Shapes.Point import Point
 
 
-class Polygon(SGIObject):
+class WireFrame(SGIObject):
     def __init__(self, name: str, positions: List[Point]) -> None:
-        super().__init__(ObjectsTypes.POLYGON, name, Dimensions3D(0, 0, 0), positions[0])
+        super().__init__(ObjectsTypes.WIREFRAME, name, Dimensions3D(0, 0, 0), positions[0])
         self.__points = positions
         
     def addPoint(self, point: Point) -> None:

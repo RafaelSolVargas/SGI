@@ -1,9 +1,8 @@
-import sys
 from typing import List
-from PyQt5.QtWidgets import QWidget, QLabel
-from PyQt5.QtGui import QPainter, QColor, QPen, QColor, QPixmap
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtGui import QPainter, QColor, QColor, QPixmap
 from PyQt5.QtCore import QPointF, Qt
-from Domain.Shapes.Polygon import Polygon
+from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
 from Domain.Shapes.SGIObject import SGIObject
@@ -40,8 +39,8 @@ class Canvas(QLabel):
                 self.__paintPoint(painter, obj)
             elif obj.type == ObjectsTypes.LINE:
                 self.__paintLine(painter, obj)
-            elif obj.type == ObjectsTypes.POLYGON:
-                self.__paintPolygon(painter, obj)
+            elif obj.type == ObjectsTypes.WIREFRAME:
+                self.__paintWireframe(painter, obj)
     
         painter.end()
         self.update()
@@ -68,9 +67,9 @@ class Canvas(QLabel):
                         line.pointTwo.position.axisX, line.pointTwo.position.axisY)
         
     @classmethod
-    def __paintPolygon(cls, canvas: QPainter, polygon: Polygon):
-        print(f'Pintando poligono')
-        positions = polygon.getPositions()
+    def __paintWireframe(cls, canvas: QPainter, wireFrame: WireFrame):
+        print(f'Pintando wireframe')
+        positions = wireFrame.getPositions()
         
         if (len(positions) == 0):
             return

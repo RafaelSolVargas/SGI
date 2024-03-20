@@ -21,8 +21,8 @@ class ObjectWindowFactory:
             return self.__createPointWindow()
         elif obj == "Reta":
             return self.__createLineWindow()
-        elif obj == "Polígono":
-            return self.__createPolygonWindow()
+        elif obj == "Wireframe":
+            return self.__createWireframeWindow()
     
     def __createPointWindow(self):
         window = QMainWindow(self.__parent)
@@ -128,13 +128,13 @@ class ObjectWindowFactory:
           
         window.show()
     
-    def __createPolygonWindow(self):
+    def __createWireframeWindow(self):
         def addTempPoint(x, y, z):
             print(f"Adicionou ponto: ({x}, {y}, {z})")
-            WorldHandler.getHandler().objectHandler.addTempPointPolygon(Position3D(int(x), int(y), int(z)))
+            WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(int(x), int(y), int(z)))
         
         window = QMainWindow(self.__parent)
-        window.setWindowTitle("Criar Polígono")
+        window.setWindowTitle("Criar Wireframe")
         window.setGeometry(self.__parent.geometry().center().x() - 150, self.__parent.geometry().center().y() - 100, 300, 200)
         
         central_widget = QWidget(window)
@@ -164,7 +164,7 @@ class ObjectWindowFactory:
         add_button = Button("Adicionar", lambda: (addTempPoint(x_field.text(), y_field.text(), z_field.text()), x_field.clear(), y_field.clear()))
         layout.addWidget(add_button)
         
-        confirm_button = Button("Confirmar", lambda: (WorldHandler.getHandler().objectHandler.commitPolygonCreation(), window.close(), self.__parent.update()))
+        confirm_button = Button("Confirmar", lambda: (WorldHandler.getHandler().objectHandler.commitWireframeCreation(), window.close(), self.__parent.update()))
         layout.addWidget(confirm_button)
             
         window.show()
@@ -188,7 +188,7 @@ class Window_Qt(QMainWindow):
         QVBoxLayout(self.__sidebar)
         
         # TODO: Change to Enum or Object after model is implemented
-        self.__addSidebarObjBox("Objetos", ["Ponto", "Reta", "Polígono"])
+        self.__addSidebarObjBox("Objetos", ["Ponto", "Reta", "Wireframe"])
         self.__addSidebarWindowBox()
                 
         self.__console = Console(self)
