@@ -1,6 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QMessageBox, QLineEdit, QHBoxLayout
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPixmap
+from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QLineEdit, QHBoxLayout
+from PyQt5.QtCore import Qt, QRect
 from Domain.Utils.Coordinates import Position3D
 from View.Button import Button
 from View.Console import Console
@@ -194,7 +193,7 @@ class ObjectWindowFactory:
 class Window_Qt(QMainWindow):
     def __init__(self, w: int = 1280, h: int = 720):
         super().__init__()
-        self.__widgets = {}
+        self._object_list_widget = None
         self.__objWinFactory = ObjectWindowFactory(self)
         
         screen = QDesktopWidget().screenGeometry()
@@ -207,11 +206,12 @@ class Window_Qt(QMainWindow):
         self.__sidebar.setGeometry(0, 0, Constants.SIDEBAR_SIZE, Constants.SCREEN_HEIGHT)
         self.__sidebar.setStyleSheet("border: 1px solid black;")
         
-        QVBoxLayout(self.__sidebar)
+        self.__sidebar.setLayout(QVBoxLayout(self.__sidebar))
         
         # TODO: Change to Enum or Object after model is implemented
         self.__addSidebarObjBox("Objetos", ["Ponto", "Reta", "Wireframe"])
         self.__addSidebarWindowBox()
+        
                 
         self.__console = Console(self)
         self.__console.setGeometry(Constants.SIDEBAR_SIZE, h - Constants.SIDEBAR_SIZE, w - Constants.SIDEBAR_SIZE, Constants.SIDEBAR_SIZE)
@@ -225,12 +225,18 @@ class Window_Qt(QMainWindow):
         print("Updating")
         
         obj_list = WorldHandler.getHandler().objectHandler.getObjectsViewport()
+        
+        self.__object_list_widget.clear()
+        for obj in obj_list:
+            self.__object_list_widget.addItem(f"{obj.name} ({obj.type.name})")
+        
         self.__canvas.draw(obj_list)
     
     def __addSidebarWindowBox(self):
         window_box = QLabel("Window")
         window_box.setLayout(QVBoxLayout())
         window_box.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        window_box.setGeometry(0, 0, 180, 200)
         self.__sidebar.layout().addWidget(window_box)
         
         window_control_box = QGroupBox()
@@ -261,8 +267,9 @@ class Window_Qt(QMainWindow):
         
                 
     def __addSidebarObjBox(self, title: str, items: list):
-        box = QGroupBox(title)
-        box.setGeometry(10, 60, 180, 100)
+        box = QGroupBox(title, self.__sidebar)
+        box.setGeometry(0, 0, 180, 150)
+        box.setFixedSize(Constants.SIDEBAR_SIZE - 17, 300)
         self.__sidebar.layout().addWidget(box)
         
         layout = QVBoxLayout(box)
@@ -270,3 +277,8 @@ class Window_Qt(QMainWindow):
         for item in items:
             button = Button(item, lambda checked, item=item: self.__objWinFactory(item))
             layout.addWidget(button)
+
+        # Add a box to list the objects drawn
+        self.__object_list_widget = QListWidget(box)
+        box.layout().addWidget(self.__object_list_widget)
+        self.__object_list_widget.setFixedSize(215, 150)
