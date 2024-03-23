@@ -7,5 +7,3 @@ class ObjectsTypes(Enum):
     WIREFRAME = 2
     VIEWPORT = 3
     WINDOW = 4
-
-

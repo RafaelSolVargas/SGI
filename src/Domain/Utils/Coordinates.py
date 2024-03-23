@@ -1,3 +1,5 @@
+import numpy as np
+
 class Dimensions3D:
     def __init__(self, length: int, width: int, height: int) -> None:
         self.__height = height
@@ -84,3 +86,6 @@ class Position3D:
 
     def moveBack(self, value = __MOVE_LENGTH) -> None:
         self.__axisZ += value
+        
+    def homogenous(self) -> np.ndarray:
+        return np.array([self.__axisX, self.__axisY, self.__axisZ, 1])
