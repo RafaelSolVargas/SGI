@@ -243,7 +243,7 @@ class ObjectTransformWindow(QMainWindow):
             rotation_type_dropdown = QComboBox()
             
             for rotation_type in RotationTypes:
-                rotation_type_dropdown.addItem(rotation_type.name)
+                rotation_type_dropdown.addItem(rotation_type.value)
             
             self.__layout.addWidget(rotation_type_dropdown)
             
@@ -274,8 +274,16 @@ class ObjectTransformWindow(QMainWindow):
         group_box_layout.addWidget(self.TransformBox(central_widget, "Escalonamento"))
         group_box_layout.addWidget(self.TransformBox(central_widget, "Rotação"))
         
-        # Create the QListWidget
-        list_widget = QListWidget(central_widget)
-        central_widget.layout().addWidget(list_widget)
+        # Create the QListWidget and Confirm Button
+        list_and_confirm_widget = QWidget(central_widget)
+        list_and_confirm_widget.setLayout(QVBoxLayout())
+        
+        list_widget = QListWidget(list_and_confirm_widget)
+        list_and_confirm_widget.layout().addWidget(list_widget)
+        
+        confirm_button = Button("Confirmar", lambda: (self.close(), parent.update()))
+        list_and_confirm_widget.layout().addWidget(confirm_button)
+        
+        central_widget.layout().addWidget(list_and_confirm_widget)
         
         self.show()
