@@ -1,12 +1,16 @@
 from Domain.Utils.Coordinates import Position3D
+from Domain.Utils.Enums import RotationTypes
 from abc import ABC, abstractmethod
-from Domain.Utils.Enums import Axis
 import numpy as np
 
 class Transform(ABC):
     def __init__(self, positions: list[Position3D] = []) -> None:
         self.__positions = positions
-    
+
+    @abstractmethod
+    def getName(self) -> str:
+        pass
+
     def __do_transform(self, position: Position3D) -> np.ndarray:
         return position.homogenous() @ self.matrix()
     
@@ -39,6 +43,9 @@ class Translation(Transform):
         self.__y = y
         self.__z = z
         
+    def getName(self) -> str:
+        return f"Translation({self.__x}, {self.__y}, {self.__z})"
+
     def matrix(self) -> np.ndarray:
         return np.array([   [1, 0, 0, 0],
                             [0, 1, 0, 0],
@@ -46,10 +53,14 @@ class Translation(Transform):
                             [self.__x, self.__y, self.__z, 1]])
         
 class Rotation(Transform):
-    def __init__(self, angle: float, positions: list[Position3D] = []) -> None:
+    def __init__(self, angle: float, type: RotationTypes, positions: list[Position3D] = []) -> None:
         super().__init__(positions)
+        self.__type = type
         self.__angle = np.radians(angle)
         
+    def getName(self) -> str:
+        return f"Rotation {self.__type}({self.__angle})"
+
     def matrix(self) -> np.ndarray:
         return np.array([   [np.cos(self.__angle), -np.sin(self.__angle), 0, 0],
                             [np.sin(self.__angle), np.cos(self.__angle), 0, 0],
@@ -63,6 +74,9 @@ class Scale(Transform):
         self.__y = y
         self.__z = z
         
+    def getName(self) -> str:
+        return f"Scale({self.__x}, {self.__y}, {self.__z})"
+
     def matrix(self) -> np.ndarray:
         return np.array([   [self.__x, 0, 0, 0],
                             [0, self.__y, 0, 0],
@@ -74,5 +88,8 @@ class GenericTransform(Transform):
         super().__init__(positions)
         self.__matrix = matrix
     
+    def getName(self) -> str:
+        return f"GenericTransform({self.__matrix})"
+
     def matrix(self) -> np.ndarray:
         return self.__matrix

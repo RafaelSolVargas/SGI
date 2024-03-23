@@ -1,11 +1,13 @@
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QGroupBox, QListWidget, QComboBox
+from Domain.Utils.Transforms import Rotation, Scale, Transform, Translation
 from Domain.Utils.Coordinates import Position3D
+from Handlers.WorldHandler import WorldHandler
 from Domain.Utils.Constants import Constants
 from Domain.Utils.Enums import RotationTypes
-from View.Button import Button
-from Handlers.WorldHandler import WorldHandler
-from Domain.Shapes.Point import Point
 from Domain.Shapes.SGIObject import SGIObject
+from Domain.Shapes.Point import Point
+from View.Button import Button
+from typing import List
 
 # Returns a function that creates a new window according to the object given
 class ObjectWindowFactory:
@@ -226,7 +228,7 @@ class ObjectTransformWindow(QMainWindow):
             z_field.setText("1")
             self.__layout.addWidget(z_field)
 
-            add_button = Button("Adicionar", lambda: self.__transform_callback(x_field.text(), y_field.text(), z_field.text()))
+            add_button = Button("Adicionar", lambda: (self.__transform_callback(x_field.text(), y_field.text(), z_field.text())))
             self.__layout.addWidget(add_button)
             
         def __addFieldsAngle(self):
@@ -247,13 +249,15 @@ class ObjectTransformWindow(QMainWindow):
             
             self.__layout.addWidget(rotation_type_dropdown)
             
-            add_button = Button("Adicionar", lambda: self.__transform_callback(angle_field.text(), rotation_type_dropdown.currentText()))
+            add_button = Button("Adicionar", lambda: (self.__transform_callback(angle_field.text(), rotation_type_dropdown.currentText())))
             self.__layout.addWidget(add_button)
     
     
     def __init__(self, parent: QWidget, obj: SGIObject):
         super().__init__(parent)
         self.__obj = obj
+        self.__transforms: List[Transform] = []
+        self.__parent = parent
         
         self.setWindowTitle(f"Transformar {self.__obj.name} ({self.__obj.type.name.lower()})")
         
@@ -270,20 +274,51 @@ class ObjectTransformWindow(QMainWindow):
         group_box.setLayout(group_box_layout)
         central_widget.layout().addWidget(group_box)
         
-        group_box_layout.addWidget(self.TransformBox(central_widget, "Translação"))
-        group_box_layout.addWidget(self.TransformBox(central_widget, "Escalonamento"))
-        group_box_layout.addWidget(self.TransformBox(central_widget, "Rotação"))
+        group_box_layout.addWidget(self.TransformBox(central_widget, "Translação", self.__translation_callback))
+        group_box_layout.addWidget(self.TransformBox(central_widget, "Escalonamento", self.__scale_callback))
+        group_box_layout.addWidget(self.TransformBox(central_widget, "Rotação", self.__rotation_callback))
         
         # Create the QListWidget and Confirm Button
         list_and_confirm_widget = QWidget(central_widget)
         list_and_confirm_widget.setLayout(QVBoxLayout())
         
-        list_widget = QListWidget(list_and_confirm_widget)
-        list_and_confirm_widget.layout().addWidget(list_widget)
+        self.__list_widget = QListWidget(list_and_confirm_widget)
+        list_and_confirm_widget.layout().addWidget(self.__list_widget)
         
-        confirm_button = Button("Confirmar", lambda: (self.close(), parent.update()))
+        confirm_button = Button("Confirmar", lambda: (self.__confirmTransformations()))
         list_and_confirm_widget.layout().addWidget(confirm_button)
         
         central_widget.layout().addWidget(list_and_confirm_widget)
         
         self.show()
+
+    def __confirmTransformations(self):
+        for transform in self.__transforms:
+            transform.execute()
+
+        self.close()
+
+        self.__parent.update()
+
+    def __translation_callback(self, x: float, y: float, z: float) -> None:
+        transform = Translation(x, y, z, self.__obj.getPositions())
+
+        self.__transforms.append(transform)
+        self.__update_transform_list()
+
+    def __rotation_callback(self, angle: float, type: RotationTypes) -> None:
+        transform = Rotation(float(angle), type, self.__obj.getPositions())
+
+        self.__transforms.append(transform)
+        self.__update_transform_list()
+
+    def __scale_callback(self, x: float, y: float, z: float) -> None:
+        transform = Scale(x, y, z, self.__obj.getPositions())
+
+        self.__transforms.append(transform)
+        self.__update_transform_list()
+
+    def __update_transform_list(self):
+        self.__list_widget.clear()
+        for transform in self.__transforms:
+            self.__list_widget.addItem(str(transform.getName()))

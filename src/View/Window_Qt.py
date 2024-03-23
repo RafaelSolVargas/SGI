@@ -102,7 +102,7 @@ class Window_Qt(QMainWindow):
         box.layout().addWidget(self.__object_list_widget)
         self.__object_list_widget.setFixedSize(215, 150)
 
-        transform_button = Button("Transformar", lambda: self.__openTransformWindow(self.__object_list_widget))
+        transform_button = Button("Transformar", lambda: (self.__openTransformWindow(self.__object_list_widget)))
         layout.addWidget(transform_button)
         
     def __openTransformWindow(self, obj_list_widget: QListWidget) -> None:
