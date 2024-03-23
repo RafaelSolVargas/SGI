@@ -68,4 +68,11 @@ class Scale(Transform):
                             [0, self.__y, 0, 0],
                             [0, 0, self.__z, 0],
                             [0, 0, 0, 1]])
+
+class GenericTransform(Transform):
+    def __init__(self, matrix: np.ndarray, positions: list[Position3D] = []) -> None:
+        super().__init__(positions)
+        self.__matrix = matrix
     
+    def matrix(self) -> np.ndarray:
+        return self.__matrix

@@ -86,3 +86,10 @@ class WorldObjectsHandler:
         print(f'<---- Finished transformations')
 
         return objectsToShow
+    
+    def getObjectByName(self, name: str) -> SGIObject:
+        for obj in self.__world.objects:
+            if obj.name == name:
+                return obj
+
+        return None

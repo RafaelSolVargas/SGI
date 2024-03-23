@@ -5,190 +5,9 @@ from View.Button import Button
 from View.Console import Console
 from View.ArrowButtonWidget import ArrowButtonWidget
 from View.Painter import Canvas
-from Domain.Shapes.Point import Point
+from View.SideWindows import ObjectWindowFactory, ObjectTransformWindow
 from Domain.Utils.Constants import Constants
 from Handlers.WorldHandler import WorldHandler
-
-# Returns a function that creates a new window according to the object given
-class ObjectWindowFactory:
-    def __init__(self, parent: QWidget):
-        self.__parent = parent
-    
-    # TODO: Change to Enum or Object after model is implemented
-    def __call__(self, obj: str):
-        if obj == "Ponto":
-            return self.__createPointWindow()
-        elif obj == "Reta":
-            return self.__createLineWindow()
-        elif obj == "Wireframe":
-            return self.__createWireframeWindow()
-    
-    def __createPointWindow(self):
-        window = QMainWindow(self.__parent)
-        window.setWindowTitle("Criar Ponto")
-        window.setGeometry(self.__parent.geometry().center().x() - 150, self.__parent.geometry().center().y() - 100, 300, 200)
-        
-        central_widget = QWidget(window)
-        window.setCentralWidget(central_widget)
-        
-        layout = QVBoxLayout(central_widget)
-        
-        x_label = QLabel("Coordenada X:")
-        layout.addWidget(x_label)
-        
-        x_field = QLineEdit()
-        layout.addWidget(x_field)
-        
-        y_label = QLabel("Coordenada Y:")
-        layout.addWidget(y_label)
-        
-        y_field = QLineEdit()
-        layout.addWidget(y_field)
-        
-        z_label = QLabel("Coordenada Z:")
-        layout.addWidget(z_label)
-        
-        z_field = QLineEdit()
-        z_field.setText("0")
-        layout.addWidget(z_field)
-        
-        name_label = QLabel("Nome do ponto:")
-        layout.addWidget(name_label)
-        
-        name_field = QLineEdit()
-        name_field.setText("Ponto")
-        layout.addWidget(name_field)
-
-        confirm_button = Button("Confirmar", lambda:  (WorldHandler
-                                                        .getHandler()
-                                                        .objectHandler
-                                                        .addPoint(
-                                                            Position3D(int(x_field.text()), int(y_field.text()), int(z_field.text())), name_field.text()
-                                                        ), 
-                                window.close(), self.__parent.update()))
-        layout.addWidget(confirm_button)
-          
-        window.show()
-        
-    def __createLineWindow(self):
-        window = QMainWindow(self.__parent)
-        window.setWindowTitle("Criar Linha")
-        window.setGeometry(self.__parent.geometry().center().x() - 150, self.__parent.geometry().center().y() - 100, 300, 200)
-        
-        central_widget = QWidget(window)
-        window.setCentralWidget(central_widget)
-        
-        layout = QVBoxLayout(central_widget)
-        
-        # First row
-        x1_label = QLabel("Coordenada X1:")
-        layout.addWidget(x1_label)
-        
-        x1_field = QLineEdit()
-        layout.addWidget(x1_field)
-        
-        y1_label = QLabel("Coordenada Y1:")
-        layout.addWidget(y1_label)
-        
-        y1_field = QLineEdit()
-        layout.addWidget(y1_field)
-        
-        z1_label = QLabel("Coordenada Z1:")
-        layout.addWidget(z1_label)
-        
-        z1_field = QLineEdit()
-        layout.addWidget(z1_field)
-        z1_field.setText("0")
-        
-        # Second row
-        x2_label = QLabel("Coordenada X2:")
-        layout.addWidget(x2_label)
-        
-        x2_field = QLineEdit()
-        layout.addWidget(x2_field)
-        
-        y2_label = QLabel("Coordenada Y2:")
-        layout.addWidget(y2_label)
-        
-        y2_field = QLineEdit()
-        layout.addWidget(y2_field)
-        
-        z2_label = QLabel("Coordenada Z2:")
-        layout.addWidget(z2_label)
-        
-        z2_field = QLineEdit()
-        z2_field.setText("0")
-        layout.addWidget(z2_field)
-        
-        # Line name
-        name_label = QLabel("Nome da linha:")
-        layout.addWidget(name_label)
-        
-        name_field = QLineEdit()
-        name_field.setText("Linha")
-        layout.addWidget(name_field)
-
-        confirm_button = Button("Confirmar", lambda: (WorldHandler
-                                .getHandler()
-                                .objectHandler
-                                .addLine(
-                                    Point(int(x1_field.text()), int(y1_field.text()), int(z1_field.text())),
-                                    Point(int(x2_field.text()), int(y2_field.text()), int(z2_field.text())),
-                                    name_field.text()
-                                ),
-                    window.close(), self.__parent.update()))
-        layout.addWidget(confirm_button)
-          
-        window.show()
-    
-    def __createWireframeWindow(self):
-        def addTempPoint(x, y, z):
-            print(f"Adicionou ponto: ({x}, {y}, {z})")
-            WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(int(x), int(y), int(z)))
-        
-        window = QMainWindow(self.__parent)
-        window.setWindowTitle("Criar Wireframe")
-        window.setGeometry(self.__parent.geometry().center().x() - 150, self.__parent.geometry().center().y() - 100, 300, 200)
-        
-        central_widget = QWidget(window)
-        window.setCentralWidget(central_widget)
-        
-        layout = QVBoxLayout(central_widget)
-        
-        x_label = QLabel("Coordenada X:")
-        layout.addWidget(x_label)
-        
-        x_field = QLineEdit()
-        layout.addWidget(x_field)
-        
-        y_label = QLabel("Coordenada Y:")
-        layout.addWidget(y_label)
-        
-        y_field = QLineEdit()
-        layout.addWidget(y_field)
-        
-        z_label = QLabel("Coordenada Z:")
-        layout.addWidget(z_label)
-        
-        z_field = QLineEdit()
-        z_field.setText("0")
-        layout.addWidget(z_field)
-        
-        # Wireframe name
-        name_label = QLabel("Nome do Wireframe:")
-        layout.addWidget(name_label)
-        
-        name_field = QLineEdit()
-        name_field.setText("Wireframe")
-        layout.addWidget(name_field)
-
-        add_button = Button("Adicionar ponto ao wireframe", lambda: (addTempPoint(x_field.text(), y_field.text(), z_field.text()), x_field.clear(), y_field.clear()))
-        layout.addWidget(add_button)
-        
-        confirm_button = Button("Confirmar criação", lambda: (WorldHandler.getHandler().objectHandler.commitWireframeCreation(name_field.text()), window.close(), self.__parent.update()))
-        layout.addWidget(confirm_button)
-            
-        window.show()
 
 class Window_Qt(QMainWindow):
     def __init__(self, w: int = 1280, h: int = 720):
@@ -269,7 +88,7 @@ class Window_Qt(QMainWindow):
     def __addSidebarObjBox(self, title: str, items: list):
         box = QGroupBox(title, self.__sidebar)
         box.setGeometry(0, 0, 180, 150)
-        box.setFixedSize(Constants.SIDEBAR_SIZE - 17, 300)
+        box.setFixedSize(Constants.SIDEBAR_SIZE - 17, 350)
         self.__sidebar.layout().addWidget(box)
         
         layout = QVBoxLayout(box)
@@ -282,3 +101,24 @@ class Window_Qt(QMainWindow):
         self.__object_list_widget = QListWidget(box)
         box.layout().addWidget(self.__object_list_widget)
         self.__object_list_widget.setFixedSize(215, 150)
+
+        transform_button = Button("Transformar", lambda: self.__openTransformWindow(self.__object_list_widget))
+        layout.addWidget(transform_button)
+        
+    def __openTransformWindow(self, obj_list_widget: QListWidget) -> None:
+        field = obj_list_widget.currentItem()
+        
+        if not field:
+            print("Nenhum objeto selecionado")
+            return
+        
+        obj_name = field.text().split(" ")[0]
+        
+        obj = WorldHandler.getHandler().objectHandler.getObjectByName(obj_name)
+        
+        if not obj:
+            print(f"Objeto {obj_name} não encontrado")
+            return
+        
+        ObjectTransformWindow(self, obj)
+        
