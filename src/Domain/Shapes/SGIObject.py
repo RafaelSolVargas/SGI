@@ -17,6 +17,9 @@ class SGIObject:
     
     def getPositions(self) -> List[Position3D]:
         return [self.__position]
+    
+    def setPositions(self, positions: List[Position3D]) -> None:
+        self.__position = positions[0]
 
     @property
     def centralPoint(self) -> Position3D:
@@ -32,7 +35,7 @@ class SGIObject:
         )
 
         self.position = new_position        
-
+        
     @property
     def dimensions(self) -> Dimensions3D:
         return self.__dimensions

@@ -18,6 +18,10 @@ class Line(SGIObject):
     def getPositions(self) -> List[Position3D]:
         return [self.pointOne.position, self.pointTwo.position]
 
+    def setPositions(self, positions: List[Position3D]) -> None:
+        self.__pointOne.position = positions[0]
+        self.__pointTwo.position = positions[1]
+
     @property
     def pointOne(self) -> Point:
         return self.__pointOne

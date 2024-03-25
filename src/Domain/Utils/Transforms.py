@@ -12,17 +12,37 @@ class Transform(ABC):
         pass
 
     def __do_transform(self, position: Position3D) -> np.ndarray:
-        return position.homogenous() @ self.matrix()
+        
+        pos = position.homogenous()
+        
+        print(f"Position: {pos}, shape: {pos.shape}")
+        
+        matrix = self.matrix()
+        
+        print(f"Matrix: {matrix}, shape: {matrix.shape}")
+        #print(f"Element types: {matrix.dtype}")
+        
+        result = pos @ matrix
+        
+        print(f"Result: {result}, shape: {result.shape}")
+        
+        
+        return result
     
-    def __matrix_homogenous_to_position(self, matrix: np.ndarray) -> Position3D:
-        return Position3D(matrix[0, 3], matrix[1, 3], matrix[2, 3])
+    def __matrix_homogenous_to_position(self, positions: np.ndarray) -> Position3D:
+        return Position3D(np.round(positions[0]), np.round(positions[1]), np.round(positions[2]))
     
     @abstractmethod
     def matrix(self) -> np.ndarray:
+        return Transform.identity()
+        
+    @staticmethod
+    def identity() -> np.ndarray:
         return np.array([   [1, 0, 0, 0],
                             [0, 1, 0, 0],
                             [0, 0, 1, 0],
                             [0, 0, 0, 1]])
+        
         
     def execute(self) -> list[Position3D]:
         l = []
@@ -84,7 +104,7 @@ class Scale(Transform):
                             [0, 0, 0, 1]])
 
 class GenericTransform(Transform):
-    def __init__(self, matrix: np.ndarray, positions: list[Position3D] = []) -> None:
+    def __init__(self, matrix: np.ndarray = Transform.identity(), positions: list[Position3D] = []) -> None:
         super().__init__(positions)
         self.__matrix = matrix
     
@@ -93,3 +113,7 @@ class GenericTransform(Transform):
 
     def matrix(self) -> np.ndarray:
         return self.__matrix
+    
+    def add_transforms(self, transforms: list[Transform]) -> None:
+        for transform in transforms:
+            self.__matrix = self.__matrix @ transform.matrix()

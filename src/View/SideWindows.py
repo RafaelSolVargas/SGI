@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QGroupBox, QListWidget, QComboBox
-from Domain.Utils.Transforms import Rotation, Scale, Transform, Translation
+from Domain.Utils.Transforms import Rotation, Scale, Transform, Translation, GenericTransform
 from Domain.Utils.Coordinates import Position3D
 from Handlers.WorldHandler import WorldHandler
 from Domain.Utils.Constants import Constants
@@ -293,27 +293,36 @@ class ObjectTransformWindow(QMainWindow):
         self.show()
 
     def __confirmTransformations(self):
-        for transform in self.__transforms:
-            transform.execute()
+        
+        transform = GenericTransform(positions=self.__obj.getPositions())
+        transform.add_transforms(self.__transforms)
+        
+        final_positions = transform.execute()
+                  
+        print(f"Final matrix for {[transform.getName() for transform in self.__transforms]}: {transform.matrix()}")    
+
+        self.__obj.setPositions(final_positions)
 
         self.close()
 
         self.__parent.update()
 
-    def __translation_callback(self, x: float, y: float, z: float) -> None:
-        transform = Translation(x, y, z, self.__obj.getPositions())
+    def __translation_callback(self, x: str, y: str, z: str) -> None:
+        transform = Translation(float(x), float(y), float(z), self.__obj.getPositions())
 
         self.__transforms.append(transform)
         self.__update_transform_list()
 
-    def __rotation_callback(self, angle: float, type: RotationTypes) -> None:
+    # TODO: Check rotation type and translate accordingly
+    def __rotation_callback(self, angle: str, type: RotationTypes) -> None:
         transform = Rotation(float(angle), type, self.__obj.getPositions())
 
         self.__transforms.append(transform)
         self.__update_transform_list()
 
-    def __scale_callback(self, x: float, y: float, z: float) -> None:
-        transform = Scale(x, y, z, self.__obj.getPositions())
+    # TODO: Add translation to the center of the world and back after scaling
+    def __scale_callback(self, x: str, y: str, z: str) -> None:
+        transform = Scale(float(x), float(y), float(z), self.__obj.getPositions())
 
         self.__transforms.append(transform)
         self.__update_transform_list()
