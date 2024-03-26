@@ -23,7 +23,7 @@ class SGIObject:
 
     @property
     def centralPoint(self) -> Position3D:
-        return self.__dimensions.central_point
+        return self.__dimensions.central_point(self.__position)
 
     def setCentralPoint(self, central_point: Position3D) -> None:
         """ Define o ponto central das dimensões do objeto """

@@ -18,3 +18,12 @@ class WireFrame(SGIObject):
     
     def setPositions(self, positions: List[Position3D]) -> None:
         self.__points = [Point(pos.axisX, pos.axisX, pos.axisZ, f"{self.name}_point_{i}") for i, pos in enumerate(positions)]
+        
+    # TODO: correct this method
+    @property
+    def centralPoint(self) -> Position3D:
+        x = sum([point.position.axisX for point in self.__points]) // len(self.__points)
+        y = sum([point.position.axisY for point in self.__points]) // len(self.__points)
+        z = sum([point.position.axisZ for point in self.__points]) // len(self.__points)
+        
+        return Position3D(x, y, z)
