@@ -1,7 +1,6 @@
 from Domain.Management.Viewport import ViewPort
 from Domain.Management.Window import Window
 from Domain.Management.World import World
-from Domain.Utils.Enums import ObjectsTypes
 from Handlers.WorldObjectsHandler import WorldObjectsHandler
 from Domain.Utils.Constants import Constants
 

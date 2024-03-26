@@ -6,6 +6,9 @@ class Dimensions3D:
         self.__width = width
         self.__length = length
 
+    def printDimensions(self):
+        print(f'({self.__length}, {self.__width}, {self.__height})')
+
     @property
     def length(self) -> int:
         return self.__length
@@ -34,7 +37,6 @@ class Dimensions3D:
         half_length = self.__length / 2 + base.axisX
         half_width = self.__width / 2 + base.axisY
         half_height = self.__height / 2 + base.axisZ
-        print("Central point: ", half_length, half_width, half_height)
     
         return Position3D(half_length, half_width, half_height)
 
@@ -58,6 +60,9 @@ class Position3D:
 
     def moveRight(self, value = __MOVE_LENGTH) -> None:
         self.__axisX += value
+
+    def printPosition(self):
+        print(f'({self.__axisX}, {self.__axisY}, {self.__axisZ})')
 
     @property
     def axisY(self) -> int:

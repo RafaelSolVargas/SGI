@@ -56,19 +56,19 @@ class Canvas(QLabel):
             
     @classmethod
     def __paintPoint(cls, canvas: QPainter, point: Point):
-        print(f'Pintando ponto em {point.position.axisX}, {point.position.axisY}')
+        #print(f'Pintando ponto em {point.position.axisX}, {point.position.axisY}')
 
         canvas.drawPoint(QPointF(point.position.axisX, point.position.axisY))
 
     @classmethod
     def __paintLine(cls, canvas: QPainter, line: Line):
-        print(f'Pintando linha de {line.pointOne.position.axisX}, {line.pointOne.position.axisY} para {line.pointTwo.position.axisX}, {line.pointTwo.position.axisY}')
+        #print(f'Pintando linha de {line.pointOne.position.axisX}, {line.pointOne.position.axisY} para {line.pointTwo.position.axisX}, {line.pointTwo.position.axisY}')
         canvas.drawLine(line.pointOne.position.axisX, line.pointOne.position.axisY,
                         line.pointTwo.position.axisX, line.pointTwo.position.axisY)
         
     @classmethod
     def __paintWireframe(cls, canvas: QPainter, wireFrame: WireFrame):
-        print(f'Pintando wireframe')
+        #print(f'Pintando wireframe')
         positions = wireFrame.getPositions()
         
         if (len(positions) == 0):

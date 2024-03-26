@@ -58,23 +58,20 @@ class WorldObjectsHandler:
        
         pointTransformed = Position3D(round(xVP), round(yVP), 1)
 
-        print(f'Transforming ({position.axisX}, {position.axisY}, {position.axisZ}) into ({pointTransformed.axisX}, {pointTransformed.axisY}, {pointTransformed.axisZ})')
+        # print(f'Transforming ({position.axisX}, {position.axisY}, {position.axisZ}) into ({pointTransformed.axisX}, {pointTransformed.axisY}, {pointTransformed.axisZ})')
 
         return pointTransformed
 
     def getObjectsViewport(self) -> List[SGIObject]:
         objectsToShow: List[SGIObject] = []
 
-        print(f'----> Starting the transformantions of {len(self.__world.objects)} objects')
+        # print(f'----> Starting the transformantions of {len(self.__world.objects)} objects')
 
         for obj in self.__world.objects:
             # Creates a copy to not change the Domain value
             objCopy = deepcopy(obj)
 
             for position in objCopy.getPositions():
-                position.axisX = position.axisX - self.__window.Xmin
-                position.axisY = position.axisY - self.__window.Ymin
-                
                 transformedPosition = self.__transformPositionToViewPort(position)
 
                 position.axisX = transformedPosition.axisX
@@ -83,7 +80,7 @@ class WorldObjectsHandler:
 
             objectsToShow.append(objCopy)
 
-        print(f'<---- Finished transformations')
+        # print(f'<---- Finished transformations')
 
         return objectsToShow
     

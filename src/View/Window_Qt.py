@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QLineEdit, QHBoxLayout
-from PyQt5.QtCore import Qt, QRect
-from Domain.Utils.Coordinates import Position3D
+from PyQt5.QtGui import QWheelEvent, QKeyEvent
+from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QHBoxLayout
+from PyQt5.QtCore import Qt
 from View.Button import Button
 from View.Console import Console
 from View.ArrowButtonWidget import ArrowButtonWidget
@@ -30,7 +30,6 @@ class Window_Qt(QMainWindow):
         # TODO: Change to Enum or Object after model is implemented
         self.__addSidebarObjBox("Objetos", ["Ponto", "Reta", "Wireframe"])
         self.__addSidebarWindowBox()
-        
                 
         self.__console = Console(self)
         self.__console.setGeometry(Constants.SIDEBAR_SIZE, h - Constants.SIDEBAR_SIZE, w - Constants.SIDEBAR_SIZE, Constants.SIDEBAR_SIZE)
@@ -39,12 +38,42 @@ class Window_Qt(QMainWindow):
         self.__canvas.setStyleSheet("background-color: white; border: 1px solid black;")
         
         self.show()
+
+    def wheelEvent(self, a0: QWheelEvent | None) -> None:
+        if a0 is not None:
+            if a0.angleDelta().y() > 0:
+                WorldHandler.getHandler().window.zoomIn()
+                print('ZoomIn - Mouse')
+            else:
+                WorldHandler.getHandler().window.zoomOut()
+                print('ZoomOut - Mouse')
+
+            self.update()
+        
+        return super().wheelEvent(a0)
     
+    def keyPressEvent(self, event: QKeyEvent):
+        key = event.key()
+
+        if key is not None:
+            if key == Qt.Key.Key_Up or key == Qt.Key.Key_W:
+                WorldHandler.getHandler().window.moveUp()
+            elif key == Qt.Key.Key_Down or key == Qt.Key.Key_S:
+                WorldHandler.getHandler().window.moveDown()
+            elif key == Qt.Key.Key_Left or key == Qt.Key.Key_A:
+                WorldHandler.getHandler().window.moveLeft()
+            elif key == Qt.Key.Key_Right or key == Qt.Key.Key_D:
+                WorldHandler.getHandler().window.moveRight()
+            
+            self.update()
+
+        super().keyPressEvent(event)
+
     def update(self):
         print("Updating")
-        
+
         obj_list = WorldHandler.getHandler().objectHandler.getObjectsViewport()
-        
+
         self.__object_list_widget.clear()
         for obj in obj_list:
             self.__object_list_widget.addItem(f"{obj.name} ({obj.type.name})")

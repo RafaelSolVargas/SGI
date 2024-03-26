@@ -7,11 +7,15 @@ class Window(SGIObject):
     ZOOM_MOVE: int = 10
     MIN_SIZE: int = 50
     MAX_SIZE: int = 8000
+    __SCALE: float = 0.1
     """
     The space from the world to be drawn, it should be available to zoom in and zoom out
     and move in all 3 dimensions
     """
     def __init__(self, lenght: int, width: int, height: int) -> None:
+        self.__BASE_LENGHT: int = lenght
+        self.__BASE_WIDTH: int = width
+
         dimensions = Dimensions3D(lenght, width, height)
         position = Position3D(0, 0, 0)
 
@@ -37,52 +41,38 @@ class Window(SGIObject):
         """
         Decrease the dimensions from the window keeping the central point        
         """
+        # Increases the dimension and decrease the position to move the window to both left and right
+        self.dimensions.length -= self.__SCALE * self.__BASE_LENGHT
+        self.position.axisX += self.__SCALE * self.__BASE_LENGHT
 
-        if self.dimensions.width > self.MIN_SIZE:
-            self.dimensions.width -= self.ZOOM_MOVE
-
-        if self.dimensions.length > self.MIN_SIZE:
-            self.dimensions.length -= self.ZOOM_MOVE
-        
-        if self.dimensions.height > self.MIN_SIZE:
-            self.dimensions.height -= self.ZOOM_MOVE
-
-        # Reset the central point with the previous
-        self.setCentralPoint(self.dimensions.central_point(self.position))
+        # Increases the dimension and decrease the position to move the window to both up and down
+        self.dimensions.width -= self.__SCALE * self.__BASE_WIDTH
+        self.position.axisY += self.__SCALE * self.__BASE_WIDTH
 
     def zoomOut(self) -> None:
         """
         Increase the dimensions from the window keeping the central point        
         """
+        # Increases the dimension and decrease the position to move the window to both left and right
+        self.dimensions.length += self.__SCALE * self.__BASE_LENGHT
+        self.position.axisX -= self.__SCALE * self.__BASE_LENGHT
 
-        if self.dimensions.width < self.MAX_SIZE:
-            self.dimensions.width += self.ZOOM_MOVE
+        # Increases the dimension and decrease the position to move the window to both up and down
+        self.dimensions.width += self.__SCALE * self.__BASE_WIDTH
+        self.position.axisY -= self.__SCALE * self.__BASE_WIDTH
 
-        if self.dimensions.length < self.MAX_SIZE:
-            self.dimensions.length += self.ZOOM_MOVE
-        
-        if self.dimensions.height < self.MAX_SIZE:
-            self.dimensions.height += self.ZOOM_MOVE
-
-        # Reset the central point with the previous
-        self.setCentralPoint(self.dimensions.central_point(self.position))
-        
     def moveUp(self) -> None:
         self.position.axisY += self.ZOOM_MOVE
-        print("Move up: ", self.position.axisY, self.ZOOM_MOVE)
         self.setCentralPoint(self.dimensions.central_point(self.position))
     
     def moveDown(self) -> None:
         self.position.axisY -= self.ZOOM_MOVE
-        print("Move down: ", self.position.axisY, self.ZOOM_MOVE)
         self.setCentralPoint(self.dimensions.central_point(self.position))
     
     def moveLeft(self) -> None:
         self.position.axisX -= self.ZOOM_MOVE
-        print("Move left: ", self.position.axisX, self.ZOOM_MOVE)
         self.setCentralPoint(self.dimensions.central_point(self.position))
         
     def moveRight(self) -> None:
         self.position.axisX += self.ZOOM_MOVE
-        print("Move right: ", self.position.axisX, self.ZOOM_MOVE)
         self.setCentralPoint(self.dimensions.central_point(self.position))
