@@ -20,8 +20,8 @@ class WireFrame(SGIObject):
         self.__points = []
         
         # For some reason, enumerate is not working here (changes order of or duplicates points in the wireframe)
-        for i in range(len(positions)):
-            self.__points.append(Point(positions[i].axisX, positions[i].axisY, positions[i].axisZ, f'{self.name}_{i}'))
+        for i, pos in enumerate(positions):
+            self.__points.append(Point(pos.axisX, pos.axisY, pos.axisZ, f'{self.name}_{i}'))
         
     # TODO: correct this method
     @property
