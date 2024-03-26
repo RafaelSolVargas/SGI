@@ -15,17 +15,16 @@ class Transform(ABC):
         
         pos = position.homogenous()
         
-        print(f"Position: {pos}, shape: {pos.shape}")
+        #print(f"Position: {pos}, shape: {pos.shape}")
         
         matrix = self.matrix()
         
-        print(f"Matrix: {matrix}, shape: {matrix.shape}")
+        #print(f"Matrix: {matrix}, shape: {matrix.shape}")
         #print(f"Element types: {matrix.dtype}")
         
         result = pos @ matrix
         
-        print(f"Result: {result}, shape: {result.shape}")
-        
+        #print(f"Result: {result}, shape: {result.shape}")
         
         return result
     

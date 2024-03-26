@@ -17,7 +17,11 @@ class WireFrame(SGIObject):
         return [x.position for x in self.__points]
     
     def setPositions(self, positions: List[Position3D]) -> None:
-        self.__points = [Point(pos.axisX, pos.axisX, pos.axisZ, f"{self.name}_point_{i}") for i, pos in enumerate(positions)]
+        self.__points = []
+        
+        # For some reason, enumerate is not working here (changes order of or duplicates points in the wireframe)
+        for i in range(len(positions)):
+            self.__points.append(Point(positions[i].axisX, positions[i].axisY, positions[i].axisZ, f'{self.name}_{i}'))
         
     # TODO: correct this method
     @property

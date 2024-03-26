@@ -11,6 +11,9 @@ class SGIObject:
         self.__dimensions: Dimensions3D = dimensions
         self.__type = type
 
+    def __str__(self) -> str:
+        return f"{self.name} ({self.type.name}) -> {self.position}"
+    
     @property
     def type(self) -> ObjectsTypes:
         return self.__type
