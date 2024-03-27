@@ -29,3 +29,14 @@ class Line(SGIObject):
     @property
     def pointTwo(self) -> Point:
         return self.__pointTwo
+    
+    @property
+    def centralPoint(self) -> Position3D:
+        # Find the central point between the two points
+        return Position3D(
+            (self.__pointOne.position.axisX + self.__pointTwo.position.axisX) // 2,
+            (self.__pointOne.position.axisY + self.__pointTwo.position.axisY) // 2,
+            (self.__pointOne.position.axisZ + self.__pointTwo.position.axisZ) // 2
+        )
+        
+        

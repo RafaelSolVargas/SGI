@@ -297,11 +297,22 @@ class ObjectTransformWindow(QMainWindow):
         transform = GenericTransform(positions=self.__obj.getPositions())
         transform.add_transforms(self.__transforms)
         
+        """ print("Positions before:")
+        for pos in self.__obj.getPositions():
+            print(f"{pos.axisX}, {pos.axisY}, {pos.axisZ}") """
+        
         final_positions = transform.execute()
                   
         print(f"Final matrix for {[transform.getName() for transform in self.__transforms]}: {transform.matrix()}")    
 
         self.__obj.setPositions(final_positions)
+        
+        """ print("Positions after (func):")
+        for pos in final_positions:
+            print(f"{pos.axisX}, {pos.axisY}, {pos.axisZ}")
+        print("Positions after (obj):")
+        for pos in self.__obj.getPositions():
+            print(f"{pos.axisX}, {pos.axisY}, {pos.axisZ}") """
 
         self.close()
 
@@ -320,11 +331,16 @@ class ObjectTransformWindow(QMainWindow):
         self.__transforms.append(transform)
         self.__update_transform_list()
 
-    # TODO: Add translation to the center of the world and back after scaling
     def __scale_callback(self, x: str, y: str, z: str) -> None:
-        transform = Scale(float(x), float(y), float(z), self.__obj.getPositions())
+        total_transform = GenericTransform(positions=self.__obj.getPositions(), name="Scale")
+        
+        translate_to_origin = Translation(-self.__obj.centralPoint.axisX, -self.__obj.centralPoint.axisY, -self.__obj.centralPoint.axisZ)
+        scale_transform = Scale(float(x), float(y), float(z))
+        translate_back = Translation(self.__obj.centralPoint.axisX, self.__obj.centralPoint.axisY, self.__obj.centralPoint.axisZ)
+        
+        total_transform.add_transforms([translate_to_origin, scale_transform, translate_back])
 
-        self.__transforms.append(transform)
+        self.__transforms.append(total_transform)
         self.__update_transform_list()
 
     def __update_transform_list(self):

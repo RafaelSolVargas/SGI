@@ -1,0 +1,1 @@
+# Para rodar o SGI, vá até até a pasta 'src' e execute 'python3 main.py'

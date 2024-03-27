@@ -15,17 +15,16 @@ class Transform(ABC):
         
         pos = position.homogenous()
         
-        print(f"Position: {pos}, shape: {pos.shape}")
+        #print(f"Position: {pos}, shape: {pos.shape}")
         
         matrix = self.matrix()
         
-        print(f"Matrix: {matrix}, shape: {matrix.shape}")
+        #print(f"Matrix: {matrix}, shape: {matrix.shape}")
         #print(f"Element types: {matrix.dtype}")
         
         result = pos @ matrix
         
-        print(f"Result: {result}, shape: {result.shape}")
-        
+        #print(f"Result: {result}, shape: {result.shape}")
         
         return result
     
@@ -104,12 +103,20 @@ class Scale(Transform):
                             [0, 0, 0, 1]])
 
 class GenericTransform(Transform):
-    def __init__(self, matrix: np.ndarray = Transform.identity(), positions: list[Position3D] = []) -> None:
+    def __init__(self, matrix: np.ndarray = Transform.identity(), positions: list[Position3D] = [], name: str = "GenericTransform") -> None:
         super().__init__(positions)
         self.__matrix = matrix
+        self.__name = name
     
     def getName(self) -> str:
-        return f"GenericTransform({self.__matrix})"
+        if self.__name == "Scale":
+            return f"{self.__name}({self.__matrix[0][0]}, {self.__matrix[1][1]}, {self.__matrix[2][2]})"
+        elif self.__name == "Translation":
+            return f"{self.__name}({self.__matrix[3][0]}, {self.__matrix[3][1]}, {self.__matrix[3][2]})"
+        elif self.__name == "Rotation":
+            return f"{self.__name}({np.degrees(np.arccos(self.__matrix[0][0]))}°)"
+        else:
+            return f"{self.__name}({self.__matrix})"
 
     def matrix(self) -> np.ndarray:
         return self.__matrix

@@ -11,6 +11,9 @@ class SGIObject:
         self.__dimensions: Dimensions3D = dimensions
         self.__type = type
 
+    def __str__(self) -> str:
+        return f"{self.name} ({self.type.name}) -> {self.position}"
+    
     @property
     def type(self) -> ObjectsTypes:
         return self.__type
@@ -23,7 +26,7 @@ class SGIObject:
 
     @property
     def centralPoint(self) -> Position3D:
-        return self.__dimensions.central_point
+        return self.__dimensions.central_point(self.__position)
 
     def setCentralPoint(self, central_point: Position3D) -> None:
         """ Define o ponto central das dimensões do objeto """

@@ -47,6 +47,9 @@ class Position3D:
         self.__axisY = axisY
         self.__axisZ = axisZ
 
+    def __str__(self) -> str:
+        return f'({self.__axisX}, {self.__axisY}, {self.__axisZ})'
+    
     @property
     def axisX(self) -> int:
         return self.__axisX
