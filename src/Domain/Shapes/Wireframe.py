@@ -17,4 +17,4 @@ class WireFrame(SGIObject):
         return [x.position for x in self.__points]
     
     def setPositions(self, positions: List[Position3D]) -> None:
-        self.__points = [Point(pos.axisX, pos.axisX, pos.axisZ, f"{self.name}_point_{i}") for i, pos in enumerate(positions)]
+        self.__points = [Point(pos.axisX, pos.axisY, pos.axisZ, f"{self.name}_point_{i}") for i, pos in enumerate(positions)]
