@@ -252,6 +252,48 @@ class ObjectTransformWindow(QMainWindow):
             add_button = Button("Adicionar", lambda: (self.__transform_callback(angle_field.text(), rotation_type_dropdown.currentText())))
             self.__layout.addWidget(add_button)
     
+    class RotationSpecificPointInputBox(QGroupBox):
+        def __init__(self, parent: QWidget, name: str, angle: float, transform_callback: callable = lambda: None):
+            super().__init__(parent)
+            self.__parent = parent
+            self.__angle = angle
+            self.__transform_callback = transform_callback
+            
+            self.setTitle(name)
+            self.setGeometry(0, 0, 180, 150)
+            
+            self.__layout = QHBoxLayout(self)
+            
+            self.__addFieldsXYZ()
+            
+        def __addFieldsXYZ(self):
+            x_label = QLabel("X:")
+            self.__layout.addWidget(x_label)
+
+            x_field = QLineEdit()
+            self.__layout.addWidget(x_field)
+
+            y_label = QLabel("Y:")
+            self.__layout.addWidget(y_label)
+
+            y_field = QLineEdit()
+            self.__layout.addWidget(y_field)
+
+            z_label = QLabel("Z:")
+            self.__layout.addWidget(z_label)
+
+            z_field = QLineEdit()
+            z_field.setText("1")
+            self.__layout.addWidget(z_field)
+
+            add_button = Button("Utilizar ponto", lambda: (self.__transform_callback(self.__angle, 
+                                                            Position3D(
+                                                                int(x_field.text()), 
+                                                                int(y_field.text()), 
+                                                                int(z_field.text())
+                                                                )
+                                                            )))
+            self.__layout.addWidget(add_button)
     
     def __init__(self, parent: QWidget, obj: SGIObject):
         super().__init__(parent)
@@ -293,7 +335,6 @@ class ObjectTransformWindow(QMainWindow):
         self.show()
 
     def __confirmTransformations(self):
-        
         transform = GenericTransform(positions=self.__obj.getPositions())
         transform.add_transforms(self.__transforms)
         
@@ -325,10 +366,45 @@ class ObjectTransformWindow(QMainWindow):
         self.__update_transform_list()
 
     # TODO: Check rotation type and translate accordingly
-    def __rotation_callback(self, angle: str, type: RotationTypes) -> None:
-        transform = Rotation(float(angle), type, self.__obj.getPositions())
+    def __rotation_callback(self, angle: str, type_str: str) -> None:
+        transformsToAdd: List[Transform] = []
 
-        self.__transforms.append(transform)
+        typeEnum = RotationTypes.convertFromString(type_str)
+
+        if (typeEnum == RotationTypes.CENTER_OBJECT):
+            translate_to_origin = Translation(-self.__obj.centralPoint.axisX, -self.__obj.centralPoint.axisY, -self.__obj.centralPoint.axisZ)
+            rotation = Rotation(float(angle), type, self.__obj.getPositions())
+            translate_back = Translation(self.__obj.centralPoint.axisX, self.__obj.centralPoint.axisY, self.__obj.centralPoint.axisZ)
+
+            transformsToAdd.extend([translate_to_origin, rotation, translate_back])
+        
+        elif (typeEnum == RotationTypes.CENTER_WORLD):
+            rotation = Rotation(float(angle), type_str, self.__obj.getPositions())
+            transformsToAdd.append(rotation)
+
+        elif (typeEnum == RotationTypes.POINT):
+            self.__rotation_point_input_box = self.RotationSpecificPointInputBox(self, "Ponto arbitrário", angle, self.__rotation_specific_point_callback)
+            print('Aoba')
+            return
+
+        self.__transforms.extend(transformsToAdd)
+        self.__update_transform_list()
+
+    def __rotation_specific_point_callback(self, angle: str, specific_point: Position3D) -> None:
+        """
+        Callback to be used when user is adding a rotation transform but a point was required to be inserted
+        """
+        movementAxisX = specific_point.axisX - self.__obj.centralPoint.axisX 
+        movementAxisY = specific_point.axisY - self.__obj.centralPoint.axisY 
+        movementAxisZ = specific_point.axisZ - self.__obj.centralPoint.axisZ 
+
+        translate_to_origin = Translation(movementAxisX, movementAxisY, movementAxisZ)
+
+        rotation = Rotation(float(angle), RotationTypes.POINT.value, self.__obj.getPositions())
+
+        translate_back = Translation(-movementAxisX, -movementAxisY, -movementAxisZ)
+
+        self.__transforms.extend([translate_to_origin, rotation, translate_back])
         self.__update_transform_list()
 
     def __scale_callback(self, x: str, y: str, z: str) -> None:

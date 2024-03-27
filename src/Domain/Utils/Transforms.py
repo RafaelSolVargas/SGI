@@ -76,7 +76,7 @@ class Rotation(Transform):
         super().__init__(positions)
         self.__type = type
         self.__angle = np.radians(angle)
-        
+
     def getName(self) -> str:
         return f"Rotation {self.__type}({self.__angle})"
 

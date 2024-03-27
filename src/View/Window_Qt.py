@@ -8,11 +8,19 @@ from View.Painter import Canvas
 from View.SideWindows import ObjectWindowFactory, ObjectTransformWindow
 from Domain.Utils.Constants import Constants
 from Handlers.WorldHandler import WorldHandler
+from Domain.Utils.Coordinates import Position3D
 
 class Window_Qt(QMainWindow):
     def __init__(self, w: int = 1280, h: int = 720):
         super().__init__()
         self._object_list_widget = None
+
+        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(100, 100, 1))
+        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(100, 200, 1))
+        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(200, 200, 1))
+        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(200, 100, 1))
+        WorldHandler.getHandler().objectHandler.commitWireframeCreation("WireFrame default")
+
         self.__objWinFactory = ObjectWindowFactory(self)
         
         screen = QDesktopWidget().screenGeometry()
@@ -36,8 +44,9 @@ class Window_Qt(QMainWindow):
         
         self.__canvas = Canvas(self)
         self.__canvas.setStyleSheet("background-color: white; border: 1px solid black;")
-        
+
         self.show()
+        self.update()
 
     def wheelEvent(self, a0: QWheelEvent | None) -> None:
         if a0 is not None:
@@ -141,8 +150,10 @@ class Window_Qt(QMainWindow):
             print("Nenhum objeto selecionado")
             return
         
-        obj_name = field.text().split(" ")[0]
-        
+        obj_names = field.text().split(" ")
+        obj_names.pop()
+        obj_name = ' '.join(obj_names)
+
         obj = WorldHandler.getHandler().objectHandler.getObjectByName(obj_name)
         
         if not obj:
