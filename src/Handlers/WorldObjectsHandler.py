@@ -47,6 +47,10 @@ class WorldObjectsHandler:
         
         self.__tempWireframePoints.clear()
     
+    
+    def originWorldViewport(self) -> Position3D:
+        return self.__transformPositionToViewPort(Position3D(0, 0, 1))
+        
     def __transformPositionToViewPort(self, position: Position3D) -> Position3D:
         xW = position.axisX
 

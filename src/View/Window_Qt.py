@@ -15,10 +15,10 @@ class Window_Qt(QMainWindow):
         super().__init__()
         self._object_list_widget = None
 
-        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(100, 100, 1))
-        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(100, 200, 1))
-        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(200, 200, 1))
-        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(200, 100, 1))
+        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(10, 10, 1))
+        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(10, 20, 1))
+        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(20, 20, 1))
+        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(20, 10, 1))
         WorldHandler.getHandler().objectHandler.commitWireframeCreation("WireFrame default")
 
         self.__objWinFactory = ObjectWindowFactory(self)

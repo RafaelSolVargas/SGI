@@ -8,6 +8,7 @@ from Domain.Shapes.Line import Line
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Enums import ObjectsTypes
 from Domain.Utils.Constants import Constants
+from Handlers.WorldHandler import WorldHandler
 
 class Canvas(QLabel):
     def __init__(self, parent=None):
@@ -16,6 +17,7 @@ class Canvas(QLabel):
         
         pixmap = QPixmap(Constants.VIEWPORT_LENGTH, Constants.VIEWPORT_WIDTH)
         pixmap.fill(Qt.white)
+        
         self.setPixmap(pixmap)
         self.setGeometry(Constants.SIDEBAR_SIZE, 0, Constants.VIEWPORT_LENGTH, Constants.VIEWPORT_WIDTH)
         
@@ -24,11 +26,45 @@ class Canvas(QLabel):
     def draw(self, obj_list: List[SGIObject]):
         self.__obj_list = obj_list
         self.paint()
+    
+    def __draw_grid(self, painter: QPainter):
+        # Draw grid lines
+        grid_size = 10
+        pen = painter.pen()
         
+        origin = WorldHandler.getHandler().objectHandler.originWorldViewport()
+        
+        for x in range(0, Constants.VIEWPORT_LENGTH, grid_size):
+            if x == origin.axisX:
+                pen.setColor(QColor(255, 0, 0))
+                pen.setWidth(2)
+                painter.setPen(pen)
+            else:
+                pen.setColor(QColor(200, 200, 200))
+                pen.setWidth(1)
+                painter.setPen(pen)
+            
+            painter.drawLine(x, 0, x, Constants.VIEWPORT_WIDTH)
+            
+        for y in range(0, Constants.VIEWPORT_WIDTH, grid_size):
+            if y == origin.axisY:
+                pen.setColor(QColor(255, 0, 0))
+                pen.setWidth(2)
+                painter.setPen(pen)
+            else:
+                pen.setColor(QColor(200, 200, 200))
+                pen.setWidth(1)
+                painter.setPen(pen)
+            
+            painter.drawLine(0, y, Constants.VIEWPORT_LENGTH, y)
+    
     def paint(self):
         self.__clear_pixmap()
         
         painter = QPainter(self.pixmap())
+        
+        self.__draw_grid(painter)
+        
         p = painter.pen()
         p.setColor(self.__pen_color)
         p.setWidth(2)
