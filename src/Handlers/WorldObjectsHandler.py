@@ -16,7 +16,10 @@ class WorldObjectsHandler:
         self.__window = window
         self.__world = world
         self.__tempWireframePoints: List[Point] = []
-
+    
+    def addObject(self, obj: SGIObject) -> None:
+        self.__world.addObject(obj)
+    
     def addLine(self, pointOne: Position3D, pointTwo: Position3D, name: str = "Linha") -> None:
         line = Line(pointOne, pointTwo, name)
 

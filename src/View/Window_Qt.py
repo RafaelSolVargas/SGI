@@ -9,17 +9,15 @@ from View.SideWindows import ObjectWindowFactory, ObjectTransformWindow
 from Domain.Utils.Constants import Constants
 from Handlers.WorldHandler import WorldHandler
 from Domain.Utils.Coordinates import Position3D
+from Domain.Utils.DescriptorOBJ import DescriptorOBJ
 
 class Window_Qt(QMainWindow):
     def __init__(self, w: int = 1280, h: int = 720):
         super().__init__()
         self._object_list_widget = None
 
-        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(10, 10, 1))
-        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(10, 20, 1))
-        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(20, 20, 1))
-        WorldHandler.getHandler().objectHandler.addTempPointWireframe(Position3D(20, 10, 1))
-        WorldHandler.getHandler().objectHandler.commitWireframeCreation("WireFrame default")
+        wireframe = DescriptorOBJ.readOBJFile("tests/WireFrame default.obj")
+        WorldHandler.getHandler().objectHandler.addObject(wireframe)
 
         self.__objWinFactory = ObjectWindowFactory(self)
         
