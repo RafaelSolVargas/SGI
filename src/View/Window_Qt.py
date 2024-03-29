@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QWheelEvent, QKeyEvent
-from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QHBoxLayout, QLineEdit
 from PyQt5.QtCore import Qt
 from View.Button import Button
 from View.Console import Console
@@ -94,17 +94,17 @@ class Window_Qt(QMainWindow):
         window_box.setGeometry(0, 0, 180, 200)
         self.__sidebar.layout().addWidget(window_box)
         
-        window_control_box = QGroupBox()
-        window_control_box.setStyleSheet("border: transparent;")
-        window_control_box.setGeometry(0, 0, 180, 100)
-        window_control_box.setLayout(QHBoxLayout())
+        window_zoom_move_box = QGroupBox()
+        window_zoom_move_box.setStyleSheet("border: transparent;")
+        window_zoom_move_box.setGeometry(0, 0, 180, 100)
+        window_zoom_move_box.setLayout(QHBoxLayout())
         
-        window_box.layout().addWidget(window_control_box)
+        window_box.layout().addWidget(window_zoom_move_box)
         
-        arrows = ArrowButtonWidget(self.update, "Mover", window_control_box)
+        arrows = ArrowButtonWidget(self.update, "Mover", window_zoom_move_box)
         arrows.setGeometry(0, 10, 100, 100)
         
-        zoom_window_box = QGroupBox(window_control_box)
+        zoom_window_box = QGroupBox(window_zoom_move_box)
         zoom_window_box.setLayout(QVBoxLayout())
         zoom_window_box.setGeometry(100, 0, 100, 100)
         
@@ -119,6 +119,25 @@ class Window_Qt(QMainWindow):
         zoom_window_widget = QWidget(zoom_window_box)
         zoom_window_widget.setLayout(zoom_window_layout)
         zoom_window_box.layout().addWidget(zoom_window_widget)
+        
+        rotate_window_box = QGroupBox(window_box)
+        rotate_window_box.setLayout(QVBoxLayout())
+        rotate_window_box.setStyleSheet("border: transparent;")
+        rotate_window_box.setGeometry(10, 115, 100, 100)
+        
+        rotate_window_label = QLabel("Rotacionar")
+        rotate_window_label.setAlignment(Qt.AlignCenter)
+        rotate_window_box.layout().addWidget(rotate_window_label)
+
+        rotation_angle_input = QLineEdit()
+        rotation_angle_widget = QWidget(rotate_window_box)
+        rotation_angle_layout = QHBoxLayout(rotation_angle_widget)
+        rotation_angle_layout.addWidget(rotation_angle_input)
+        rotation_angle_layout.addWidget(QLabel("°"))
+        rotate_window_box.layout().addWidget(rotation_angle_widget)
+
+        confirm_button = Button("Confirmar", lambda: print("Rodar Window"))
+        rotate_window_box.layout().addWidget(confirm_button)
         
                 
     def __addSidebarObjBox(self, title: str, items: list):
