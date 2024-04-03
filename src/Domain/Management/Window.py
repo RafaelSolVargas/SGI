@@ -76,3 +76,9 @@ class Window(SGIObject):
     def moveRight(self) -> None:
         self.position.axisX += self.ZOOM_MOVE
         self.setCentralPoint(self.dimensions.central_point(self.position))
+        
+    def rotate(self, angle: float, axis: str):
+        centerOfWindow = self.centralPoint
+
+        
+    
