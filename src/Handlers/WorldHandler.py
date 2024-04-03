@@ -45,7 +45,7 @@ class WorldHandler:
         
 
         windowTranslationTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
-        windowRotationTransform = Rotation(math.radians(angle), RotationTypes.CENTER_OBJECT, window_positions)
+        windowRotationTransform = Rotation(angle, RotationTypes.CENTER_OBJECT, window_positions)
         windowBackTranslationTransform = Translation(self.__window.centralPoint.axisX, self.__window.centralPoint.axisY, self.__window.centralPoint.axisZ)
         
         finalTransform = GenericTransform(positions=window_positions)

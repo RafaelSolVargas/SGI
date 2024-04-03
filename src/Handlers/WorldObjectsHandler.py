@@ -19,6 +19,7 @@ class WorldObjectsHandler:
         self.__window = window
         self.__world = world
         self.__tempWireframePoints: List[Point] = []
+        self.__windowPos = None
     
     def addObject(self, obj: SGIObject) -> None:
         self.__world.addObject(obj)
@@ -91,6 +92,9 @@ class WorldObjectsHandler:
         return final_transform_window.execute(), final_objs
     
     def originWorldViewport(self) -> Position3D:
+        return self.__transformPositionToViewPortPPC(Position3D(0, 0, 1), self.__windowPos)
+    
+    def originWorldViewport(self) -> Position3D:
         return self.__transformPositionToViewPort(Position3D(0, 0, 1))
         
     def __transformPositionToViewPort(self, position: Position3D) -> Position3D:
@@ -121,6 +125,8 @@ class WorldObjectsHandler:
     
     def getObjectsViewportPPC(self) -> List[SGIObject]:
         windowPosition, objs = self.getWindowObjectsPPC()
+        
+        self.__windowPos = windowPosition
         
         objectsToShow: List[SGIObject] = []
         
