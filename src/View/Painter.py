@@ -25,6 +25,10 @@ class Canvas(QLabel):
         
     def draw(self, obj_list: List[SGIObject]):
         self.__obj_list = obj_list
+        
+        for obj in self.__obj_list:
+            print(f'Objeto {obj.name} adicionado ao canvas')
+        
         self.paint()
     
     def __draw_grid(self, painter: QPainter):
@@ -130,3 +134,5 @@ class Canvas(QLabel):
 
                 canvas.drawLine(curPosition.axisX, curPosition.axisY, 
                                 nextPosition.axisX, nextPosition.axisY)
+                
+                print(f'Pintando linha de {curPosition.axisX}, {curPosition.axisY} para {nextPosition.axisX}, {nextPosition.axisY}')

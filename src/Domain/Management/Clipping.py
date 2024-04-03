@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from src.Domain.Management.Window import Window
-from src.Domain.Shapes.Line import Line
-from src.Domain.Shapes.SGIObject import SGIObject
+from Domain.Management.Window import Window
+from Domain.Shapes.Line import Line
+from Domain.Shapes.SGIObject import SGIObject
 
 class LineClippingStrategy(ABC):
     def __init__(self) -> None:

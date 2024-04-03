@@ -37,7 +37,6 @@ class WorldHandler:
     def viewport(self):
         return self.__viewport
 
-
     def rotateWindow(self, angle: float, axis: str):
         self.__window.rotate(angle, axis)
 

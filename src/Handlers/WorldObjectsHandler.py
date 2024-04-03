@@ -8,6 +8,9 @@ from Domain.Shapes.Line import Line
 from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
+from Domain.Utils.Transforms import Translation, Rotation, GenericTransform
+from Domain.Utils.Enums import RotationTypes
+import numpy as np
 
 
 class WorldObjectsHandler:
@@ -50,6 +53,42 @@ class WorldObjectsHandler:
         
         self.__tempWireframePoints.clear()
     
+    def getWindowObjectsPPC(self) -> tuple[Position3D, list[SGIObject]]:
+        # Compute v_up (vector of the left side of the window)
+        window_positions = deepcopy(self.__window.getPositions())
+        v_up = Position3D(window_positions[1].axisX - window_positions[0].axisX, window_positions[1].axisY - window_positions[0].axisY, 0)
+        
+        angle = np.arccos(v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY]))
+        
+        # Window center to origin (translate objs accordingly)
+        # Rotate window and objs by -(angle between Y and v_up)
+        translate_window = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
+        translate_objs = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
+        rotate_window = Rotation(-angle, RotationTypes.CENTER_WORLD)
+        rotate_objs = Rotation(-angle, RotationTypes.CENTER_WORLD)
+        
+        objs_positions = deepcopy([x.getPositions() for x in self.__world.objects])
+        
+        final_transform_window = GenericTransform(positions=window_positions)
+        final_transform_window.add_transforms([translate_window, rotate_window])
+        
+        final_obj_positions = []
+        
+        for positions in objs_positions:
+            final_transform_objs = GenericTransform(positions=positions)
+            final_transform_objs.add_transforms([translate_objs, rotate_objs])
+            
+            final_obj_positions.append(final_transform_objs.execute())
+            
+        final_objs = []
+        for obj, positions in zip(self.__world.objects, final_obj_positions):
+            obj_copy = deepcopy(obj)
+            obj_copy.setPositions(positions)
+            
+            final_objs.append(obj_copy)
+        
+        # Return new window and objs
+        return final_transform_window.execute(), final_objs
     
     def originWorldViewport(self) -> Position3D:
         return self.__transformPositionToViewPort(Position3D(0, 0, 1))
@@ -67,6 +106,40 @@ class WorldObjectsHandler:
 
         return pointTransformed
 
+    def __transformPositionToViewPortPPC(self, position: Position3D, window_pos: Position3D) -> Position3D:
+        xW = position.axisX
+
+        xVP = ((xW - window_pos[0].axisX) / (self.__window.dimensions.length)) * (self.__viewport.dimensions.length)
+
+        yW = position.axisY
+
+        yVP = (1 - ((yW - window_pos[0].axisY) / (self.__window.dimensions.width))) * (self.__viewport.dimensions.width)
+       
+        pointTransformed = Position3D(round(xVP), round(yVP), 1)
+
+        return pointTransformed
+    
+    def getObjectsViewportPPC(self) -> List[SGIObject]:
+        windowPosition, objs = self.getWindowObjectsPPC()
+        
+        objectsToShow: List[SGIObject] = []
+        
+        for obj in objs:
+            # Creates a copy to not change the Domain value
+            objCopy = deepcopy(obj)
+
+            for position in objCopy.getPositions():
+                transformedPosition = self.__transformPositionToViewPortPPC(position, windowPosition)
+
+                position.axisX = transformedPosition.axisX
+                position.axisY = transformedPosition.axisY
+                position.axisZ = transformedPosition.axisZ
+
+            objectsToShow.append(objCopy)
+
+        return objectsToShow
+        
+    
     def getObjectsViewport(self) -> List[SGIObject]:
         objectsToShow: List[SGIObject] = []
 

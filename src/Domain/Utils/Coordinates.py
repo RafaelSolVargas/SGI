@@ -39,7 +39,7 @@ class Dimensions3D:
         half_height = self.__height / 2 + base.axisZ
     
         return Position3D(half_length, half_width, half_height)
-
+    
 class Position3D:
     __MOVE_LENGTH = 1
     def __init__(self, axisX: int, axisY: int, axisZ: int) -> None:
