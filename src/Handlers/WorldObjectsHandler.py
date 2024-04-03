@@ -58,7 +58,7 @@ class WorldObjectsHandler:
         window_positions = deepcopy(self.__window.getPositions())
         v_up = Position3D(window_positions[1].axisX - window_positions[0].axisX, window_positions[1].axisY - window_positions[0].axisY, 0)
         
-        angle = np.arccos(v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY]))
+        angle = np.radians(np.arccos(v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY])))
         
         # Window center to origin (translate objs accordingly)
         # Rotate window and objs by -(angle between Y and v_up)

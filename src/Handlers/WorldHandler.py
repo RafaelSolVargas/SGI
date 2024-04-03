@@ -37,14 +37,22 @@ class WorldHandler:
     def viewport(self):
         return self.__viewport
 
-    def rotateWindow(self, angle: float, axis: str):
-        self.__window.rotate(angle, axis)
+    def rotateWindow(self, angle: float):
+        window_positions = self.__window.getPositions()
+        
+        print(f'Window position 0: {window_positions[0].axisX}, {window_positions[0].axisY}, {window_positions[0].axisZ}')
+        print(f'Window position 1: {window_positions[1].axisX}, {window_positions[1].axisY}, {window_positions[1].axisZ}')
+        
 
-        windowTranslationTransform = Translation()
-
-        for obj in self.__world.objects:
-            self.__calculateMatrixOfRotationOfWindowIntoObject(obj, angle, axis)
-
+        windowTranslationTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
+        windowRotationTransform = Rotation(math.radians(angle), RotationTypes.CENTER_OBJECT, window_positions)
+        windowBackTranslationTransform = Translation(self.__window.centralPoint.axisX, self.__window.centralPoint.axisY, self.__window.centralPoint.axisZ)
+        
+        finalTransform = GenericTransform(positions=window_positions)
+        finalTransform.add_transforms([windowTranslationTransform, windowRotationTransform, windowBackTranslationTransform])
+        
+        finalPositions = finalTransform.execute()
+        self.__window.setPositions(finalPositions)
 
     def __calculateMatrixOfRotationOfWindowIntoObject(self, otherObj: SGIObject, angle: float, axis: str):
         # Calculates points of Window        

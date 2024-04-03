@@ -136,7 +136,7 @@ class Window_Qt(QMainWindow):
         rotation_angle_layout.addWidget(QLabel("°"))
         rotate_window_box.layout().addWidget(rotation_angle_widget)
 
-        confirm_button = Button("Confirmar", lambda: print("Rodar Window"))
+        confirm_button = Button("Confirmar", lambda: (self.__rotateWindow(float(rotation_angle_input.text()))))
         rotate_window_box.layout().addWidget(confirm_button)
         
                 
@@ -159,7 +159,11 @@ class Window_Qt(QMainWindow):
 
         transform_button = Button("Transformar", lambda: (self.__openTransformWindow(self.__object_list_widget)))
         layout.addWidget(transform_button)
-        
+
+    def __rotateWindow(self, angle: float) -> None:
+        WorldHandler.getHandler().rotateWindow(angle)
+        self.update()
+    
     def __openTransformWindow(self, obj_list_widget: QListWidget) -> None:
         field = obj_list_widget.currentItem()
         
