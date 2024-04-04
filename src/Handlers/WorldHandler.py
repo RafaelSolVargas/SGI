@@ -7,6 +7,7 @@ from Domain.Utils.Transforms import GenericTransform, Rotation, Translation
 from Handlers.WorldObjectsHandler import WorldObjectsHandler
 from Domain.Utils.Constants import Constants
 import math
+from copy import deepcopy
 
 
 class WorldHandler:
@@ -39,7 +40,8 @@ class WorldHandler:
 
     def rotateWindow(self, angle: float):
         window_positions = self.__window.getPositions()
-        
+    
+        print("Before rotation")
         print(f'Window position 0: {window_positions[0].axisX}, {window_positions[0].axisY}, {window_positions[0].axisZ}')
         print(f'Window position 1: {window_positions[1].axisX}, {window_positions[1].axisY}, {window_positions[1].axisZ}')
         
@@ -53,6 +55,10 @@ class WorldHandler:
         
         finalPositions = finalTransform.execute()
         self.__window.setPositions(finalPositions)
+        
+        print("After rotation")
+        print(f'Window position 0: {self.__window.getPositions()[0].axisX}, {self.__window.getPositions()[0].axisY}, {self.__window.getPositions()[0].axisZ}')
+        print(f'Window position 1: {self.__window.getPositions()[1].axisX}, {self.__window.getPositions()[1].axisY}, {self.__window.getPositions()[1].axisZ}')
 
     def __calculateMatrixOfRotationOfWindowIntoObject(self, otherObj: SGIObject, angle: float, axis: str):
         # Calculates points of Window        

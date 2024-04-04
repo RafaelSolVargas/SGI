@@ -21,7 +21,7 @@ class Window(SGIObject):
         dimensions = Dimensions3D(lenght, width, height)
         
         # v_up (vector of the left side of the window)
-        self.__positions = [Position3D(0, 0, 0), Position3D(0, width, 0)]
+        self.__positions = [Position3D(-50, -50, 0), Position3D(-50, width -50, 0)]
         self.__angle = 0
 
         super().__init__(ObjectsTypes.WINDOW, "Window", dimensions, self.__positions[0])
