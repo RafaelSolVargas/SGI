@@ -59,22 +59,18 @@ class WorldObjectsHandler:
         window_positions = deepcopy(self.__window.getPositions())
         v_up = Position3D(window_positions[1].axisX - window_positions[0].axisX, window_positions[1].axisY - window_positions[0].axisY, 0)
         
-        angle = np.rad2deg(np.arccos(v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY])))
+        cosine = v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY])
+        angle = np.rad2deg(np.arccos(cosine))
         
-        print(f'Angle: {angle}')
-        print(f'v_up: {v_up.axisX}, {v_up.axisY}, {v_up.axisZ}')
+        #print(f'Cosine: {v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY])}')
+        #print(f'Angle (rad): {np.arccos(v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY]))}')
+        #print(f'Angle (deg): {angle}')
+        #print(f'v_up: {v_up.axisX}, {v_up.axisY}, {v_up.axisZ}')
         
-        # Window center to origin (translate objs accordingly)
-        # Rotate window and objs by -(angle between Y and v_up)
-        translate_window = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
-        translate_objs = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
-        rotate_window = Rotation(-angle, RotationTypes.CENTER_WORLD)
+        translate_window = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ, window_positions)
         rotate_objs = Rotation(-angle, RotationTypes.CENTER_WORLD)
         
         objs = deepcopy(self.__world.objects)
-        
-        final_transform_window = GenericTransform(positions=window_positions)
-        final_transform_window.add_transforms([translate_window, rotate_window])
         
         final_obj_positions = []
         
@@ -82,9 +78,10 @@ class WorldObjectsHandler:
             positions = obj.getPositions()
             centralPoint = obj.centralPoint
             
-            translate_to_origin = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
-            translate_back = Translation(centralPoint.axisX - self.__window.centralPoint.axisX, centralPoint.axisY - self.__window.centralPoint.axisY, centralPoint.axisZ - self.__window.centralPoint.axisZ)
+            objWindowDiff = Position3D(centralPoint.axisX - self.__window.centralPoint.axisX, centralPoint.axisY - self.__window.centralPoint.axisY, centralPoint.axisZ - self.__window.centralPoint.axisZ)
             
+            translate_to_origin = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
+            translate_back = Translation(objWindowDiff.axisX, objWindowDiff.axisY, objWindowDiff.axisZ)
             final_transform_obj = GenericTransform(positions=positions)
             final_transform_obj.add_transforms([translate_to_origin, rotate_objs, translate_back])
             
@@ -98,7 +95,7 @@ class WorldObjectsHandler:
             final_objs.append(obj_copy)
         
         # Return new window and objs
-        return final_transform_window.execute(), final_objs
+        return translate_window.execute(), final_objs
     
     def originWorldViewport(self) -> Position3D:
         return self.__transformPositionToViewPortPPC(Position3D(0, 0, 1), self.__windowPos)
