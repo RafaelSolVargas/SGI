@@ -51,7 +51,9 @@ class Canvas(QLabel):
 
             painter.drawLine(0, y, Constants.VIEWPORT_LENGTH, y)
 
-        # Configure pen to draw red lines
+        
+        # Commenting due to window rotation
+        """ # Configure pen to draw red lines
         origin = WorldHandler.getHandler().objectHandler.originWorldViewport()
         pen.setColor(QColor(255, 0, 0))
         pen.setWidth(2)
@@ -61,7 +63,7 @@ class Canvas(QLabel):
         painter.drawLine(0, origin.axisY, Constants.VIEWPORT_LENGTH, origin.axisY)
 
         # Paint the axis Y line
-        painter.drawLine(origin.axisX, 0, origin.axisX, Constants.VIEWPORT_WIDTH)
+        painter.drawLine(origin.axisX, 0, origin.axisX, Constants.VIEWPORT_WIDTH) """
 
 
     def paint(self):

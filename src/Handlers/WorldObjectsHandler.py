@@ -71,18 +71,24 @@ class WorldObjectsHandler:
         rotate_window = Rotation(-angle, RotationTypes.CENTER_WORLD)
         rotate_objs = Rotation(-angle, RotationTypes.CENTER_WORLD)
         
-        objs_positions = deepcopy([x.getPositions() for x in self.__world.objects])
+        objs = deepcopy(self.__world.objects)
         
         final_transform_window = GenericTransform(positions=window_positions)
         final_transform_window.add_transforms([translate_window, rotate_window])
         
         final_obj_positions = []
         
-        for positions in objs_positions:
-            final_transform_objs = GenericTransform(positions=positions)
-            final_transform_objs.add_transforms([translate_objs, rotate_objs])
+        for obj in objs:
+            positions = obj.getPositions()
+            centralPoint = obj.centralPoint
             
-            final_obj_positions.append(final_transform_objs.execute())
+            translate_to_origin = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
+            translate_back = Translation(centralPoint.axisX - self.__window.centralPoint.axisX, centralPoint.axisY - self.__window.centralPoint.axisY, centralPoint.axisZ - self.__window.centralPoint.axisZ)
+            
+            final_transform_obj = GenericTransform(positions=positions)
+            final_transform_obj.add_transforms([translate_to_origin, rotate_objs, translate_back])
+            
+            final_obj_positions.append(final_transform_obj.execute())
             
         final_objs = []
         for obj, positions in zip(self.__world.objects, final_obj_positions):

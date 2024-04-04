@@ -2,7 +2,7 @@ from typing import List
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Dimensions3D, Position3D
 from Domain.Utils.Enums import ObjectsTypes
-from Domain.Utils.Transforms import Rotation
+from Domain.Utils.Constants import Constants
 
 
 class Window(SGIObject):
@@ -21,8 +21,7 @@ class Window(SGIObject):
         dimensions = Dimensions3D(lenght, width, height)
         
         # v_up (vector of the left side of the window)
-        self.__positions = [Position3D(-50, -50, 0), Position3D(-50, width -50, 0)]
-        self.__angle = 0
+        self.__positions = [Position3D(-Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 0), Position3D(-Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 0)]
 
         super().__init__(ObjectsTypes.WINDOW, "Window", dimensions, self.__positions[0])
         
