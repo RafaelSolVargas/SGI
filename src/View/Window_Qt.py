@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QWheelEvent, QKeyEvent
+from PyQt5.QtGui import QWheelEvent, QKeyEvent, QIcon
 from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QHBoxLayout, QLineEdit
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from View.Button import Button
 from View.Console import Console
 from View.ArrowButtonWidget import ArrowButtonWidget
@@ -123,7 +123,7 @@ class Window_Qt(QMainWindow):
         rotate_window_box = QGroupBox(window_box)
         rotate_window_box.setLayout(QVBoxLayout())
         rotate_window_box.setStyleSheet("border: transparent;")
-        rotate_window_box.setGeometry(10, 115, 100, 100)
+        rotate_window_box.setGeometry(10, 130, 100, 130)
         
         rotate_window_label = QLabel("Rotacionar")
         rotate_window_label.setAlignment(Qt.AlignCenter)
@@ -138,7 +138,21 @@ class Window_Qt(QMainWindow):
 
         confirm_button = Button("Confirmar", lambda: (self.__rotateWindow(float(rotation_angle_input.text()))))
         rotate_window_box.layout().addWidget(confirm_button)
-        
+
+        # Adding the rotate windows with default value buttons
+        rotate_window_left_button = Button("", lambda: (self.__rotateWindow(float(45))))
+        rotate_window_left_button.setFixedHeight(35)
+        rotate_window_left_button.setFixedWidth(35)
+        rotate_window_left_button.setIconSize(QSize(35, 35))
+        rotate_window_left_button.setIcon(QIcon("View/Images/rotate_left.png"))
+        rotate_window_box.layout().addWidget(rotate_window_left_button)
+
+        rotate_window_right_button = Button("", lambda: (self.__rotateWindow(float(-45))))
+        rotate_window_right_button.setFixedHeight(35)
+        rotate_window_right_button.setFixedWidth(35)
+        rotate_window_right_button.setIconSize(QSize(35, 35))
+        rotate_window_right_button.setIcon(QIcon("View/Images/rotate_right.png"))
+        rotate_window_box.layout().addWidget(rotate_window_right_button)
                 
     def __addSidebarObjBox(self, title: str, items: list):
         box = QGroupBox(title, self.__sidebar)

@@ -344,22 +344,11 @@ class ObjectTransformWindow(QMainWindow):
         transform = GenericTransform(positions=self.__obj.getPositions())
         transform.add_transforms(self.__transforms)
         
-        """ print("Positions before:")
-        for pos in self.__obj.getPositions():
-            print(f"{pos.axisX}, {pos.axisY}, {pos.axisZ}") """
-        
         final_positions = transform.execute()
                   
         print(f"Final matrix for {[transform.getName() for transform in self.__transforms]}: {transform.matrix()}")    
 
         self.__obj.setPositions(final_positions)
-        
-        """ print("Positions after (func):")
-        for pos in final_positions:
-            print(f"{pos.axisX}, {pos.axisY}, {pos.axisZ}")
-        print("Positions after (obj):")
-        for pos in self.__obj.getPositions():
-            print(f"{pos.axisX}, {pos.axisY}, {pos.axisZ}") """
 
         self.close()
 
@@ -371,7 +360,6 @@ class ObjectTransformWindow(QMainWindow):
         self.__transforms.append(transform)
         self.__update_transform_list()
 
-    # TODO: Check rotation type and translate accordingly
     def __rotation_callback(self, angle: str, type_str: str) -> None:
         transform = GenericTransform(name="Rotation")
 
