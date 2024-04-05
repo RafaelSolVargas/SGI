@@ -52,7 +52,7 @@ class Position3D:
     
     @property
     def axisX(self) -> int:
-        return self.__axisX
+        return int(self.__axisX)
     
     @axisX.setter
     def axisX(self, value) -> None:
@@ -69,7 +69,7 @@ class Position3D:
 
     @property
     def axisY(self) -> int:
-        return self.__axisY
+        return int(self.__axisY)
     
     @axisY.setter
     def axisY(self, value) -> None:
@@ -83,7 +83,7 @@ class Position3D:
 
     @property
     def axisZ(self) -> int:
-        return self.__axisZ
+        return int(self.__axisZ)
     
     @axisZ.setter
     def axisZ(self, value) -> None:

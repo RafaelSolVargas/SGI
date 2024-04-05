@@ -52,18 +52,27 @@ class Canvas(QLabel):
             painter.drawLine(0, y, Constants.VIEWPORT_LENGTH, y)
         
         # Configure pen to draw red lines
-        origin = WorldHandler.getHandler().objectHandler.originWorldViewport()
+        axisXLine, axisYLine = WorldHandler.getHandler().objectHandler.getAxisLinesToDrawPPC()
         pen.setWidth(2)
+
+        print('Linha Eixo X: ', axisXLine)
+        print('Linha Eixo Y: ', axisYLine)
 
         # Paint the axis X line
         pen.setColor(QColor(0, 255, 0))
         painter.setPen(pen)
-        painter.drawLine(0, origin.axisY, Constants.VIEWPORT_LENGTH, origin.axisY)
+        painter.drawLine(int(axisXLine.pointOne.position.axisX), 
+                        int(axisXLine.pointOne.position.axisY),
+                        int(axisXLine.pointTwo.position.axisX), 
+                        int(axisXLine.pointTwo.position.axisY))
 
         # Paint the axis Y line
         pen.setColor(QColor(0, 0, 255))
         painter.setPen(pen)
-        painter.drawLine(origin.axisX, 0, origin.axisX, Constants.VIEWPORT_WIDTH)
+        painter.drawLine(int(axisYLine.pointOne.position.axisX), 
+                        int(axisYLine.pointOne.position.axisY),
+                        int(axisYLine.pointTwo.position.axisX), 
+                        int(axisYLine.pointTwo.position.axisY))
 
 
     def paint(self):

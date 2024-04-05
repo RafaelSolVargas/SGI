@@ -79,7 +79,7 @@ class Window_Qt(QMainWindow):
     def update(self):
         print("Updating")
 
-        obj_list = WorldHandler.getHandler().objectHandler.getObjectsViewportPPC()
+        obj_list = WorldHandler.getHandler().objectHandler.getObjectsTransformedToViewPortAndPPC()
 
         self.__object_list_widget.clear()
         for obj in obj_list:

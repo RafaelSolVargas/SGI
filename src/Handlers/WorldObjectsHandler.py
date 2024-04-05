@@ -54,7 +54,7 @@ class WorldObjectsHandler:
         
         self.__tempWireframePoints.clear()
     
-    def __getWorldObjectInPPCFormat(self) -> tuple[Position3D, list[SGIObject]]:
+    def __convertObjectToPPC(self, inputObjects: List[SGIObject]) -> tuple[Position3D, list[SGIObject]]:
         # Get the left bottom and left up positions from Window
         window_positions = deepcopy(self.__window.getPositions())
  
@@ -78,11 +78,11 @@ class WorldObjectsHandler:
         # Build the rotation to be applied to all objects
         rotateTransform = Rotation(-angle, RotationTypes.CENTER_WORLD)
         
-        worldObjects = deepcopy(self.__world.objects)
-        final_obj_positions = []
+        objectToConvert = deepcopy(inputObjects)
+        finalObjPositions: List[List[Position3D]] = []
         
         # Build the transform for each object
-        for obj in worldObjects:
+        for obj in objectToConvert:
             objPositions = obj.getPositions()
             objCentralPoint = obj.centralPoint
             
@@ -100,11 +100,11 @@ class WorldObjectsHandler:
             finalTransform = GenericTransform(positions=objPositions)
             finalTransform.add_transforms([translateToOriginTransform, rotateTransform, translateBackTransform])
             
-            final_obj_positions.append(finalTransform.execute())
+            finalObjPositions.append(finalTransform.execute())
             
         # Apply the transform to a copy of each object
         transformedObjects: List[SGIObject] = []
-        for obj, objPositions in zip(self.__world.objects, final_obj_positions):
+        for obj, objPositions in zip(inputObjects, finalObjPositions):
             objCopy = deepcopy(obj)
             objCopy.setPositions(objPositions)
             
@@ -113,9 +113,62 @@ class WorldObjectsHandler:
         # Return new window matrix and transformed objects
         return translateWindowMatrix, transformedObjects
     
-    def originWorldViewport(self) -> Position3D:
+    def originWorldViewportPPC(self) -> Position3D:
         return self.__transformPositionToViewPortPPC(Position3D(0, 0, 1), self.__windowPos)
-    
+
+    def getAxisLinesToDrawPPC(self) -> tuple[Line, Line]:
+        # Create points that will represent both axis 
+        axisXLeftPoint = Point(-1000, 0, 1)
+        axisXRightPoint = Point(1000, 0, 1)
+        axisYBottomPoint = Point(0, -600, 1)
+        axisYUpperPoint = Point(0, 600, 1)
+
+        # Convert to lines
+        axisXLine = Line(axisXLeftPoint, axisXRightPoint)
+        axisYLine = Line(axisYBottomPoint, axisYUpperPoint)
+        
+        # Convert to the PPC
+        #_, convertedList = self.__convertObjectToPPC([axisXLine])
+        #convertedAxisXLine = convertedList[0] 
+
+        #_, convertedList = self.__convertObjectToPPC([axisYLine])
+        #convertedAxisYLine = convertedList[0]
+
+        # return convertedAxisXLine, convertedAxisYLine
+
+        # Get the left bottom and left up positions from Window
+        window_positions = deepcopy(self.__window.getPositions())
+ 
+        # Compute v_up (vector of the left side of the window)
+        v_up = Position3D(window_positions[1].axisX - window_positions[0].axisX, 
+                          window_positions[1].axisY - window_positions[0].axisY, 
+                          0)
+        
+        # Get the angle to the aixs Y
+        cosine = v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY])
+        angle = np.rad2deg(np.arccos(cosine))
+        
+        # Build the rotation to be applied to both lines
+        rotateTransform = Rotation(-angle, RotationTypes.CENTER_WORLD)
+        
+        # Convert the axis X to PPC
+        axisXLineTransform = GenericTransform(positions=axisXLine.getPositions())
+        axisXLineTransform.add_transforms([rotateTransform])
+
+        lineXConvertedPositions = axisXLineTransform.execute()
+
+        axisXLine.setPositions(lineXConvertedPositions)
+
+        # Convert the axis Y to PPC
+        axisYLineTransform = GenericTransform(positions=axisYLine.getPositions())
+        axisYLineTransform.add_transforms([rotateTransform])
+
+        lineXConvertedPositions = axisYLineTransform.execute()
+
+        axisYLine.setPositions(lineXConvertedPositions)
+        
+        return axisXLine, axisYLine
+
     def originWorldViewport(self) -> Position3D:
         return self.__transformPositionToViewPort(Position3D(0, 0, 1))
         
@@ -145,8 +198,8 @@ class WorldObjectsHandler:
 
         return pointTransformed
     
-    def getObjectsViewportPPC(self) -> List[SGIObject]:
-        windowPosition, objs = self.__getWorldObjectInPPCFormat()
+    def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
+        windowPosition, objs = self.__convertObjectToPPC(self.__world.objects)
         
         self.__windowPos = windowPosition
         
@@ -166,25 +219,6 @@ class WorldObjectsHandler:
             objectsToShow.append(objCopy)
 
         return objectsToShow
-        
-    
-    """ def getObjectsViewport(self) -> List[SGIObject]:
-        objectsToShow: List[SGIObject] = []
-
-        for obj in self.__world.objects:
-            # Creates a copy to not change the Domain value
-            objCopy = deepcopy(obj)
-
-            for position in objCopy.getPositions():
-                transformedPosition = self.__transformPositionToViewPort(position)
-
-                position.axisX = transformedPosition.axisX
-                position.axisY = transformedPosition.axisY
-                position.axisZ = transformedPosition.axisZ
-
-            objectsToShow.append(objCopy)
-
-        return objectsToShow """
     
     def getObjectByName(self, name: str) -> SGIObject:
         for obj in self.__world.objects:

@@ -15,6 +15,9 @@ class Line(SGIObject):
 
         super().__init__(ObjectsTypes.LINE, name, dimensions, pointOne.position)
 
+    def __str__(self):
+        return f"P1: ({self.__pointOne.position.axisX}, {self.__pointOne.position.axisY}) - P2: P1: ({self.__pointTwo.position.axisX}, {self.__pointTwo.position.axisY})"
+
     def getPositions(self) -> List[Position3D]:
         return [self.pointOne.position, self.pointTwo.position]
 
