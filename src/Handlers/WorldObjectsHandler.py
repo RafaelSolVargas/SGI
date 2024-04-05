@@ -15,9 +15,9 @@ import numpy as np
 
 class WorldObjectsHandler:
     def __init__(self, viewPort: ViewPort, window: Window, world: World) -> None:
-        self.__viewport = viewPort
-        self.__window = window
-        self.__world = world
+        self.__viewport: ViewPort = viewPort
+        self.__window: Window = window
+        self.__world: World = world
         self.__tempWireframePoints: List[Point] = []
         self.__windowPos = None
     
@@ -54,48 +54,64 @@ class WorldObjectsHandler:
         
         self.__tempWireframePoints.clear()
     
-    def getWindowObjectsPPC(self) -> tuple[Position3D, list[SGIObject]]:
-        # Compute v_up (vector of the left side of the window)
+    def __getWorldObjectInPPCFormat(self) -> tuple[Position3D, list[SGIObject]]:
+        # Get the left bottom and left up positions from Window
         window_positions = deepcopy(self.__window.getPositions())
-        v_up = Position3D(window_positions[1].axisX - window_positions[0].axisX, window_positions[1].axisY - window_positions[0].axisY, 0)
+ 
+        # Compute v_up (vector of the left side of the window)
+        v_up = Position3D(window_positions[1].axisX - window_positions[0].axisX, 
+                          window_positions[1].axisY - window_positions[0].axisY, 
+                          0)
         
+        # Get the angle to the aixs Y
         cosine = v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY])
         angle = np.rad2deg(np.arccos(cosine))
         
-        #print(f'Cosine: {v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY])}')
-        #print(f'Angle (rad): {np.arccos(v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY]))}')
-        #print(f'Angle (deg): {angle}')
-        #print(f'v_up: {v_up.axisX}, {v_up.axisY}, {v_up.axisZ}')
+        # Build the translation of the window
+        translateWindowTransform = Translation(-self.__window.centralPoint.axisX, 
+                                       -self.__window.centralPoint.axisY, 
+                                       -self.__window.centralPoint.axisZ, 
+                                       window_positions)
         
-        translate_window = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ, window_positions)
-        rotate_objs = Rotation(-angle, RotationTypes.CENTER_WORLD)
+        translateWindowMatrix = translateWindowTransform.execute()
         
-        objs = deepcopy(self.__world.objects)
+        # Build the rotation to be applied to all objects
+        rotateTransform = Rotation(-angle, RotationTypes.CENTER_WORLD)
         
+        worldObjects = deepcopy(self.__world.objects)
         final_obj_positions = []
         
-        for obj in objs:
-            positions = obj.getPositions()
-            centralPoint = obj.centralPoint
+        # Build the transform for each object
+        for obj in worldObjects:
+            objPositions = obj.getPositions()
+            objCentralPoint = obj.centralPoint
             
-            objWindowDiff = Position3D(centralPoint.axisX - self.__window.centralPoint.axisX, centralPoint.axisY - self.__window.centralPoint.axisY, centralPoint.axisZ - self.__window.centralPoint.axisZ)
+            diffAxisX = objCentralPoint.axisX - self.__window.centralPoint.axisX
+            diffAxisY = objCentralPoint.axisY - self.__window.centralPoint.axisY
+            diffAxisZ = objCentralPoint.axisZ - self.__window.centralPoint.axisZ
             
-            translate_to_origin = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
-            translate_back = Translation(objWindowDiff.axisX, objWindowDiff.axisY, objWindowDiff.axisZ)
-            final_transform_obj = GenericTransform(positions=positions)
-            final_transform_obj.add_transforms([translate_to_origin, rotate_objs, translate_back])
+            # Translate object to origin
+            translateToOriginTransform = Translation(-objCentralPoint.axisX, -objCentralPoint.axisY, -objCentralPoint.axisZ)
             
-            final_obj_positions.append(final_transform_obj.execute())
+            # Translate object back
+            translateBackTransform = Translation(diffAxisX, diffAxisY, diffAxisZ)
+
+            # Stack up the transform for the obj             
+            finalTransform = GenericTransform(positions=objPositions)
+            finalTransform.add_transforms([translateToOriginTransform, rotateTransform, translateBackTransform])
             
-        final_objs = []
-        for obj, positions in zip(self.__world.objects, final_obj_positions):
-            obj_copy = deepcopy(obj)
-            obj_copy.setPositions(positions)
+            final_obj_positions.append(finalTransform.execute())
             
-            final_objs.append(obj_copy)
+        # Apply the transform to a copy of each object
+        transformedObjects: List[SGIObject] = []
+        for obj, objPositions in zip(self.__world.objects, final_obj_positions):
+            objCopy = deepcopy(obj)
+            objCopy.setPositions(objPositions)
+            
+            transformedObjects.append(objCopy)
         
-        # Return new window and objs
-        return translate_window.execute(), final_objs
+        # Return new window matrix and transformed objects
+        return translateWindowMatrix, transformedObjects
     
     def originWorldViewport(self) -> Position3D:
         return self.__transformPositionToViewPortPPC(Position3D(0, 0, 1), self.__windowPos)
@@ -130,7 +146,7 @@ class WorldObjectsHandler:
         return pointTransformed
     
     def getObjectsViewportPPC(self) -> List[SGIObject]:
-        windowPosition, objs = self.getWindowObjectsPPC()
+        windowPosition, objs = self.__getWorldObjectInPPCFormat()
         
         self.__windowPos = windowPosition
         
@@ -152,7 +168,7 @@ class WorldObjectsHandler:
         return objectsToShow
         
     
-    def getObjectsViewport(self) -> List[SGIObject]:
+    """ def getObjectsViewport(self) -> List[SGIObject]:
         objectsToShow: List[SGIObject] = []
 
         for obj in self.__world.objects:
@@ -168,7 +184,7 @@ class WorldObjectsHandler:
 
             objectsToShow.append(objCopy)
 
-        return objectsToShow
+        return objectsToShow """
     
     def getObjectByName(self, name: str) -> SGIObject:
         for obj in self.__world.objects:

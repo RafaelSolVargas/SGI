@@ -35,8 +35,8 @@ class Window(SGIObject):
     @property
     def centralPoint(self) -> Position3D:
         v_up_middle = Position3D((self.__positions[1].axisX - self.__positions[0].axisX) / 2, (self.__positions[1].axisY - self.__positions[0].axisY) / 2, 0)
-        
-        # Walks from the middle left to the central point of the window
+
+        # Walks from the bottom middle left to the central point of the window
         return Position3D(self.__positions[0].axisX + v_up_middle.axisX, self.__positions[0].axisY + v_up_middle.axisY, 0)
     
     @property
@@ -102,9 +102,7 @@ class Window(SGIObject):
         for position in self.__positions:
             position.axisX += self.ZOOM_MOVE
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
-        
-    def rotate(self, angle: float, axis: str):
-        centerOfWindow = self.centralPoint
+
 
         
     

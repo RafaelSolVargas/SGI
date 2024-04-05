@@ -123,7 +123,7 @@ class Window_Qt(QMainWindow):
         rotate_window_box = QGroupBox(window_box)
         rotate_window_box.setLayout(QVBoxLayout())
         rotate_window_box.setStyleSheet("border: transparent;")
-        rotate_window_box.setGeometry(10, 130, 100, 130)
+        rotate_window_box.setGeometry(10, 100, 100, 160)
         
         rotate_window_label = QLabel("Rotacionar")
         rotate_window_label.setAlignment(Qt.AlignCenter)

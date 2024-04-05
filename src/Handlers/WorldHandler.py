@@ -44,7 +44,6 @@ class WorldHandler:
         print("Before rotation")
         print(f'Window position 0: {window_positions[0].axisX}, {window_positions[0].axisY}, {window_positions[0].axisZ}')
         print(f'Window position 1: {window_positions[1].axisX}, {window_positions[1].axisY}, {window_positions[1].axisZ}')
-        
 
         windowTranslationTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
         windowRotationTransform = Rotation(angle, RotationTypes.CENTER_OBJECT, window_positions)
@@ -60,40 +59,3 @@ class WorldHandler:
         print(f'Window position 0: {self.__window.getPositions()[0].axisX}, {self.__window.getPositions()[0].axisY}, {self.__window.getPositions()[0].axisZ}')
         print(f'Window position 1: {self.__window.getPositions()[1].axisX}, {self.__window.getPositions()[1].axisY}, {self.__window.getPositions()[1].axisZ}')
 
-    def __calculateMatrixOfRotationOfWindowIntoObject(self, otherObj: SGIObject, angle: float, axis: str):
-        # Calculates points of Window        
-        centralPointWindow = self.__window.centralPoint
-        Wx = centralPointWindow.axisX
-        Wy = centralPointWindow.axisY
-        Wz = centralPointWindow.axisZ
-
-        # Calculate points of object
-        centralPointObj = otherObj.centralPoint
-        objX = centralPointObj.axisX
-        objY = centralPointObj.axisY
-        objZ = centralPointObj.axisZ
-
-        # Diff between them
-        diffX = objX - (objX - Wx)
-        diffY = objY - (objY - Wy)
-        diffZ = objZ - (objZ - Wz)
-
-        # Angle convertion
-        angleRadian = math.radians(angle)
-
-        # Build all three transforms
-        translationToOriginTransform = Translation(-diffX, -diffY, -diffZ)
-
-        rotationTransform = Rotation(angleRadian, RotationTypes.CENTER_OBJECT, otherObj.getPositions())
-
-        translationBackTransform = Translation(diffX, diffY, diffZ)
-
-        # Pack them together 
-        finalTransform = GenericTransform(positions=self.__obj.getPositions())
-        finalTransform.add_transforms([translationToOriginTransform, rotationTransform, translationBackTransform])
-        
-        # Calculate the final matrix
-        finalPositions = finalTransform.execute()
-
-        # Apply into the object
-        otherObj.setPositions(finalPositions)
