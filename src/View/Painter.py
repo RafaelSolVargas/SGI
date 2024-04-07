@@ -15,11 +15,11 @@ class Canvas(QLabel):
         super().__init__(parent)
         self.__obj_list: List[SGIObject] = []
         
-        pixmap = QPixmap(Constants.VIEWPORT_LENGTH, Constants.VIEWPORT_WIDTH)
+        pixmap = QPixmap(Constants.VIEWPORT_LENGTH + Constants.VIEWPORT_SLACK, Constants.VIEWPORT_WIDTH + Constants.VIEWPORT_SLACK)
         pixmap.fill(Qt.white)
         
         self.setPixmap(pixmap)
-        self.setGeometry(Constants.SIDEBAR_SIZE, 0, Constants.VIEWPORT_LENGTH, Constants.VIEWPORT_WIDTH)
+        self.setGeometry(Constants.SIDEBAR_SIZE, 0, Constants.VIEWPORT_LENGTH + Constants.VIEWPORT_SLACK, Constants.VIEWPORT_WIDTH + Constants.VIEWPORT_SLACK)
         
         self.__pen_color = QColor(0, 0, 0)
         
@@ -36,20 +36,21 @@ class Canvas(QLabel):
         grid_size = 10
         pen = painter.pen()
         
+        slack = Constants.VIEWPORT_SLACK // 2
 
-        for x in range(0, Constants.VIEWPORT_LENGTH, grid_size):
+        for x in range(slack, Constants.VIEWPORT_LENGTH + slack, grid_size):
             pen.setColor(QColor(200, 200, 200))
             pen.setWidth(1)
             painter.setPen(pen)
             
-            painter.drawLine(x, 0, x, Constants.VIEWPORT_WIDTH)
+            painter.drawLine(x, slack, x, Constants.VIEWPORT_WIDTH + slack)
 
-        for y in range(0, Constants.VIEWPORT_WIDTH, grid_size):
+        for y in range(slack, Constants.VIEWPORT_WIDTH + slack, grid_size):
             pen.setColor(QColor(200, 200, 200))
             pen.setWidth(1)
             painter.setPen(pen)
 
-            painter.drawLine(0, y, Constants.VIEWPORT_LENGTH, y)
+            painter.drawLine(slack, y, Constants.VIEWPORT_LENGTH + slack, y)
         
         # Configure pen to draw red lines
         axisXLine, axisYLine = WorldHandler.getHandler().objectHandler.getAxisLinesToDrawPPC()

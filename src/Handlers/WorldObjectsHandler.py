@@ -10,6 +10,7 @@ from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
 from Domain.Utils.Transforms import Translation, Rotation, GenericTransform
 from Domain.Utils.Enums import RotationTypes
+from Domain.Management.Clipping import Clipper
 import numpy as np
 
 
@@ -19,7 +20,8 @@ class WorldObjectsHandler:
         self.__window: Window = window
         self.__world: World = world
         self.__tempWireframePoints: List[Point] = []
-        self.__windowPos = None
+        self.__windowPos: Position3D = None
+        self.__clipper = Clipper()
     
     def addObject(self, obj: SGIObject) -> None:
         self.__world.addObject(obj)
@@ -205,7 +207,9 @@ class WorldObjectsHandler:
         
         objectsToShow: List[SGIObject] = []
         
-        for obj in objs:
+        clipped_objs = self.__clipper.clip(windowPosition, objs, self.__window.dimensions.length)
+        
+        for obj in clipped_objs:
             # Creates a copy to not change the Domain value
             objCopy = deepcopy(obj)
 

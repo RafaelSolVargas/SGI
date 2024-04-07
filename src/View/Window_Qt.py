@@ -8,7 +8,6 @@ from View.Painter import Canvas
 from View.SideWindows import ObjectWindowFactory, ObjectTransformWindow
 from Domain.Utils.Constants import Constants
 from Handlers.WorldHandler import WorldHandler
-from Domain.Utils.Coordinates import Position3D
 from Domain.Utils.DescriptorOBJ import DescriptorOBJ
 
 class Window_Qt(QMainWindow):
@@ -123,7 +122,7 @@ class Window_Qt(QMainWindow):
         rotate_window_box = QGroupBox(window_box)
         rotate_window_box.setLayout(QVBoxLayout())
         rotate_window_box.setStyleSheet("border: transparent;")
-        rotate_window_box.setGeometry(10, 100, 100, 160)
+        rotate_window_box.setGeometry(10, 100, 200, 160)
         
         rotate_window_label = QLabel("Rotacionar")
         rotate_window_label.setAlignment(Qt.AlignCenter)
@@ -145,14 +144,14 @@ class Window_Qt(QMainWindow):
         rotate_window_left_button.setFixedWidth(35)
         rotate_window_left_button.setIconSize(QSize(35, 35))
         rotate_window_left_button.setIcon(QIcon("View/Images/rotate_left.png"))
-        rotate_window_box.layout().addWidget(rotate_window_left_button)
+        rotation_angle_widget.layout().addWidget(rotate_window_left_button)
 
         rotate_window_right_button = Button("", lambda: (self.__rotateWindow(float(-45))))
         rotate_window_right_button.setFixedHeight(35)
         rotate_window_right_button.setFixedWidth(35)
         rotate_window_right_button.setIconSize(QSize(35, 35))
         rotate_window_right_button.setIcon(QIcon("View/Images/rotate_right.png"))
-        rotate_window_box.layout().addWidget(rotate_window_right_button)
+        rotation_angle_widget.layout().addWidget(rotate_window_right_button)
                 
     def __addSidebarObjBox(self, title: str, items: list):
         box = QGroupBox(title, self.__sidebar)

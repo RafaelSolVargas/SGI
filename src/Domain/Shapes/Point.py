@@ -10,7 +10,11 @@ class Point(SGIObject):
         position = Position3D(axisX, axisY, axisZ)
         
         super().__init__(ObjectsTypes.POINT, name, dimensions, position)
-
+    
+    @staticmethod
+    def fromPosition(position: Position3D, name: str = "Ponto") -> 'Point':
+        return Point(position.axisX, position.axisY, position.axisZ, name)
+    
     def getPositions(self) -> List[Position3D]:
         return [self.position]
     
