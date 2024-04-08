@@ -11,6 +11,7 @@ from Domain.Utils.Coordinates import Position3D
 from Domain.Utils.Transforms import Translation, Rotation, GenericTransform
 from Domain.Utils.Enums import RotationTypes
 from Domain.Management.Clipping import Clipper
+from Domain.Utils.Constants import Constants
 import numpy as np
 
 
@@ -190,11 +191,11 @@ class WorldObjectsHandler:
     def __transformPositionToViewPortPPC(self, position: Position3D, window_pos: Position3D) -> Position3D:
         xW = position.axisX
 
-        xVP = ((xW - window_pos[0].axisX) / (self.__window.dimensions.length)) * (self.__viewport.dimensions.length)
+        xVP = ((xW - window_pos[0].axisX) / (self.__window.dimensions.length)) * (Constants.VIEWPORT_LENGTH)
 
         yW = position.axisY
 
-        yVP = (1 - ((yW - window_pos[0].axisY) / (self.__window.dimensions.width))) * (self.__viewport.dimensions.width)
+        yVP = (1 - ((yW - window_pos[0].axisY) / (self.__window.dimensions.width))) * (Constants.VIEWPORT_WIDTH)
        
         pointTransformed = Position3D(round(xVP), round(yVP), 1)
 
@@ -216,8 +217,8 @@ class WorldObjectsHandler:
             for position in objCopy.getPositions():
                 transformedPosition = self.__transformPositionToViewPortPPC(position, windowPosition)
 
-                position.axisX = transformedPosition.axisX
-                position.axisY = transformedPosition.axisY
+                position.axisX = transformedPosition.axisX + Constants.VIEWPORT_SLACK // 2
+                position.axisY = transformedPosition.axisY + Constants.VIEWPORT_SLACK // 2
                 position.axisZ = transformedPosition.axisZ
 
             objectsToShow.append(objCopy)

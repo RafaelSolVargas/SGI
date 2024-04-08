@@ -42,7 +42,10 @@ class CohenSutherlandStrategy(LineClippingStrategy):
         code1 = self.__compute_code(p1, win_bottom_left, win_top_left, win_top_right)
         code2 = self.__compute_code(p2, win_bottom_left, win_top_left, win_top_right)
         
+        
+        
         while True:
+            print(f'Code 1: {int(code1):04b} | Code 2: {int(code2):04b}')
             # Fully inside
             if code1 == 0 and code2 == 0:
                 return Line(Point.fromPosition(p1), Point.fromPosition(p2), line.name)
@@ -53,43 +56,51 @@ class CohenSutherlandStrategy(LineClippingStrategy):
             
             # Partially
             else:
-                # Select the point outside
-                code_out = code1 if code1 != 0 else code2
                 
-                x = 0
-                y = 0
+                x0, y0 = p1.axisX, p1.axisY
+                x1, y1 = p2.axisX, p2.axisY
                 
-                # Compute intersection point
-                # Top | Bottom | Right | Left
-                if code_out & 8:
-                    x = p1.axisX + (p2.axisX - p1.axisX) * (win_top_left.axisY - p1.axisY) / (p2.axisY - p1.axisY)
-                    y = win_top_left.axisY
+                m = (y1 - y0) / (x1 - x0) if x1 != x0 else None 
                 
-                elif code_out & 4:
-                    x = p1.axisX + (p2.axisX - p1.axisX) * (win_bottom_left.axisY - p1.axisY) / (p2.axisY - p1.axisY)
-                    y = win_bottom_left.axisY
-                
-                elif code_out & 2:
-                    y = p1.axisY + (p2.axisY - p1.axisY) * (win_top_right.axisX - p1.axisX) / (p2.axisX - p1.axisX)
-                    x = win_top_right.axisX
-                
-                elif code_out & 1:
-                    y = p1.axisY + (p2.axisY - p1.axisY) * (win_top_left.axisX - p1.axisX) / (p2.axisX - p1.axisX)
-                    x = win_top_left.axisX
-                
-                # Update the point
-                if code_out == code1:
-                    p1 = Position3D(x, y, 0)
-                    code1 = self.__compute_code(p1, win_bottom_left, win_top_left, win_top_right)
-                    
-                    
+                if code1 != 0:
+                    if code1 & 8:
+                        x0 = x0 + (win_top_left.axisY - y0) * (1 / m)
+                        y0 = win_top_left.axisY
+                    elif code1 & 4:
+                        x0 = x0 + (win_bottom_left.axisY - y0) * (1 / m)
+                        y0 = win_bottom_left.axisY
+                        
+                    if code1 & 2:
+                        y0 = y0 + (win_top_right.axisX - x0) * m
+                        x0 = win_top_right.axisX
+                    elif code1 & 1:
+                        y0 = y0 + (win_top_left.axisX - x0) * m
+                        x0 = win_top_left.axisX
+                        
+                if code2 != 0:
+                    if code2 & 8:
+                        x1 = x1 + (win_top_left.axisY - y1) * (1 / m)
+                        y1 = win_top_left.axisY
+                    elif code2 & 4:
+                        x1 = x1 + (win_bottom_left.axisY - y1) * (1 / m)
+                        y1 = win_bottom_left.axisY
+                        
+                    if code2 & 2:
+                        y1 = y1 + (win_top_right.axisX - x1) * m
+                        x1 = win_top_right.axisX
+                    elif code2 & 1:
+                        y1 = y1 + (win_top_left.axisX - x1) * m
+                        x1 = win_top_left.axisX
+                        
+                return Line(Point(x0, y0, 0), Point(x1, y1, 0), line.name)
+                        
 class Clipper:
     def __init__(self) -> None:
         self.__lineClippingStrategy: LineClippingStrategy = CohenSutherlandStrategy()
         self.__polygongClip = None
     
-    def __clipPoint(self, point: Position3D, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> Position3D | None:
-        if point.axisX >= win_bottom_left.axisX and point.axisX <= win_top_right.axisX and point.axisY >= win_bottom_left.axisY and point.axisY <= win_top_right.axisY:
+    def __clipPoint(self, point: Point, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> Point | None:
+        if point.position.axisX >= win_bottom_left.axisX and point.position.axisX <= win_top_right.axisX and point.position.axisY >= win_bottom_left.axisY and point.position.axisY <= win_top_right.axisY:
             return point
         
         return None
@@ -115,9 +126,10 @@ class Clipper:
             
             # TODO: Add wireframe clipping when polygon algorithm is implemented
             if obj.type == ObjectsTypes.POINT:
-                temp = self.__clipPoint(obj.getPositions()[0], win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+                temp = self.__clipPoint(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
             elif obj.type == ObjectsTypes.LINE:
                 temp = self.__lineClippingStrategy.clip(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+                #temp = obj
             elif obj.type == ObjectsTypes.WIREFRAME:
                 temp = obj
                 

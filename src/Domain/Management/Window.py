@@ -62,12 +62,12 @@ class Window(SGIObject):
         # Increases the dimension and decrease the position to move the window to both left and right
         self.dimensions.length -= self.__SCALE * self.__BASE_LENGHT
         for position in self.__positions:
-            position.axisX += self.__SCALE * self.__BASE_LENGHT
+            position.axisX += self.__SCALE * self.__BASE_LENGHT // 2
 
         # Increases the dimension and decrease the position to move the window to both up and down
         self.dimensions.width -= self.__SCALE * self.__BASE_WIDTH
-        for position in self.__positions:
-            position.axisY += self.__SCALE * self.__BASE_WIDTH
+        self.__positions[1].axisY -= self.__SCALE * self.__BASE_WIDTH // 2
+        self.__positions[0].axisY += self.__SCALE * self.__BASE_WIDTH // 2
 
     def zoomOut(self) -> None:
         """
@@ -76,12 +76,12 @@ class Window(SGIObject):
         # Increases the dimension and decrease the position to move the window to both left and right
         self.dimensions.length += self.__SCALE * self.__BASE_LENGHT
         for position in self.__positions:
-            position.axisX -= self.__SCALE * self.__BASE_LENGHT
+            position.axisX -= self.__SCALE * self.__BASE_LENGHT // 2
 
         # Increases the dimension and decrease the position to move the window to both up and down
         self.dimensions.width += self.__SCALE * self.__BASE_WIDTH
-        for position in self.__positions:
-            position.axisY -= self.__SCALE * self.__BASE_WIDTH
+        self.__positions[1].axisY += self.__SCALE * self.__BASE_WIDTH // 2
+        self.__positions[0].axisY -= self.__SCALE * self.__BASE_WIDTH // 2
 
     def moveUp(self) -> None:
         for position in self.__positions:
