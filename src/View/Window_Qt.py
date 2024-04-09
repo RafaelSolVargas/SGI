@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QWheelEvent, QKeyEvent, QIcon
-from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QHBoxLayout, QLineEdit
+from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QHBoxLayout, QLineEdit, QFileDialog
 from PyQt5.QtCore import Qt, QSize
 from View.Button import Button
 from View.Console import Console
@@ -172,7 +172,19 @@ class Window_Qt(QMainWindow):
 
         transform_button = Button("Transformar", lambda: (self.__openTransformWindow(self.__object_list_widget)))
         layout.addWidget(transform_button)
+        
+        import_button = Button("Importar", lambda: (self.__importDescriptorOBJ()))
+        layout.addWidget(import_button)
 
+    def __importDescriptorOBJ(self):
+        import_dialog = QFileDialog()
+        file_name, _ = import_dialog.getOpenFileName(self, "Importar Arquivo", "", "OBJ Files (*.obj)")
+
+        if file_name:
+            wireframe = DescriptorOBJ.readOBJFile(file_name)
+            WorldHandler.getHandler().objectHandler.addObject(wireframe)
+            self.update()
+    
     def __rotateWindow(self, angle: float) -> None:
         WorldHandler.getHandler().rotateWindow(angle)
         self.update()

@@ -59,7 +59,7 @@ class Canvas(QLabel):
         print('Linha Eixo X: ', axisXLine)
         print('Linha Eixo Y: ', axisYLine)
 
-        # Paint the axis X line
+        """ # Paint the axis X line
         pen.setColor(QColor(0, 255, 0))
         painter.setPen(pen)
         painter.drawLine(int(axisXLine.pointOne.position.axisX), 
@@ -73,7 +73,7 @@ class Canvas(QLabel):
         painter.drawLine(int(axisYLine.pointOne.position.axisX), 
                         int(axisYLine.pointOne.position.axisY),
                         int(axisYLine.pointTwo.position.axisX), 
-                        int(axisYLine.pointTwo.position.axisY))
+                        int(axisYLine.pointTwo.position.axisY)) """
 
 
     def paint(self):
