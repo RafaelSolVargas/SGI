@@ -9,14 +9,26 @@ from View.SideWindows import ObjectWindowFactory, ObjectTransformWindow
 from Domain.Utils.Constants import Constants
 from Handlers.WorldHandler import WorldHandler
 from Domain.Utils.DescriptorOBJ import DescriptorOBJ
+import os
 
 class Window_Qt(QMainWindow):
     def __init__(self, w: int = 1280, h: int = 720):
         super().__init__()
         self._object_list_widget = None
 
-        wireframe = DescriptorOBJ.readOBJFile("tests/WireFrame default.obj")
-        WorldHandler.getHandler().objectHandler.addObject(wireframe)
+        # Get the path to the tests folder
+        tests_folder = os.path.join(os.getcwd(), "tests")
+
+        # Iterate over all files in the tests folder
+        for file_name in os.listdir(tests_folder):
+            # Check if the file is an .obj file
+            if file_name.endswith(".obj"):
+                # Construct the full path to the .obj file
+                obj_file_path = os.path.join(tests_folder, file_name)
+                
+                # Read the .obj file and add it to the object handler
+                wireframe = DescriptorOBJ.readOBJFile(obj_file_path)
+                WorldHandler.getHandler().objectHandler.addObject(wireframe)
 
         self.__objWinFactory = ObjectWindowFactory(self)
         

@@ -9,6 +9,8 @@ from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Enums import ObjectsTypes
 from Domain.Utils.Constants import Constants
 from Handlers.WorldHandler import WorldHandler
+from Domain.Utils.Coordinates import Position3D
+import numpy as np
 
 class Canvas(QLabel):
     def __init__(self, parent=None):
@@ -30,6 +32,14 @@ class Canvas(QLabel):
             print(f'Objeto {obj.name} adicionado ao canvas')
         
         self.paint()
+    
+    def __getAngleWithOrigin(self, p: Position3D) -> float:
+        cosine = p.axisY / np.linalg.norm([p.axisX, p.axisY])
+        angle = np.rad2deg(np.arccos(cosine))
+        
+        return angle
+        
+        
     
     def __draw_grid(self, painter: QPainter):
         # Draw grid lines
@@ -56,8 +66,34 @@ class Canvas(QLabel):
         axisXLine, axisYLine = WorldHandler.getHandler().objectHandler.getAxisLinesToDrawPPC()
         pen.setWidth(2)
 
-        print('Linha Eixo X: ', axisXLine)
-        print('Linha Eixo Y: ', axisYLine)
+        windowPos = WorldHandler.getHandler().objectHandler.windowPosPPC
+        length, width = WorldHandler.getHandler().window.dimensions.length, WorldHandler.getHandler().window.dimensions.width
+        
+        #print(f'Window position: {windowPos[0]}, {windowPos[1]}')
+        #print(f'Window dimensions: {length}, {width}')
+        
+        # Draw red lines for borders of the window
+        pen.setColor(QColor(255, 0, 0))
+        painter.setPen(pen)
+        
+        # Draw point of the center of the window
+        center_point = WorldHandler.getHandler().objectHandler.windowCenterPPC
+        slack = Constants.VIEWPORT_SLACK // 2
+        
+        painter.drawPoint(center_point.axisX + slack, center_point.axisY + slack)
+        print(f'Center point: {center_point.axisX}, {center_point.axisY}')
+            
+        """  print(int(windowPos[0].axisX), int(windowPos[0].axisY), int(windowPos[1].axisX), int(windowPos[1].axisY))
+        print(int(windowPos[1].axisX), int(windowPos[1].axisY), int(windowPos[2].axisX), int(windowPos[2].axisY))
+        print(int(windowPos[2].axisX), int(windowPos[2].axisY), int(windowPos[3].axisX), int(windowPos[3].axisY))
+        print(int(windowPos[3].axisX), int(windowPos[3].axisY), int(windowPos[0].axisX), int(windowPos[0].axisY)) """
+        
+        painter.drawLine(slack, Constants.VIEWPORT_WIDTH + slack, Constants.VIEWPORT_LENGTH + slack, Constants.VIEWPORT_WIDTH + slack)
+        painter.drawLine(Constants.VIEWPORT_LENGTH + slack, slack, Constants.VIEWPORT_LENGTH + slack, Constants.VIEWPORT_WIDTH + slack)
+        painter.drawLine(Constants.VIEWPORT_LENGTH + slack, slack, slack, slack)
+        painter.drawLine(slack, slack, slack, Constants.VIEWPORT_WIDTH + slack)
+        
+        
 
         """ # Paint the axis X line
         pen.setColor(QColor(0, 255, 0))
