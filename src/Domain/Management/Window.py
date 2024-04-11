@@ -20,11 +20,20 @@ class Window(SGIObject):
 
         dimensions = Dimensions3D(lenght, width, height)
         
+        self.__angle = 0
+        
         # Bottom left, top left, top right, bottom right
         self.__positions = [Position3D(-Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 0), Position3D(-Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 0), Position3D(Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 0), Position3D(Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 0)]
 
         super().__init__(ObjectsTypes.WINDOW, "Window", dimensions, self.__positions[0])
-        
+    
+    @property
+    def angle(self) -> float:
+        return self.__angle
+    
+    @angle.setter
+    def angle(self, value: float) -> None:
+        self.__angle = value
     
     def getPositions(self) -> list[Position3D]:
         return self.__positions
@@ -41,7 +50,7 @@ class Window(SGIObject):
         half_width = (top_right.axisY - bottom_left.axisY) / 2 + bottom_left.axisY
         half_height = (top_right.axisZ - bottom_left.axisZ) / 2 + bottom_left.axisZ
         
-        print(f'Center: {half_length}, {half_width}, {half_height}')
+        #print(f'Center: {half_length}, {half_width}, {half_height}')
         
         return Position3D(half_length, half_width, half_height)
         

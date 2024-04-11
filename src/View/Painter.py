@@ -153,7 +153,7 @@ class Canvas(QLabel):
 
     @classmethod
     def __paintLine(cls, canvas: QPainter, line: Line):
-        #print(f'Pintando linha de {line.pointOne.position.axisX}, {line.pointOne.position.axisY} para {line.pointTwo.position.axisX}, {line.pointTwo.position.axisY}')
+        print(f'Pintando linha de {line.pointOne.position.axisX}, {line.pointOne.position.axisY} para {line.pointTwo.position.axisX}, {line.pointTwo.position.axisY}')
         canvas.drawLine(line.pointOne.position.axisX, line.pointOne.position.axisY,
                         line.pointTwo.position.axisX, line.pointTwo.position.axisY)
         

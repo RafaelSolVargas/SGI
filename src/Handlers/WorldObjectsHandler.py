@@ -41,6 +41,8 @@ class WorldObjectsHandler:
     def windowCenterPPC(self) -> Position3D:
         pos = self.__transformPositionToViewPortPPC(self.__window.centralPoint, self.__windowPos)
         
+        print(f"Window center PPC: {pos.axisX}, {pos.axisY}")
+        
         #pos.axisX += Constants.VIEWPORT_SLACK // 2
         #pos.axisY += Constants.VIEWPORT_SLACK // 2
         
@@ -83,15 +85,6 @@ class WorldObjectsHandler:
         # Get the left bottom and left up positions from Window
         window_positions = deepcopy(self.__window.getPositions())
  
-        # Compute v_up (vector of the left side of the window)
-        v_up = Position3D(window_positions[1].axisX - window_positions[0].axisX, 
-                          window_positions[1].axisY - window_positions[0].axisY, 
-                          0)
-        
-        # Get the angle to the aixs Y
-        cosine = v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY])
-        angle = np.rad2deg(np.arccos(cosine))
-        
         # Build the translation of the window
         translateWindowTransform = Translation(-self.__window.centralPoint.axisX, 
                                        -self.__window.centralPoint.axisY, 
@@ -100,8 +93,7 @@ class WorldObjectsHandler:
         
         wPos = translateWindowTransform.execute()
         
-        # Build the rotation to be applied to all objects
-        #rotateTransform = Rotation(-angle, RotationTypes.CENTER_WORLD)
+        wPos = Rotation(-self.__window.angle, RotationTypes.CENTER_WORLD, wPos).execute()
         
         objectToConvert = deepcopy(inputObjects)
         finalObjPositions: List[List[Position3D]] = []
@@ -109,29 +101,10 @@ class WorldObjectsHandler:
         # Build the transform for each object
         for obj in objectToConvert:
             objPositions = obj.getPositions()
-            objCentralPoint = obj.centralPoint
+            # Translate object 
+            translateTransform = Translation(self.__window.centralPoint.axisX, self.__window.centralPoint.axisY, self.__window.centralPoint.axisZ, objPositions)
             
-            diffAxisX = objCentralPoint.axisX - self.__window.centralPoint.axisX
-            diffAxisY = objCentralPoint.axisY - self.__window.centralPoint.axisY
-            diffAxisZ = objCentralPoint.axisZ - self.__window.centralPoint.axisZ
-            
-            print(f'Obj central point: {objCentralPoint.axisX}, {objCentralPoint.axisY}, {objCentralPoint.axisZ}')
-            print(f'Window central point: {self.__window.centralPoint.axisX}, {self.__window.centralPoint.axisY}, {self.__window.centralPoint.axisZ}')
-            
-            # Translate object to origin
-            translateToOriginTransform = Translation(-objCentralPoint.axisX, -objCentralPoint.axisY, -objCentralPoint.axisZ)
-            
-            # Rotate object
-            rotateTransform = Rotation(-angle, RotationTypes.CENTER_OBJECT)
-            
-            # Translate object back
-            translateBackTransform = Translation(diffAxisX, diffAxisY, diffAxisZ)
-
-            # Stack up the transform for the obj             
-            finalTransform = GenericTransform(positions=objPositions)
-            finalTransform.add_transforms([translateToOriginTransform, rotateTransform, translateBackTransform])
-            
-            finalObjPositions.append(finalTransform.execute())
+            finalObjPositions.append(translateTransform.execute())
             
         # Apply the transform to a copy of each object
         transformedObjects: List[SGIObject] = []
@@ -216,18 +189,6 @@ class WorldObjectsHandler:
 
         return pointTransformed
 
-    def __Xmin(self, window_positions: List[Position3D]) -> float:
-        return min([pos.axisX for pos in window_positions])
-    
-    def __Ymin(self, window_positions: List[Position3D]) -> float:
-        return min([pos.axisY for pos in window_positions])
-    
-    def __Xmax(self, window_positions: List[Position3D]) -> float:
-        return max([pos.axisX for pos in window_positions])
-    
-    def __Ymax(self, window_positions: List[Position3D]) -> float:
-        return max([pos.axisY for pos in window_positions])
-
     def __transformPositionToViewPortPPC(self, position: Position3D, window_pos: Position3D) -> Position3D:
         xW = position.axisX
 
@@ -243,7 +204,7 @@ class WorldObjectsHandler:
     
     def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
         clipped_objs = self.__clipper.clip(self.__window.getPositions(), self.__world.objects, self.__window.dimensions.length)
-        windowPosition, objs = self.__convertObjectToPPC(clipped_objs)
+        windowPosition, objs = self.__convertObjectToPPC(self.__world.objects)
         
         print(windowPosition[0], windowPosition[1])
         
@@ -259,7 +220,7 @@ class WorldObjectsHandler:
                 position.axisX = transformedPosition.axisX + Constants.VIEWPORT_SLACK // 2
                 position.axisY = transformedPosition.axisY + Constants.VIEWPORT_SLACK // 2
                 position.axisZ = transformedPosition.axisZ
-
+        
             objectsToShow.append(objCopy)
 
         self.__windowPos = windowPosition

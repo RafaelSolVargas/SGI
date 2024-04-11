@@ -46,14 +46,26 @@ class WorldHandler:
         print(f'Window position 1: {window_positions[1].axisX}, {window_positions[1].axisY}, {window_positions[1].axisZ}')
 
         windowTranslationTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
-        windowRotationTransform = Rotation(angle, RotationTypes.CENTER_OBJECT, window_positions)
+        windowRotationTransform = Rotation(angle, RotationTypes.CENTER_OBJECT)
         windowBackTranslationTransform = Translation(self.__window.centralPoint.axisX, self.__window.centralPoint.axisY, self.__window.centralPoint.axisZ)
         
         finalTransform = GenericTransform(positions=window_positions)
         finalTransform.add_transforms([windowTranslationTransform, windowRotationTransform, windowBackTranslationTransform])
         
+    
+        
         finalPositions = finalTransform.execute()
         self.__window.setPositions(finalPositions)
+        self.__window.angle += angle % 360
+        
+        # Transform the objects of the world
+        for obj in self.__world.objects:
+            transform = GenericTransform(positions=obj.getPositions())
+            
+            rotation = Rotation(-angle, RotationTypes.CENTER_OBJECT)
+                       
+            transform.add_transforms([windowTranslationTransform, rotation, windowBackTranslationTransform])
+            obj.setPositions(transform.execute())
         
         print("After rotation")
         print(f'Window position 0: {self.__window.getPositions()[0].axisX}, {self.__window.getPositions()[0].axisY}, {self.__window.getPositions()[0].axisZ}')
