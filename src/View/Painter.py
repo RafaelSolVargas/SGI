@@ -74,14 +74,11 @@ class Canvas(QLabel):
         painter.drawLine(centerPoint.axisX - 5, centerPoint.axisY, centerPoint.axisX + 5, centerPoint.axisY)
         painter.drawLine(centerPoint.axisX, centerPoint.axisY - 5, centerPoint.axisX, centerPoint.axisY + 5)
 
-        print(f'Center Point Desenhado na Viewport: {centerPoint.axisX}, {centerPoint.axisY}')
-        
-        pen.setColor(QColor(255, 0, 0))
-        painter.setPen(pen)
+        #print(f'Center Point Desenhado na Viewport: {centerPoint.axisX}, {centerPoint.axisY}')
         
         # Window points
         window = WorldHandler.getHandler().objectHandler.windowPosPPC
-        pen.setColor(QColor(255, 0, 0))
+        pen.setColor(QColor(0, 255, 0))
         painter.setPen(pen)
         pen.setWidth(2)
         
@@ -89,11 +86,15 @@ class Canvas(QLabel):
         painter.drawPoint(window[1].axisX, window[1].axisY)
         painter.drawPoint(window[2].axisX, window[2].axisY)
         painter.drawPoint(window[3].axisX, window[3].axisY)
+        
+        
+        pen.setColor(QColor(255, 0, 0))
+        painter.setPen(pen)
 
-        """painter.drawLine(slack, Constants.VIEWPORT_WIDTH + slack, Constants.VIEWPORT_LENGTH + slack, Constants.VIEWPORT_WIDTH + slack)
+        painter.drawLine(slack, Constants.VIEWPORT_WIDTH + slack, Constants.VIEWPORT_LENGTH + slack, Constants.VIEWPORT_WIDTH + slack)
         painter.drawLine(Constants.VIEWPORT_LENGTH + slack, slack, Constants.VIEWPORT_LENGTH + slack, Constants.VIEWPORT_WIDTH + slack)
         painter.drawLine(Constants.VIEWPORT_LENGTH + slack, slack, slack, slack)
-        painter.drawLine(slack, slack, slack, Constants.VIEWPORT_WIDTH + slack) """
+        painter.drawLine(slack, slack, slack, Constants.VIEWPORT_WIDTH + slack)
 
 
     def paint(self):

@@ -41,7 +41,7 @@ class WorldHandler:
     def rotateWindow(self, angle: float):
         window_positions = self.__window.getPositions()
         print("Before rotation")
-        self.__window.printPositions()
+        #self.__window.printPositions()
 
         windowTranslationTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
         windowRotationTransform = Rotation(angle, RotationTypes.CENTER_OBJECT)
@@ -65,4 +65,4 @@ class WorldHandler:
         
         window_positions = self.__window.getPositions()
         print("After rotation")
-        self.__window.printPositions()
+        #self.__window.printPositions()

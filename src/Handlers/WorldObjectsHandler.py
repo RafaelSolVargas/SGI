@@ -39,6 +39,7 @@ class WorldObjectsHandler:
     
     @property
     def windowCenterPPC(self) -> Position3D:
+        print(f'Window center: {self.__window.centralPoint}')
         pos = self.__transformPositionToViewPortPPC(self.__window.centralPoint, self.__windowPos)
         
         print(f"Window center PPC: {pos.axisX}, {pos.axisY}")
@@ -226,8 +227,8 @@ class WorldObjectsHandler:
 
         self.__windowPos = windowPosition
         
-        print(f'Window center: {self.__window.centralPoint}')
-        self.__window.printPositions()
+        #print(f'Window center: {self.__window.centralPoint}')
+        #self.__window.printPositions()
         
         return objectsToShow
 
