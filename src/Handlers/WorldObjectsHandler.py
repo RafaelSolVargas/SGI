@@ -204,14 +204,14 @@ class WorldObjectsHandler:
         return pointTransformed
     
     def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
-        clipped_objs = self.__clipper.clip(self.__window.getPositions(), self.__world.objects, self.__window.dimensions.length)
         windowPosition, objs = self.__convertObjectToPPC(self.__world.objects)
+        clipped_objs = self.__clipper.clip(windowPosition, objs, self.__window.dimensions.length)
         
         print(windowPosition[0], windowPosition[1])
         
         objectsToShow: List[SGIObject] = []
         
-        for obj in objs:
+        for obj in clipped_objs:
             # Creates a copy to not change the Domain value
             objCopy = deepcopy(obj)
 

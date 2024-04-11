@@ -78,11 +78,22 @@ class Canvas(QLabel):
         
         pen.setColor(QColor(255, 0, 0))
         painter.setPen(pen)
+        
+        # Window points
+        window = WorldHandler.getHandler().objectHandler.windowPosPPC
+        pen.setColor(QColor(255, 0, 0))
+        painter.setPen(pen)
+        pen.setWidth(2)
+        
+        painter.drawPoint(window[0].axisX, window[0].axisY)
+        painter.drawPoint(window[1].axisX, window[1].axisY)
+        painter.drawPoint(window[2].axisX, window[2].axisY)
+        painter.drawPoint(window[3].axisX, window[3].axisY)
 
-        painter.drawLine(slack, Constants.VIEWPORT_WIDTH + slack, Constants.VIEWPORT_LENGTH + slack, Constants.VIEWPORT_WIDTH + slack)
+        """painter.drawLine(slack, Constants.VIEWPORT_WIDTH + slack, Constants.VIEWPORT_LENGTH + slack, Constants.VIEWPORT_WIDTH + slack)
         painter.drawLine(Constants.VIEWPORT_LENGTH + slack, slack, Constants.VIEWPORT_LENGTH + slack, Constants.VIEWPORT_WIDTH + slack)
         painter.drawLine(Constants.VIEWPORT_LENGTH + slack, slack, slack, slack)
-        painter.drawLine(slack, slack, slack, Constants.VIEWPORT_WIDTH + slack)
+        painter.drawLine(slack, slack, slack, Constants.VIEWPORT_WIDTH + slack) """
 
 
     def paint(self):

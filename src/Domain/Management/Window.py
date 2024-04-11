@@ -61,6 +61,9 @@ class Window(SGIObject):
         print(self.__positions[1])
         print(self.__positions[2])
         print(self.__positions[3])
+        print(self.dimensions.length)
+        print(self.dimensions.width)
+        print(self.dimensions.height)
 
     @property
     def Xmin(self) -> float:
@@ -106,12 +109,6 @@ class Window(SGIObject):
         """
         Decrease the dimensions from the window keeping the central point        
         """
-        # Increases the dimension and decrease the position to move the window to both left and right
-        self.dimensions.length -= self.__SCALE * self.__BASE_LENGHT
-        # Increases the dimension and decrease the position to move the window to both up and down
-        self.dimensions.width -= self.__SCALE * self.__BASE_WIDTH
-
-        #center = self.__centerV_up()
         centralPoint = self.centralPoint
         
         translate = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
@@ -124,6 +121,9 @@ class Window(SGIObject):
         
         novoPontoCentral = self.centralPoint
 
+        self.dimensions.length = abs(self.__positions[3].axisX - self.__positions[0].axisX)
+        self.dimensions.width = abs(self.__positions[1].axisY - self.__positions[0].axisY)
+
         print(f'ZOOM OUT - Ponto anterior: ({centralPoint.axisX}, {centralPoint.axisY}, {centralPoint.axisZ})')
         print(f'ZOOM OUT - Novo ponto: ({novoPontoCentral.axisX}, {novoPontoCentral.axisY}, {novoPontoCentral.axisZ})')
         
@@ -132,14 +132,6 @@ class Window(SGIObject):
         """
         Increase the dimensions from the window keeping the central point        
         """
-        # Increases the dimension and decrease the position to move the window to both left and right
-        self.dimensions.length += self.__SCALE * self.__BASE_LENGHT
-        # Increases the dimension and decrease the position to move the window to both up and down
-        self.dimensions.width += self.__SCALE * self.__BASE_WIDTH
-        
-        # Scale positions to keep the central point
-        #center = self.__centerV_up()
-        
         centralPoint = self.centralPoint
 
         translate = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
@@ -151,6 +143,9 @@ class Window(SGIObject):
         self.__positions = final_transform.execute()
 
         novoPontoCentral = self.centralPoint
+
+        self.dimensions.length = abs(self.__positions[3].axisX - self.__positions[0].axisX)
+        self.dimensions.width = abs(self.__positions[1].axisY - self.__positions[0].axisY)
 
         print(f'ZOOM OUT - Ponto anterior: ({centralPoint.axisX}, {centralPoint.axisY}, {centralPoint.axisZ})')
         print(f'ZOOM OUT - Novo ponto: ({novoPontoCentral.axisX}, {novoPontoCentral.axisY}, {novoPontoCentral.axisZ})')
