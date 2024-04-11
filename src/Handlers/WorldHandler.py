@@ -40,10 +40,8 @@ class WorldHandler:
 
     def rotateWindow(self, angle: float):
         window_positions = self.__window.getPositions()
-    
         print("Before rotation")
-        print(f'Window position 0: {window_positions[0].axisX}, {window_positions[0].axisY}, {window_positions[0].axisZ}')
-        print(f'Window position 1: {window_positions[1].axisX}, {window_positions[1].axisY}, {window_positions[1].axisZ}')
+        self.__window.printPositions()
 
         windowTranslationTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
         windowRotationTransform = Rotation(angle, RotationTypes.CENTER_OBJECT)
@@ -51,8 +49,6 @@ class WorldHandler:
         
         finalTransform = GenericTransform(positions=window_positions)
         finalTransform.add_transforms([windowTranslationTransform, windowRotationTransform, windowBackTranslationTransform])
-        
-    
         
         finalPositions = finalTransform.execute()
         self.__window.setPositions(finalPositions)
@@ -67,7 +63,6 @@ class WorldHandler:
             transform.add_transforms([windowTranslationTransform, rotation, windowBackTranslationTransform])
             obj.setPositions(transform.execute())
         
+        window_positions = self.__window.getPositions()
         print("After rotation")
-        print(f'Window position 0: {self.__window.getPositions()[0].axisX}, {self.__window.getPositions()[0].axisY}, {self.__window.getPositions()[0].axisZ}')
-        print(f'Window position 1: {self.__window.getPositions()[1].axisX}, {self.__window.getPositions()[1].axisY}, {self.__window.getPositions()[1].axisZ}')
-
+        self.__window.printPositions()

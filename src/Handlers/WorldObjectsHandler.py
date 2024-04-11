@@ -83,39 +83,40 @@ class WorldObjectsHandler:
     
     def __convertObjectToPPC(self, inputObjects: List[SGIObject]) -> tuple[Position3D, list[SGIObject]]:
         # Get the left bottom and left up positions from Window
-        window_positions = deepcopy(self.__window.getPositions())
- 
-        # Build the translation of the window
+        windowPositions = deepcopy(self.__window.getPositions())
+       
+        objectToConvert = deepcopy(inputObjects)
+        
+        # Apply the transform to a copy of each object
+        transformedObjects: List[SGIObject] = []
+        for obj in objectToConvert:
+            objPositions = obj.getPositions()
+            
+            # Translate object 
+            translateTransform = Translation(self.__window.centralPoint.axisX, self.__window.centralPoint.axisY, self.__window.centralPoint.axisZ, objPositions)
+
+            # Execute the matrix calculus
+            objFinalPositions = translateTransform.execute()
+
+            # Create a new object with the new positions and add to the list
+            objCopy = deepcopy(obj)
+            objCopy.setPositions(objFinalPositions)
+            
+            transformedObjects.append(objCopy)
+
+        # Translate the window
         translateWindowTransform = Translation(-self.__window.centralPoint.axisX, 
                                        -self.__window.centralPoint.axisY, 
                                        -self.__window.centralPoint.axisZ, 
-                                       window_positions)
-        
-        wPos = translateWindowTransform.execute()
-        
-        wPos = Rotation(-self.__window.angle, RotationTypes.CENTER_WORLD, wPos).execute()
-        
-        objectToConvert = deepcopy(inputObjects)
-        finalObjPositions: List[List[Position3D]] = []
-        
-        # Build the transform for each object
-        for obj in objectToConvert:
-            objPositions = obj.getPositions()
-            # Translate object 
-            translateTransform = Translation(self.__window.centralPoint.axisX, self.__window.centralPoint.axisY, self.__window.centralPoint.axisZ, objPositions)
-            
-            finalObjPositions.append(translateTransform.execute())
-            
-        # Apply the transform to a copy of each object
-        transformedObjects: List[SGIObject] = []
-        for obj, objPositions in zip(inputObjects, finalObjPositions):
-            objCopy = deepcopy(obj)
-            objCopy.setPositions(objPositions)
-            
-            transformedObjects.append(objCopy)
-        
+                                       windowPositions)
+
+        newWindowsPositions = translateWindowTransform.execute()
+
+        # Rotate the window
+        newWindowsPositions = Rotation(-self.__window.angle, RotationTypes.CENTER_WORLD, newWindowsPositions).execute()
+
         # Return new window matrix and transformed objects
-        return wPos, transformedObjects
+        return newWindowsPositions, transformedObjects
     
     def originWorldViewportPPC(self) -> Position3D:
         return self.__transformPositionToViewPortPPC(Position3D(0, 0, 1), self.__windowPos)
@@ -225,16 +226,11 @@ class WorldObjectsHandler:
 
         self.__windowPos = windowPosition
         
-        print(f'Window center: {self.windowCenter(windowPosition)}')
+        print(f'Window center: {self.__window.centralPoint}')
+        self.__window.printPositions()
         
         return objectsToShow
-    
-    def windowCenter(self, positions: list[Position3D]) -> Position3D:
-        x = (positions[0].axisX + positions[2].axisX) / 2
-        y = (positions[0].axisY + positions[2].axisY) / 2
-        z = (positions[0].axisZ + positions[2].axisZ) / 2
-        
-        return Position3D(x, y, z)
+
     
     def getObjectByName(self, name: str) -> SGIObject:
         for obj in self.__world.objects:

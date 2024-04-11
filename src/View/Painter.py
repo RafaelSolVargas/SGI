@@ -28,8 +28,6 @@ class Canvas(QLabel):
     def draw(self, obj_list: List[SGIObject]):
         self.__obj_list = obj_list
         
-        for obj in self.__obj_list:
-            print(f'Objeto {obj.name} adicionado ao canvas')
         
         self.paint()
     
@@ -38,8 +36,6 @@ class Canvas(QLabel):
         angle = np.rad2deg(np.arccos(cosine))
         
         return angle
-        
-        
     
     def __draw_grid(self, painter: QPainter):
         # Draw grid lines
@@ -62,54 +58,31 @@ class Canvas(QLabel):
 
             painter.drawLine(slack, y, Constants.VIEWPORT_LENGTH + slack, y)
         
-        # Configure pen to draw red lines
-        axisXLine, axisYLine = WorldHandler.getHandler().objectHandler.getAxisLinesToDrawPPC()
-        pen.setWidth(2)
-
-        windowPos = WorldHandler.getHandler().objectHandler.windowPosPPC
-        length, width = WorldHandler.getHandler().window.dimensions.length, WorldHandler.getHandler().window.dimensions.width
-        
-        #print(f'Window position: {windowPos[0]}, {windowPos[1]}')
-        #print(f'Window dimensions: {length}, {width}')
-        
-        # Draw red lines for borders of the window
-        pen.setColor(QColor(255, 0, 0))
-        painter.setPen(pen)
         
         # Draw point of the center of the window
-        center_point = WorldHandler.getHandler().objectHandler.windowCenterPPC
+        pen.setWidth(2)
+        pen.setColor(QColor(0, 0, 255))
+        painter.setPen(pen)
+        
+        centerPoint = WorldHandler.getHandler().objectHandler.windowCenterPPC
         slack = Constants.VIEWPORT_SLACK // 2
         
-        painter.drawPoint(center_point.axisX + slack, center_point.axisY + slack)
-        print(f'Center point: {center_point.axisX}, {center_point.axisY}')
-            
-        """  print(int(windowPos[0].axisX), int(windowPos[0].axisY), int(windowPos[1].axisX), int(windowPos[1].axisY))
-        print(int(windowPos[1].axisX), int(windowPos[1].axisY), int(windowPos[2].axisX), int(windowPos[2].axisY))
-        print(int(windowPos[2].axisX), int(windowPos[2].axisY), int(windowPos[3].axisX), int(windowPos[3].axisY))
-        print(int(windowPos[3].axisX), int(windowPos[3].axisY), int(windowPos[0].axisX), int(windowPos[0].axisY)) """
+        centerPoint.axisX += slack 
+        centerPoint.axisY += slack 
+
+        painter.drawPoint(centerPoint.axisX, centerPoint.axisY)
+        painter.drawLine(centerPoint.axisX - 5, centerPoint.axisY, centerPoint.axisX + 5, centerPoint.axisY)
+        painter.drawLine(centerPoint.axisX, centerPoint.axisY - 5, centerPoint.axisX, centerPoint.axisY + 5)
+
+        print(f'Center Point Desenhado na Viewport: {centerPoint.axisX}, {centerPoint.axisY}')
         
+        pen.setColor(QColor(255, 0, 0))
+        painter.setPen(pen)
+
         painter.drawLine(slack, Constants.VIEWPORT_WIDTH + slack, Constants.VIEWPORT_LENGTH + slack, Constants.VIEWPORT_WIDTH + slack)
         painter.drawLine(Constants.VIEWPORT_LENGTH + slack, slack, Constants.VIEWPORT_LENGTH + slack, Constants.VIEWPORT_WIDTH + slack)
         painter.drawLine(Constants.VIEWPORT_LENGTH + slack, slack, slack, slack)
         painter.drawLine(slack, slack, slack, Constants.VIEWPORT_WIDTH + slack)
-        
-        
-
-        """ # Paint the axis X line
-        pen.setColor(QColor(0, 255, 0))
-        painter.setPen(pen)
-        painter.drawLine(int(axisXLine.pointOne.position.axisX), 
-                        int(axisXLine.pointOne.position.axisY),
-                        int(axisXLine.pointTwo.position.axisX), 
-                        int(axisXLine.pointTwo.position.axisY))
-
-        # Paint the axis Y line
-        pen.setColor(QColor(0, 0, 255))
-        painter.setPen(pen)
-        painter.drawLine(int(axisYLine.pointOne.position.axisX), 
-                        int(axisYLine.pointOne.position.axisY),
-                        int(axisYLine.pointTwo.position.axisX), 
-                        int(axisYLine.pointTwo.position.axisY)) """
 
 
     def paint(self):
@@ -153,7 +126,7 @@ class Canvas(QLabel):
 
     @classmethod
     def __paintLine(cls, canvas: QPainter, line: Line):
-        print(f'Pintando linha de {line.pointOne.position.axisX}, {line.pointOne.position.axisY} para {line.pointTwo.position.axisX}, {line.pointTwo.position.axisY}')
+        #print(f'Pintando linha de {line.pointOne.position.axisX}, {line.pointOne.position.axisY} para {line.pointTwo.position.axisX}, {line.pointTwo.position.axisY}')
         canvas.drawLine(line.pointOne.position.axisX, line.pointOne.position.axisY,
                         line.pointTwo.position.axisX, line.pointTwo.position.axisY)
         
@@ -183,4 +156,4 @@ class Canvas(QLabel):
                 canvas.drawLine(curPosition.axisX, curPosition.axisY, 
                                 nextPosition.axisX, nextPosition.axisY)
                 
-                print(f'Pintando linha de {curPosition.axisX}, {curPosition.axisY} para {nextPosition.axisX}, {nextPosition.axisY}')
+                #print(f'Pintando linha de {curPosition.axisX}, {curPosition.axisY} para {nextPosition.axisX}, {nextPosition.axisY}')

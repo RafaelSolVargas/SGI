@@ -55,6 +55,13 @@ class Window(SGIObject):
         return Position3D(half_length, half_width, half_height)
         
     
+    def printPositions(self):
+        print('Posições Window:')
+        print(self.__positions[0])
+        print(self.__positions[1])
+        print(self.__positions[2])
+        print(self.__positions[3])
+
     @property
     def Xmin(self) -> float:
         return self.__positions[0].axisX
@@ -103,23 +110,22 @@ class Window(SGIObject):
         self.dimensions.length -= self.__SCALE * self.__BASE_LENGHT
         # Increases the dimension and decrease the position to move the window to both up and down
         self.dimensions.width -= self.__SCALE * self.__BASE_WIDTH
+
+        #center = self.__centerV_up()
+        centralPoint = self.centralPoint
         
-                # Scale positions to keep the central point
-        center = self.__centerV_up()
-        
-        translate = Translation(-center.axisX, -center.axisY, -center.axisZ)
+        translate = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
         scale = Scale(1 - self.__SCALE, 1 - self.__SCALE, 1)
-        translate_back = Translation(center.axisX, center.axisY, center.axisZ)
+        translate_back = Translation(centralPoint.axisX, centralPoint.axisY, centralPoint.axisZ)
+        
         final_transform = GenericTransform(positions=self.__positions)
         final_transform.add_transforms([translate, scale, translate_back])
         self.__positions = final_transform.execute()
         
-        """ for position in self.__positions:
-            position.axisX += self.__SCALE * self.__BASE_LENGHT // 2
+        novoPontoCentral = self.centralPoint
 
-        self.__positions[1].axisY -= self.__SCALE * self.__BASE_WIDTH // 2
-        self.__positions[0].axisY += self.__SCALE * self.__BASE_WIDTH // 2 """
-
+        print(f'ZOOM OUT - Ponto anterior: ({centralPoint.axisX}, {centralPoint.axisY}, {centralPoint.axisZ})')
+        print(f'ZOOM OUT - Novo ponto: ({novoPontoCentral.axisX}, {novoPontoCentral.axisY}, {novoPontoCentral.axisZ})')
         
     
     def zoomOut(self) -> None:
@@ -132,39 +138,41 @@ class Window(SGIObject):
         self.dimensions.width += self.__SCALE * self.__BASE_WIDTH
         
         # Scale positions to keep the central point
-        center = self.__centerV_up()
+        #center = self.__centerV_up()
         
-        translate = Translation(-center.axisX, -center.axisY, -center.axisZ)
+        centralPoint = self.centralPoint
+
+        translate = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
         scale = Scale(1 + self.__SCALE, 1 + self.__SCALE, 1)
-        translate_back = Translation(center.axisX, center.axisY, center.axisZ)
+        translate_back = Translation(centralPoint.axisX, centralPoint.axisY, centralPoint.axisZ)
+        
         final_transform = GenericTransform(positions=self.__positions)
         final_transform.add_transforms([translate, scale, translate_back])
         self.__positions = final_transform.execute()
-      
-        """ for position in self.__positions:
-            position.axisX -= self.__SCALE * self.__BASE_LENGHT // 2
 
-        self.__positions[1].axisY += self.__SCALE * self.__BASE_WIDTH // 2
-        self.__positions[0].axisY -= self.__SCALE * self.__BASE_WIDTH // 2 """
+        novoPontoCentral = self.centralPoint
+
+        print(f'ZOOM OUT - Ponto anterior: ({centralPoint.axisX}, {centralPoint.axisY}, {centralPoint.axisZ})')
+        print(f'ZOOM OUT - Novo ponto: ({novoPontoCentral.axisX}, {novoPontoCentral.axisY}, {novoPontoCentral.axisZ})')
 
     def moveUp(self) -> None:
-        for position in self.__positions:
-            position.axisY += self.ZOOM_MOVE
-        self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
-    
-    def moveDown(self) -> None:
         for position in self.__positions:
             position.axisY -= self.ZOOM_MOVE
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
     
+    def moveDown(self) -> None:
+        for position in self.__positions:
+            position.axisY += self.ZOOM_MOVE
+        self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
+    
     def moveLeft(self) -> None:
         for position in self.__positions:
-            position.axisX -= self.ZOOM_MOVE
+            position.axisX += self.ZOOM_MOVE
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
         
     def moveRight(self) -> None:
         for position in self.__positions:
-            position.axisX += self.ZOOM_MOVE
+            position.axisX -= self.ZOOM_MOVE
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
 
 
