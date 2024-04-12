@@ -169,8 +169,8 @@ class Window_Qt(QMainWindow):
         # Add the clipping method
         clippingLabel = QLabel("Tipo de Clipping: ")
         clippingDropdown = QComboBox()
-        for clippingMethod in ClippingMethods:
-            clippingDropdown.addItem(clippingMethod.value)
+        clippingDropdown.addItem(ClippingMethods.COHEN.value)
+        clippingDropdown.addItem(ClippingMethods.LIANG.value)
         
         changeClipButton = Button("Aplicar", lambda: (self.__changeClipping(clippingDropdown.currentText())))
 

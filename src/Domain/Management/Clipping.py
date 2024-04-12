@@ -19,15 +19,25 @@ class LiangBarskyStrategy(LineClippingStrategy):
         super().__init__()
     
     def clip(self, line: Line, winBottomLeft: Position3D, winTopLeft: Position3D, winTopRight: Position3D, winBottomRight: Position3D) -> Line | None:
-        x0, y0, z0 = line.pointOne.position.axisX, line.pointOne.position.axisY, line.pointOne.position.axisZ 
-        x1, y1, z1 = line.pointTwo.position.axisX, line.pointTwo.position.axisY, line.pointTwo.position.axisZ 
+        pointOne = line.getPositions()[0]
+        pointTwo = line.getPositions()[1]
+        
+        #x0, y0, z0 = pointOne.axisX, pointOne.axisY, pointOne.axisZ 
+        #x1, y1, z1 = pointTwo.axisX, pointTwo.axisY, pointTwo.axisZ 
+        
+        x0, y0, z0 = 5, 12, 1 
+        x1, y1, z1 = 15, 17, 1 
         
         t0, t1 = 0.0, 1.0
         dx = x1 - x0
         dy = y1 - y0
 
-        xmin, xmax = winBottomRight.axisX, winBottomLeft.axisX
-        ymin, ymax = winBottomLeft.axisY, winTopLeft.axisY
+        #xmin, xmax = winBottomRight.axisX, winBottomLeft.axisX
+        #ymin, ymax = winBottomLeft.axisY, winTopLeft.axisY
+
+        xmin, xmax = 10, 25
+        ymin, ymax = 10, 20
+
 
         p = [-dx, dx, -dy, dy]
         q = [x0 - (xmin), (xmax) - x0, y0 - (ymin), (ymax) - y0]
@@ -50,14 +60,14 @@ class LiangBarskyStrategy(LineClippingStrategy):
                         t1 = t
 
         if t0 < t1:
-            x0_clipped = x0 + t0 * dx
-            y0_clipped = y0 + t0 * dy
-            x1_clipped = x0 + t1 * dx
-            y1_clipped = y0 + t1 * dy
+            x0Clipped = x0 + t0 * dx
+            y0Clipped = y0 + t0 * dy
+            x1Clipped = x0 + t1 * dx
+            y1Clipped = y0 + t1 * dy
         
             return Line(
-                        Point(x0_clipped, y0_clipped, z0, line.pointOne.name),
-                        Point(x1_clipped, y1_clipped, z1, line.pointTwo.name),
+                        Point(x0Clipped, y0Clipped, z0),
+                        Point(x1Clipped, y1Clipped, z1),
                         line.name
                         )
 
