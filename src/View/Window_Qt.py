@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QWheelEvent, QKeyEvent, QIcon
-from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QHBoxLayout, QLineEdit, QFileDialog
+from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QHBoxLayout, QLineEdit, QFileDialog, QComboBox
 from PyQt5.QtCore import Qt, QSize
+from Domain.Utils.Enums import ClippingMethods
 from View.Button import Button
 from View.Console import Console
 from View.ArrowButtonWidget import ArrowButtonWidget
@@ -164,6 +165,18 @@ class Window_Qt(QMainWindow):
         rotate_window_right_button.setIconSize(QSize(35, 35))
         rotate_window_right_button.setIcon(QIcon("View/Images/rotate_right.png"))
         rotation_angle_widget.layout().addWidget(rotate_window_right_button)
+
+        # Add the clipping method
+        clippingLabel = QLabel("Tipo de Clipping: ")
+        clippingDropdown = QComboBox()
+        for clippingMethod in ClippingMethods:
+            clippingDropdown.addItem(clippingMethod.value)
+        
+        changeClipButton = Button("Aplicar", lambda: (self.__changeClipping(clippingDropdown.currentText())))
+
+        rotate_window_box.layout().addWidget(clippingLabel)
+        rotate_window_box.layout().addWidget(clippingDropdown)
+        rotate_window_box.layout().addWidget(changeClipButton)
                 
     def __addSidebarObjBox(self, title: str, items: list):
         box = QGroupBox(title, self.__sidebar)
@@ -197,6 +210,11 @@ class Window_Qt(QMainWindow):
             WorldHandler.getHandler().objectHandler.addObject(wireframe)
             self.update()
     
+    def __changeClipping(self, clippingMethodStr: str) -> None:
+        clippingMethod: ClippingMethods = ClippingMethods.convertFromString(clippingMethodStr)
+
+        WorldHandler.getHandler().objectHandler.setClippingMethod(clippingMethod)
+
     def __rotateWindow(self, angle: float) -> None:
         WorldHandler.getHandler().rotateWindow(angle)
         self.update()

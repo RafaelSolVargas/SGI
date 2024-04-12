@@ -13,7 +13,56 @@ class LineClippingStrategy(ABC):
     def clip(self, line: Line, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> Line | None:
         pass
     
+
+class LiangBarskyStrategy(LineClippingStrategy):
+    def __init__(self) -> None:
+        super().__init__()
     
+    def clip(self, line: Line, winBottomLeft: Position3D, winTopLeft: Position3D, winTopRight: Position3D, winBottomRight: Position3D) -> Line | None:
+        x0, y0, z0 = line.pointOne.position.axisX, line.pointOne.position.axisY, line.pointOne.position.axisZ 
+        x1, y1, z1 = line.pointTwo.position.axisX, line.pointTwo.position.axisY, line.pointTwo.position.axisZ 
+        
+        t0, t1 = 0.0, 1.0
+        dx = x1 - x0
+        dy = y1 - y0
+
+        xmin, xmax = winBottomRight.axisX, winBottomLeft.axisX
+        ymin, ymax = winBottomLeft.axisY, winTopLeft.axisY
+
+        p = [-dx, dx, -dy, dy]
+        q = [x0 - (xmin), (xmax) - x0, y0 - (ymin), (ymax) - y0]
+
+        for i in range(4):
+            if p[i] == 0:
+                if q[i] < 0:
+                    break
+            else:
+                t = q[i] / p[i]
+                if p[i] < 0:
+                    if t > t1:
+                        break
+                    elif t > t0:
+                        t0 = t
+                else:
+                    if t < t0:
+                        break
+                    elif t < t1:
+                        t1 = t
+
+        if t0 < t1:
+            x0_clipped = x0 + t0 * dx
+            y0_clipped = y0 + t0 * dy
+            x1_clipped = x0 + t1 * dx
+            y1_clipped = y0 + t1 * dy
+        
+            return Line(
+                        Point(x0_clipped, y0_clipped, z0, line.pointOne.name),
+                        Point(x1_clipped, y1_clipped, z1, line.pointTwo.name),
+                        line.name
+                        )
+
+        return None
+
 class CohenSutherlandStrategy(LineClippingStrategy):
     def __init__(self) -> None:
         super().__init__()

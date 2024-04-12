@@ -9,8 +9,8 @@ from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
 from Domain.Utils.Transforms import Translation, Rotation, GenericTransform
-from Domain.Utils.Enums import RotationTypes
-from Domain.Management.Clipping import Clipper
+from Domain.Utils.Enums import ClippingMethods, RotationTypes
+from Domain.Management.Clipping import Clipper, CohenSutherlandStrategy, LiangBarskyStrategy
 from Domain.Utils.Constants import Constants
 import numpy as np
 
@@ -23,7 +23,15 @@ class WorldObjectsHandler:
         self.__tempWireframePoints: List[Point] = []
         self.__windowPos: Position3D = None
         self.__clipper = Clipper()
-    
+
+    def setClippingMethod(self, clippingMethod: ClippingMethods) -> None:
+        if clippingMethod == ClippingMethods.COHEN:
+            self.__clipper.setLineClippingStrategy(CohenSutherlandStrategy())
+        elif clippingMethod == ClippingMethods.LIANG:
+            self.__clipper.setLineClippingStrategy(LiangBarskyStrategy())
+        else:
+            print('Clipping method não encontrado')
+
     @property
     def windowPosPPC(self) -> Position3D:
         arr = []

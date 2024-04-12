@@ -20,3 +20,15 @@ class RotationTypes(Enum):
                 return enum_member
             
         raise ValueError(f"No such enum member with value {type_str}")
+    
+class ClippingMethods(Enum):
+    LIANG = "Liang-Barsky"
+    COHEN = "Cohen-Sutherland"
+
+    @classmethod
+    def convertFromString(cls, type_str: str) -> 'ClippingMethods':
+        for enum_member in cls:
+            if enum_member.value == type_str:
+                return enum_member
+            
+        raise ValueError(f"No such enum member with value {type_str}")
