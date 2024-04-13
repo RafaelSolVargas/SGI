@@ -23,6 +23,39 @@ class ObjectWindowFactory:
         elif obj == "Wireframe":
             return self.__createWireframeWindow()
     
+    def __rgbHorizontalBoxes(self, layout: QVBoxLayout):
+        color_label = QLabel("Cor:")
+        layout.addWidget(color_label)
+        
+        box = QWidget()
+        box.setLayout(QHBoxLayout())
+        
+        r_label = QLabel("R:")
+        box.layout().addWidget(r_label)
+        
+        r_field = QLineEdit()
+        r_field.setText("0")
+        box.layout().addWidget(r_field)
+        
+        g_label = QLabel("G:")
+        box.layout().addWidget(g_label)
+        
+        g_field = QLineEdit()
+        g_field.setText("0")
+        box.layout().addWidget(g_field)
+        
+        b_label = QLabel("B:")
+        box.layout().addWidget(b_label)
+        
+        b_field = QLineEdit()
+        b_field.setText("0")
+        box.layout().addWidget(b_field)
+        
+        box.layout().addStretch()
+        layout.addWidget(box)
+        
+        return r_field, g_field, b_field
+    
     def __createPointWindow(self):
         window = QMainWindow(self.__parent)
         window.setWindowTitle("Criar Ponto")
@@ -58,12 +91,15 @@ class ObjectWindowFactory:
         name_field = QLineEdit()
         name_field.setText("Ponto")
         layout.addWidget(name_field)
+        
+        r_field, g_field, b_field = self.__rgbHorizontalBoxes(layout)
 
         confirm_button = Button("Confirmar", lambda:  (WorldHandler
                                                         .getHandler()
                                                         .objectHandler
                                                         .addPoint(
-                                                            Position3D(int(x_field.text()), int(y_field.text()), int(z_field.text())), name_field.text()
+                                                            Position3D(int(x_field.text()), int(y_field.text()), int(z_field.text())), name_field.text(), 
+                                                            (int(r_field.text()), int(g_field.text()), int(b_field.text()))
                                                         ), 
                                 window.close(), self.__parent.update()))
         layout.addWidget(confirm_button)
@@ -127,16 +163,18 @@ class ObjectWindowFactory:
         name_field = QLineEdit()
         name_field.setText("Linha")
         layout.addWidget(name_field)
-
+        r_field, g_field, b_field = self.__rgbHorizontalBoxes(layout)
+        
         confirm_button = Button("Confirmar", lambda: (WorldHandler
-                                .getHandler()
-                                .objectHandler
-                                .addLine(
-                                    Point(int(x1_field.text()), int(y1_field.text()), int(z1_field.text())),
-                                    Point(int(x2_field.text()), int(y2_field.text()), int(z2_field.text())),
-                                    name_field.text()
-                                ),
-                    window.close(), self.__parent.update()))
+                    .getHandler()
+                    .objectHandler
+                    .addLine(
+                        Point(int(x1_field.text()), int(y1_field.text()), int(z1_field.text())),
+                        Point(int(x2_field.text()), int(y2_field.text()), int(z2_field.text())),
+                        name_field.text(),
+                        (int(r_field.text()), int(g_field.text()), int(b_field.text()))
+                    ),
+                window.close(), self.__parent.update()))
         layout.addWidget(confirm_button)
           
         window.show()
@@ -181,11 +219,13 @@ class ObjectWindowFactory:
         name_field = QLineEdit()
         name_field.setText("Wireframe")
         layout.addWidget(name_field)
+        
+        r_field, g_field, b_field = self.__rgbHorizontalBoxes(layout)
 
         add_button = Button("Adicionar ponto ao wireframe", lambda: (addTempPoint(x_field.text(), y_field.text(), z_field.text()), x_field.clear(), y_field.clear()))
         layout.addWidget(add_button)
         
-        confirm_button = Button("Confirmar criação", lambda: (WorldHandler.getHandler().objectHandler.commitWireframeCreation(name_field.text()), window.close(), self.__parent.update()))
+        confirm_button = Button("Confirmar criação", lambda: (WorldHandler.getHandler().objectHandler.commitWireframeCreation(name_field.text(), (int(r_field.text()), int(g_field.text()), int(b_field.text()))), window.close(), self.__parent.update()))
         layout.addWidget(confirm_button)
             
         window.show()

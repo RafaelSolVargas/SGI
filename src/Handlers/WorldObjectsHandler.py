@@ -60,15 +60,17 @@ class WorldObjectsHandler:
     def addObject(self, obj: SGIObject) -> None:
         self.__world.addObject(obj)
     
-    def addLine(self, pointOne: Position3D, pointTwo: Position3D, name: str = "Linha") -> None:
+    def addLine(self, pointOne: Position3D, pointTwo: Position3D, name: str = "Linha", color: tuple[int, int, int] = (0, 0, 0)) -> None:
         line = Line(pointOne, pointTwo, name)
+        line.setColor(color)
 
         self.__world.addObject(line)
 
-    def addPoint(self, position: Position3D, name: str = 'Ponto') -> None:
+    def addPoint(self, position: Position3D, name: str = 'Ponto', color: tuple[int, int, int] = (0, 0, 0)) -> None:
         print(f'Ponto adicionado {position.axisX}, {position.axisY}, {position.axisZ}')
 
         point = Point(position.axisX, position.axisY, position.axisZ, name)
+        point.setColor(color)
 
         self.__world.addObject(point)
 
@@ -80,11 +82,12 @@ class WorldObjectsHandler:
         
         self.__tempWireframePoints.append(point)
         
-    def commitWireframeCreation(self, name: str = "Wireframe") -> None:
+    def commitWireframeCreation(self, name: str = "Wireframe", color: tuple[int, int, int] = (0, 0, 0)) -> None:
         if len(self.__tempWireframePoints) == 0:
             return
 
         wireFrame = WireFrame(name, copy(self.__tempWireframePoints))
+        wireFrame.setColor(color)
 
         self.__world.addObject(wireFrame)
         

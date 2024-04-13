@@ -1,6 +1,6 @@
 from typing import List
 from PyQt5.QtWidgets import QLabel
-from PyQt5.QtGui import QPainter, QColor, QColor, QPixmap
+from PyQt5.QtGui import QPainter, QColor, QColor, QPixmap, QPolygonF
 from PyQt5.QtCore import QPointF, Qt
 from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.Point import Point
@@ -105,11 +105,12 @@ class Canvas(QLabel):
         self.__draw_grid(painter)
         
         p = painter.pen()
-        p.setColor(self.__pen_color)
         p.setWidth(2)
-        painter.setPen(p)
-
+        
         for obj in self.__obj_list:
+            p.setColor(QColor(*obj.color))
+            painter.setPen(p)
+            
             if obj.type == ObjectsTypes.POINT:
                 self.__paintPoint(painter, obj)
             elif obj.type == ObjectsTypes.LINE:
@@ -166,6 +167,13 @@ class Canvas(QLabel):
                 nextPosition = positions[index+1]
 
                 canvas.drawLine(curPosition.axisX, curPosition.axisY, 
-                                nextPosition.axisX, nextPosition.axisY)
+                        nextPosition.axisX, nextPosition.axisY)
                 
                 #print(f'Pintando linha de {curPosition.axisX}, {curPosition.axisY} para {nextPosition.axisX}, {nextPosition.axisY}')
+        
+        # Preenche o polígono com uma cor
+        brush = canvas.brush()
+        brush.setColor(QColor(255, 0, 0, 100))  # Red color with transparency
+        brush.setStyle(Qt.SolidPattern)  # Solid pattern
+        canvas.setBrush(brush)
+        canvas.drawPolygon(QPolygonF([QPointF(x.axisX, x.axisY) for x in positions]))
