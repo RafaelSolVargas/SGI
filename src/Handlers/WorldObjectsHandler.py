@@ -82,11 +82,11 @@ class WorldObjectsHandler:
         
         self.__tempWireframePoints.append(point)
         
-    def commitWireframeCreation(self, name: str = "Wireframe", color: tuple[int, int, int] = (0, 0, 0)) -> None:
+    def commitWireframeCreation(self, name: str = "Wireframe", color: tuple[int, int, int] = (0, 0, 0), fill: bool = False) -> None:
         if len(self.__tempWireframePoints) == 0:
             return
 
-        wireFrame = WireFrame(name, copy(self.__tempWireframePoints))
+        wireFrame = WireFrame(name, copy(self.__tempWireframePoints), fill)
         wireFrame.setColor(color)
 
         self.__world.addObject(wireFrame)

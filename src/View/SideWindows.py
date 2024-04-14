@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QGroupBox, QListWidget, QComboBox
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QGroupBox, QListWidget, QComboBox, QCheckBox
 from Domain.Utils.Transforms import Rotation, Scale, Transform, Translation, GenericTransform
 from Domain.Utils.Coordinates import Position3D
 from Handlers.WorldHandler import WorldHandler
@@ -221,11 +221,18 @@ class ObjectWindowFactory:
         layout.addWidget(name_field)
         
         r_field, g_field, b_field = self.__rgbHorizontalBoxes(layout)
+        
+        fill_checkbox = QCheckBox("Preencher Wireframe")
+        layout.addWidget(fill_checkbox)
 
         add_button = Button("Adicionar ponto ao wireframe", lambda: (addTempPoint(x_field.text(), y_field.text(), z_field.text()), x_field.clear(), y_field.clear()))
         layout.addWidget(add_button)
         
-        confirm_button = Button("Confirmar criação", lambda: (WorldHandler.getHandler().objectHandler.commitWireframeCreation(name_field.text(), (int(r_field.text()), int(g_field.text()), int(b_field.text()))), window.close(), self.__parent.update()))
+        confirm_button = Button("Confirmar criação", lambda: (WorldHandler.getHandler().objectHandler.commitWireframeCreation(name_field.text(), 
+                                                                                                                              (int(r_field.text()), int(g_field.text()), int(b_field.text())),
+                                                                                                                              fill_checkbox.isChecked()), 
+                                                                window.close(), 
+                                                                self.__parent.update()))
         layout.addWidget(confirm_button)
             
         window.show()

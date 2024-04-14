@@ -162,9 +162,9 @@ class Canvas(QLabel):
             # Desenha a linha entre os pontos
             canvas.drawLine(positions[n].axisX, positions[n].axisY, positions[n + 1].axisX, positions[n + 1].axisY)
         
-        # Preenche o polígono com uma cor
-        brush = canvas.brush()
-        brush.setColor(QColor(255, 0, 0, 100))  # Red color with transparency
-        brush.setStyle(Qt.SolidPattern)  # Solid pattern
-        canvas.setBrush(brush)
-        canvas.drawPolygon(QPolygonF([QPointF(x.axisX, x.axisY) for x in positions]))
+        if wireFrame.filled:
+            brush = canvas.brush()
+            brush.setColor(QColor(wireFrame.color[0], wireFrame.color[1], wireFrame.color[2], 100))
+            brush.setStyle(Qt.SolidPattern)  # Solid pattern
+            canvas.setBrush(brush)
+            canvas.drawPolygon(QPolygonF([QPointF(x.axisX, x.axisY) for x in positions]))

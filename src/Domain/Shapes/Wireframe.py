@@ -6,9 +6,18 @@ from Domain.Shapes.Point import Point
 
 
 class WireFrame(SGIObject):
-    def __init__(self, name: str, positions: List[Point]) -> None:
+    def __init__(self, name: str, positions: List[Point], filled: bool = False) -> None:
         super().__init__(ObjectsTypes.WIREFRAME, name, Dimensions3D(0, 0, 0), positions[0])
         self.__points = positions
+        self.__filled: bool = filled
+    
+    @property
+    def filled(self) -> bool:
+        return self.__filled
+    
+    @filled.setter
+    def filled(self, value: bool) -> None:
+        self.__filled = value
         
     def addPoint(self, point: Point) -> None:
         self.__points.append(point)
