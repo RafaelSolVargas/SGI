@@ -5,6 +5,7 @@ from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
 from Domain.Utils.Enums import ObjectsTypes
+from copy import deepcopy
 
 class LineClippingStrategy(ABC):
     def __init__(self) -> None:
@@ -247,7 +248,8 @@ class WeilerAthertonStrategy:
         return True
     
     def clip(self, polygon: WireFrame, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> WireFrame:
-        positions = polygon.getPositions()
+        # Deepcopy because we change Z coordinate
+        positions = deepcopy(polygon.getPositions())
         
         if self.__wireframe_inside(positions, win_bottom_left, win_top_right):
             return polygon
@@ -256,10 +258,14 @@ class WeilerAthertonStrategy:
         cr_i = [[], [], [], []]
         c_length = len(positions)
         
+        # Set to 1 to avoid removing at the end
+        for p in positions:
+            p.axisZ = 1
+        
         counter = 0
         for i in range(-1, c_length - 1):
             intersection = self.__intersection_lb(positions[i], positions[i + 1], win_bottom_left, win_top_left, win_top_right, win_bottom_right)
-            #print(f'Intersection: {intersection} for positions: {positions[i]} and {positions[i + 1]}')
+            print(f'Intersection: {intersection} for positions: {positions[i]} and {positions[i + 1]}')
             
             if intersection:
                 counter += 1
@@ -275,13 +281,13 @@ class WeilerAthertonStrategy:
                     if y == win_bottom_left.axisY:
                         cr_i[0].append(intersection)
                     # right
-                    elif x == win_top_right.axisX:
+                    if x == win_top_right.axisX:
                         cr_i[1].append(intersection)
                     # top
-                    elif y == win_top_right.axisY:
+                    if y == win_top_right.axisY:
                         cr_i[2].append(intersection)
                     # left
-                    elif x == win_bottom_left.axisX:
+                    if x == win_bottom_left.axisX:
                         cr_i[3].append(intersection)
                 else:
                     subject.append(intersection[:2])
@@ -295,13 +301,13 @@ class WeilerAthertonStrategy:
                     if y0 == win_bottom_left.axisY:
                         cr_i[0].append(intersection[:2])
                     # right
-                    elif x0 == win_top_right.axisX:
+                    if x0 == win_top_right.axisX:
                         cr_i[1].append(intersection[:2])
                     # top
-                    elif y0 == win_top_right.axisY:
+                    if y0 == win_top_right.axisY:
                         cr_i[2].append(intersection[:2])
                     # left
-                    elif x0 == win_bottom_left.axisX:
+                    if x0 == win_bottom_left.axisX:
                         cr_i[3].append(intersection[:2])
 
                     counter += 1
@@ -311,28 +317,34 @@ class WeilerAthertonStrategy:
                     if y1 == win_bottom_left.axisY:
                         cr_i[0].append(intersection[2:])
                     # right
-                    elif x1 == win_top_right.axisX:
+                    if x1 == win_top_right.axisX:
                         cr_i[1].append(intersection[2:])
                     # top
-                    elif y1 == win_top_right.axisY:
+                    if y1 == win_top_right.axisY:
                         cr_i[2].append(intersection[2:])
                     # left
-                    elif x1 == win_bottom_left.axisX:
+                    if x1 == win_bottom_left.axisX:
                         cr_i[3].append(intersection[2:])
             else:
                 subject.append(positions[i])
                 
         # unpack intersections on
-        cr_i.insert(0, [win_bottom_left])
-        cr_i.insert(2, [win_top_left])
-        cr_i.insert(4, [win_top_right])
-        cr_i.insert(6, [win_bottom_right])
+        cr_i.insert(0, [Position3D(win_bottom_left.axisX, win_bottom_left.axisY, 0)])
+        cr_i.insert(2, [Position3D(win_bottom_right.axisX, win_bottom_right.axisY, 0)])
+        cr_i.insert(4, [Position3D(win_top_right.axisX, win_top_right.axisY, 0)])
+        cr_i.insert(6, [Position3D(win_top_left.axisX, win_top_left.axisY, 0)])
         
         print(cr_i)
 
         # flatten intersections
         cr = [j for i in cr_i for j in i]
-        print(cr)
+        
+        for i in range(len(cr)):
+            if type(cr[i]) is list:
+                print((cr[i][1].axisX, cr[i][1].axisY, cr[i][1].axisZ), end=' ')
+            else:
+                print((cr[i].axisX, cr[i].axisY, cr[i].axisZ), end=' ')
+        print()
 
         # No intersections, simply return and remove element
         if counter == 0:
@@ -354,11 +366,17 @@ class WeilerAthertonStrategy:
         # boolean to check where to iterate
         on_polygon = True
         
+        # Keep closest window position
+        closest = None
+        dist = float('inf')
+        
         # iterate over polygon and window
         while True:
             i += 1
             if on_polygon:
                 i = i % len(subject)
+                
+                print(subject[i])
 
                 if type(subject[i]) is not list:
                     if self.__wireframe_inside([subject[i]], win_bottom_left, win_top_right):
@@ -381,6 +399,13 @@ class WeilerAthertonStrategy:
                 i = i % len(cr)
 
                 if type(cr[i]) is not list:
+                    if cr[i].axisZ == 0:
+                        for p in positions:
+                            d = ((p.axisX - cr[i].axisX) ** 2 + (p.axisY - cr[i].axisY) ** 2) ** 0.5
+                            if d < dist:
+                                closest = cr[i]
+                                dist = d
+                                        
                     clipped.append(cr[i])
 
                 else:
@@ -390,6 +415,7 @@ class WeilerAthertonStrategy:
                     if x_cr == x_clipped and y_cr == y_clipped:
                         break
                     on_polygon = True
+                    
                     clipped.append(cr[i][1])
                     print(subject)
                     for n in range(len(subject)):
@@ -398,7 +424,15 @@ class WeilerAthertonStrategy:
                                 i = n
                                 break
         
-        return WireFrame(polygon.name, [Point.fromPosition(p) for p in clipped])
+        print([(p.axisX, p.axisY, p.axisZ) for p in clipped])
+        
+        print(f'Closest: {closest}')
+        if closest:        
+            closest.axisZ = 1
+        
+        # Gambiarra because window positions are being included in the clipped polygon inadvertedly
+        # All positions created by this method are marked with axisZ = 1, except for the window positions, which are replicated with 0
+        return WireFrame(polygon.name, [Point.fromPosition(p) for p in clipped if p.axisZ == 1])
                 
               
 class Clipper:

@@ -158,18 +158,9 @@ class Canvas(QLabel):
         if (len(positions) == 2):
             canvas.drawLine(positions[0].axisX, positions[0].axisY, positions[1].axisX, positions[1].axisY)
 
-        # Adiciona o primeiro ponto como último ponto para fechar automaticamente o polígono
-        positions.append(positions[0])
-
-        for index, curPosition in enumerate(positions):
-            # Não executa nada caso seja o último
-            if index != len(positions) - 1:
-                nextPosition = positions[index+1]
-
-                canvas.drawLine(curPosition.axisX, curPosition.axisY, 
-                        nextPosition.axisX, nextPosition.axisY)
-                
-                #print(f'Pintando linha de {curPosition.axisX}, {curPosition.axisY} para {nextPosition.axisX}, {nextPosition.axisY}')
+        for n in range(-1, len(positions) - 1):
+            # Desenha a linha entre os pontos
+            canvas.drawLine(positions[n].axisX, positions[n].axisY, positions[n + 1].axisX, positions[n + 1].axisY)
         
         # Preenche o polígono com uma cor
         brush = canvas.brush()
