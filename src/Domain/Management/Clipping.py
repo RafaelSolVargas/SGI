@@ -24,22 +24,15 @@ class LiangBarskyStrategy(LineClippingStrategy):
         pointOne = line.getPositions()[0]
         pointTwo = line.getPositions()[1]
         
-        #x0, y0, z0 = pointOne.axisX, pointOne.axisY, pointOne.axisZ 
-        #x1, y1, z1 = pointTwo.axisX, pointTwo.axisY, pointTwo.axisZ 
+        x0, y0, z0 = pointOne.axisX, pointOne.axisY, pointOne.axisZ 
+        x1, y1, z1 = pointTwo.axisX, pointTwo.axisY, pointTwo.axisZ 
         
-        x0, y0, z0 = 5, 12, 1 
-        x1, y1, z1 = 15, 17, 1 
-        
-        t0, t1 = 0.0, 1.0
+        tMin, tMax = 0.0, 1.0
         dx = x1 - x0
         dy = y1 - y0
 
-        #xmin, xmax = winBottomRight.axisX, winBottomLeft.axisX
-        #ymin, ymax = winBottomLeft.axisY, winTopLeft.axisY
-
-        xmin, xmax = 10, 25
-        ymin, ymax = 10, 20
-
+        xmin, xmax = winBottomLeft.axisX, winBottomRight.axisX
+        ymin, ymax = winBottomLeft.axisY, winTopLeft.axisY
 
         p = [-dx, dx, -dy, dy]
         q = [x0 - (xmin), (xmax) - x0, y0 - (ymin), (ymax) - y0]
@@ -49,23 +42,23 @@ class LiangBarskyStrategy(LineClippingStrategy):
                 if q[i] < 0:
                     break
             else:
-                t = q[i] / p[i]
-                if p[i] < 0:
-                    if t > t1:
+                tCur = q[i] / p[i]
+                if p[i] < 0: # Dentro para fora
+                    if tCur > tMax:
                         break
-                    elif t > t0:
-                        t0 = t
-                else:
-                    if t < t0:
+                    elif tCur > tMin:
+                        tMin = tCur
+                else: # Fora para dentro
+                    if tCur < tMin:
                         break
-                    elif t < t1:
-                        t1 = t
+                    elif tCur < tMax:
+                        tMax = tCur
 
-        if t0 < t1:
-            x0Clipped = x0 + t0 * dx
-            y0Clipped = y0 + t0 * dy
-            x1Clipped = x0 + t1 * dx
-            y1Clipped = y0 + t1 * dy
+        if tMin < tMax:
+            x0Clipped = x0 + tMin * dx
+            y0Clipped = y0 + tMin * dy
+            x1Clipped = x0 + tMax * dx
+            y1Clipped = y0 + tMax * dy
         
             return Line(
                         Point(x0Clipped, y0Clipped, z0),
@@ -433,7 +426,8 @@ class WeilerAthertonStrategy:
               
 class Clipper:
     def __init__(self) -> None:
-        self.__lineClippingStrategy: LineClippingStrategy = CohenSutherlandStrategy()
+        #self.__lineClippingStrategy: LineClippingStrategy = CohenSutherlandStrategy()
+        self.__lineClippingStrategy: LineClippingStrategy = LiangBarskyStrategy()
         self.__polygongClip = WeilerAthertonStrategy()
     
     def __clipPoint(self, point: Point, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> Point | None:
@@ -456,6 +450,8 @@ class Clipper:
         #print(f'Clipping window with positions: {win_bottom_left}, {win_top_left}, {win_top_right}, {win_bottom_right}')
         
         for obj in objs:
+            positions = obj.getPositions()
+
             temp = None
             
             #print(f'Clipping object {obj.name}')

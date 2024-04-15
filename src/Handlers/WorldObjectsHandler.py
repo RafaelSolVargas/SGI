@@ -52,6 +52,8 @@ class WorldObjectsHandler:
         
         print(f"Window center PPC: {pos.axisX}, {pos.axisY}")
         
+        self.__window.printPositions()
+
         #pos.axisX += Constants.VIEWPORT_SLACK // 2
         #pos.axisY += Constants.VIEWPORT_SLACK // 2
         
