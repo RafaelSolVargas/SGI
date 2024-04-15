@@ -3,7 +3,6 @@ from Domain.Utils.Coordinates import Dimensions3D, Position3D
 from Domain.Utils.Enums import ObjectsTypes
 from Domain.Utils.Constants import Constants
 from Domain.Utils.Transforms import Translation, Scale, GenericTransform
-from copy import deepcopy
 
 class Window(SGIObject):
     ZOOM_MOVE: int = 10
@@ -15,9 +14,6 @@ class Window(SGIObject):
     and move in all 3 dimensions
     """
     def __init__(self, lenght: int, width: int, height: int) -> None:
-        self.__BASE_LENGHT: int = lenght
-        self.__BASE_WIDTH: int = width
-
         dimensions = Dimensions3D(lenght, width, height)
         
         self.__angle = 0
@@ -40,7 +36,7 @@ class Window(SGIObject):
     
     def setPositions(self, positions: list[Position3D]) -> None:
         self.__positions = positions
-    
+
     @property
     def centralPoint(self) -> Position3D:
         bottomLeft = self.__positions[0]
@@ -51,7 +47,6 @@ class Window(SGIObject):
         half_height = (topRight.axisZ - bottomLeft.axisZ) / 2 + bottomLeft.axisZ
         
         return Position3D(half_length, half_width, half_height)
-        
     
     def printPositions(self):
         print('Posições Window:')

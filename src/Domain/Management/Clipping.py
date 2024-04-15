@@ -40,19 +40,15 @@ class LiangBarskyStrategy(LineClippingStrategy):
         for i in range(4):
             if p[i] == 0:
                 if q[i] < 0:
-                    break
+                    return None
             else:
-                tCur = q[i] / p[i]
-                if p[i] < 0: # Dentro para fora
-                    if tCur > tMax:
-                        break
-                    elif tCur > tMin:
-                        tMin = tCur
-                else: # Fora para dentro
-                    if tCur < tMin:
-                        break
-                    elif tCur < tMax:
-                        tMax = tCur
+                t = q[i] / p[i]
+                if p[i] < 0:
+                    if t > tMin:
+                        tMin = t
+                else:
+                    if t < tMax:
+                        tMax = t
 
         if tMin < tMax:
             x0Clipped = x0 + tMin * dx

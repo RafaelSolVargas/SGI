@@ -64,7 +64,7 @@ class WorldObjectsHandler:
     @property
     def worldCenterPPC(self) -> Position3D:
         worldCenterPoint = Position3D(0, 0, 0)
-        
+
         return self.__convertWorldPositionToPpcAndViewport(worldCenterPoint)
     
     def addObject(self, obj: SGIObject) -> None:
