@@ -426,8 +426,7 @@ class WeilerAthertonStrategy:
               
 class Clipper:
     def __init__(self) -> None:
-        #self.__lineClippingStrategy: LineClippingStrategy = CohenSutherlandStrategy()
-        self.__lineClippingStrategy: LineClippingStrategy = LiangBarskyStrategy()
+        self.__lineClippingStrategy: LineClippingStrategy = CohenSutherlandStrategy()
         self.__polygongClip = WeilerAthertonStrategy()
     
     def __clipPoint(self, point: Point, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> Point | None:
