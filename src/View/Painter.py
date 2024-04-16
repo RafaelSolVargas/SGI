@@ -62,21 +62,6 @@ class Canvas(QLabel):
         painter.drawLine(windowCenterPoint.axisX - 5, windowCenterPoint.axisY, windowCenterPoint.axisX + 5, windowCenterPoint.axisY)
         painter.drawLine(windowCenterPoint.axisX, windowCenterPoint.axisY - 5, windowCenterPoint.axisX, windowCenterPoint.axisY + 5)
 
-        # Draw the World center
-        pen.setWidth(2)
-        pen.setColor(QColor(0, 0, 255))
-        painter.setPen(pen)
-        
-        worldCenterPoint = WorldHandler.getHandler().objectHandler.worldCenterPPC
-        slack = Constants.VIEWPORT_SLACK // 2
-        
-        worldCenterPoint.axisX += slack 
-        worldCenterPoint.axisY += slack 
-
-        painter.drawPoint(worldCenterPoint.axisX, worldCenterPoint.axisY)
-        painter.drawLine(worldCenterPoint.axisX - 5, worldCenterPoint.axisY, worldCenterPoint.axisX + 5, worldCenterPoint.axisY)
-        painter.drawLine(worldCenterPoint.axisX, worldCenterPoint.axisY - 5, worldCenterPoint.axisX, worldCenterPoint.axisY + 5)
-
         # Window points
         window = WorldHandler.getHandler().objectHandler.windowPositionsPPC
         pen.setColor(QColor(0, 255, 0))

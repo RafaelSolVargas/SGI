@@ -6,7 +6,7 @@ from Domain.Utils.IdGenerator import IdGenerator
 class SGIObject:
     def __init__(self, type: ObjectsTypes, name: str, dimensions: Dimensions3D, position: Position3D, color: tuple[int, int, int] = (0, 0, 0)) -> None:
         self.__id = IdGenerator.generate_id()
-        self.__name = name
+        self.__name = name 
         self.__position: Position3D = position
         self.__dimensions: Dimensions3D = dimensions
         self.__type = type

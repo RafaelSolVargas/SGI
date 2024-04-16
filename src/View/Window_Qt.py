@@ -1,6 +1,8 @@
 from PyQt5.QtGui import QWheelEvent, QKeyEvent, QIcon
 from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QHBoxLayout, QLineEdit, QFileDialog, QComboBox
 from PyQt5.QtCore import Qt, QSize
+from Domain.Shapes.Line import Line
+from Domain.Shapes.Point import Point
 from Domain.Utils.Enums import ClippingMethods
 from View.Button import Button
 from View.Console import Console
@@ -16,6 +18,14 @@ class Window_Qt(QMainWindow):
     def __init__(self, w: int = 1280, h: int = 720):
         super().__init__()
         self._object_list_widget = None
+
+        # Add two objects to represent the central point
+        worldCenterLineOne = Line(Point(-5, 0, 1), Point(5, 0, 1), "XXXDEFAULTLINEXXX")
+        worldCenterLineOne.setColor([0, 0, 255])
+        worldCenterLineTwo = Line(Point(0, -5, 1), Point(0, 5, 1), "XXXDEFAULTLINEXXX")
+        worldCenterLineTwo.setColor([0, 0, 255])
+        WorldHandler.getHandler().objectHandler.addObject(worldCenterLineOne)
+        WorldHandler.getHandler().objectHandler.addObject(worldCenterLineTwo)
 
         # Get the path to the tests folder
         tests_folder = os.path.join(os.getcwd(), "tests")
@@ -95,6 +105,9 @@ class Window_Qt(QMainWindow):
 
         self.__object_list_widget.clear()
         for obj in obj_list:
+            if obj.name == "XXXDEFAULTLINEXXX":
+                continue
+
             self.__object_list_widget.addItem(f"{obj.name} ({obj.type.name})")
         
         self.__canvas.draw(obj_list)
