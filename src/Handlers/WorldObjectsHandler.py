@@ -8,20 +8,17 @@ from Domain.Shapes.Line import Line
 from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
-from Domain.Utils.Transforms import Translation, Rotation, GenericTransform
+from Domain.Utils.Transforms import Translation, Rotation
 from Domain.Utils.Enums import ClippingMethods, RotationTypes
 from Domain.Management.Clipping import Clipper, CohenSutherlandStrategy, LiangBarskyStrategy
 from Domain.Utils.Constants import Constants
-import numpy as np
 
 
 class WorldObjectsHandler:
     def __init__(self, viewPort: ViewPort, window: Window, world: World) -> None:
-        self.__viewport: ViewPort = viewPort
         self.__window: Window = window
         self.__world: World = world
         self.__tempWireframePoints: List[Point] = []
-        self.__windowPos: Position3D = None
         self.__clipper = Clipper()
 
     def setClippingMethod(self, clippingMethod: ClippingMethods) -> None:
@@ -33,29 +30,42 @@ class WorldObjectsHandler:
             print('Clipping method não encontrado')
 
     @property
-    def windowPosPPC(self) -> Position3D:
+    def windowPositionsPPC(self) -> List[Position3D]:
         arr = []
         
-        for pos in self.__windowPos:
-            arr.append(self.__transformPositionToViewPortPPC(pos, self.__windowPos))
+        for position in self.__window.getPositions():
+            arr.append(self.__transformPositionToViewPort(position, self.__window.getPositions()))
             
-        for pos in arr:
-            pos.axisX += Constants.VIEWPORT_SLACK // 2
-            pos.axisY += Constants.VIEWPORT_SLACK // 2
+        for position in arr:
+            position.axisX += Constants.VIEWPORT_SLACK // 2
+            position.axisY += Constants.VIEWPORT_SLACK // 2
             
         return arr
     
     @property
     def windowCenterPPC(self) -> Position3D:
-        print(f'Window center: {self.__window.centralPoint}')
-        pos = self.__transformPositionToViewPortPPC(self.__window.centralPoint, self.__windowPos)
-        
-        print(f"Window center PPC: {pos.axisX}, {pos.axisY}")
-        
-        #pos.axisX += Constants.VIEWPORT_SLACK // 2
-        #pos.axisY += Constants.VIEWPORT_SLACK // 2
-        
-        return pos 
+        return self.__convertWorldPositionToPpcAndViewport(self.__window.centralPoint)
+
+    def __convertWorldPositionToPpcAndViewport(self, positionPPC: Position3D) -> Position3D: 
+        # Creates a point to follow the method interface
+        point = Point(positionPPC.axisX, positionPPC.axisY, positionPPC.axisZ)
+
+        # Convert to PPC
+        windowPositions, objectsConvertedToPPC = self.__convertObjectToPPC([point])
+
+        # Extract the position again
+        positionPPC = objectsConvertedToPPC[0].position
+
+        # Convert to Viewport
+        positionVP = self.__transformPositionToViewPort(positionPPC, windowPositions)
+
+        return positionVP 
+    
+    @property
+    def worldCenterPPC(self) -> Position3D:
+        worldCenterPoint = Position3D(0, 0, 0)
+
+        return self.__convertWorldPositionToPpcAndViewport(worldCenterPoint)
     
     def addObject(self, obj: SGIObject) -> None:
         self.__world.addObject(obj)
@@ -111,7 +121,8 @@ class WorldObjectsHandler:
             objPositions = obj.getPositions()
             
             # Translate object 
-            translateTransform = Translation(self.__window.centralPoint.axisX, self.__window.centralPoint.axisY, self.__window.centralPoint.axisZ, objPositions)
+            translateTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ, objPositions)
+            #translateTransform = Translation(self.__window.centralPoint.axisX, self.__window.centralPoint.axisY, self.__window.centralPoint.axisZ, objPositions)
 
             # Execute the matrix calculus
             objFinalPositions = translateTransform.execute()
@@ -135,80 +146,8 @@ class WorldObjectsHandler:
 
         # Return new window matrix and transformed objects
         return newWindowsPositions, transformedObjects
-    
-    def originWorldViewportPPC(self) -> Position3D:
-        return self.__transformPositionToViewPortPPC(Position3D(0, 0, 1), self.__windowPos)
 
-    def getAxisLinesToDrawPPC(self) -> tuple[Line, Line]:
-        # Create points that will represent both axis 
-        axisXLeftPoint = Point(-1000, 0, 1)
-        axisXRightPoint = Point(1000, 0, 1)
-        axisYBottomPoint = Point(0, -600, 1)
-        axisYUpperPoint = Point(0, 600, 1)
-
-        # Convert to lines
-        axisXLine = Line(axisXLeftPoint, axisXRightPoint)
-        axisYLine = Line(axisYBottomPoint, axisYUpperPoint)
-        
-        # Convert to the PPC
-        #_, convertedList = self.__convertObjectToPPC([axisXLine])
-        #convertedAxisXLine = convertedList[0] 
-
-        #_, convertedList = self.__convertObjectToPPC([axisYLine])
-        #convertedAxisYLine = convertedList[0]
-
-        # return convertedAxisXLine, convertedAxisYLine
-
-        # Get the left bottom and left up positions from Window
-        window_positions = deepcopy(self.__window.getPositions())
- 
-        # Compute v_up (vector of the left side of the window)
-        v_up = Position3D(window_positions[1].axisX - window_positions[0].axisX, 
-                          window_positions[1].axisY - window_positions[0].axisY, 
-                          0)
-        
-        # Get the angle to the aixs Y
-        cosine = v_up.axisY / np.linalg.norm([v_up.axisX, v_up.axisY])
-        angle = np.rad2deg(np.arccos(cosine))
-        
-        # Build the rotation to be applied to both lines
-        rotateTransform = Rotation(-angle, RotationTypes.CENTER_WORLD)
-        
-        # Convert the axis X to PPC
-        axisXLineTransform = GenericTransform(positions=axisXLine.getPositions())
-        axisXLineTransform.add_transforms([rotateTransform])
-
-        lineXConvertedPositions = axisXLineTransform.execute()
-
-        axisXLine.setPositions(lineXConvertedPositions)
-
-        # Convert the axis Y to PPC
-        axisYLineTransform = GenericTransform(positions=axisYLine.getPositions())
-        axisYLineTransform.add_transforms([rotateTransform])
-
-        lineXConvertedPositions = axisYLineTransform.execute()
-
-        axisYLine.setPositions(lineXConvertedPositions)
-        
-        return axisXLine, axisYLine
-
-    def originWorldViewport(self) -> Position3D:
-        return self.__transformPositionToViewPort(Position3D(0, 0, 1))
-        
-    def __transformPositionToViewPort(self, position: Position3D) -> Position3D:
-        xW = position.axisX
-
-        xVP = ((xW - self.__window.Xmin) / (self.__window.dimensions.length)) * (self.__viewport.dimensions.length)
-
-        yW = position.axisY
-
-        yVP = (1 - ((yW - self.__window.Ymin) / (self.__window.dimensions.width))) * (self.__viewport.dimensions.width)
-       
-        pointTransformed = Position3D(round(xVP), round(yVP), 1)
-
-        return pointTransformed
-
-    def __transformPositionToViewPortPPC(self, position: Position3D, window_pos: Position3D) -> Position3D:
+    def __transformPositionToViewPort(self, position: Position3D, window_pos: Position3D) -> Position3D:
         xW = position.axisX
 
         xVP = ((xW - window_pos[0].axisX) / (self.__window.dimensions.length)) * (Constants.VIEWPORT_LENGTH)
@@ -234,7 +173,7 @@ class WorldObjectsHandler:
             objCopy = deepcopy(obj)
 
             for position in objCopy.getPositions():
-                transformedPosition = self.__transformPositionToViewPortPPC(position, windowPosition)
+                transformedPosition = self.__transformPositionToViewPort(position, windowPosition)
 
                 position.axisX = transformedPosition.axisX + Constants.VIEWPORT_SLACK // 2
                 position.axisY = transformedPosition.axisY + Constants.VIEWPORT_SLACK // 2
@@ -243,9 +182,6 @@ class WorldObjectsHandler:
             objectsToShow.append(objCopy)
 
         self.__windowPos = windowPosition
-        
-        #print(f'Window center: {self.__window.centralPoint}')
-        #self.__window.printPositions()
         
         return objectsToShow
 

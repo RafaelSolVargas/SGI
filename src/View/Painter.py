@@ -9,8 +9,6 @@ from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Enums import ObjectsTypes
 from Domain.Utils.Constants import Constants
 from Handlers.WorldHandler import WorldHandler
-from Domain.Utils.Coordinates import Position3D
-import numpy as np
 
 class Canvas(QLabel):
     def __init__(self, parent=None):
@@ -23,19 +21,10 @@ class Canvas(QLabel):
         self.setPixmap(pixmap)
         self.setGeometry(Constants.SIDEBAR_SIZE, 0, Constants.VIEWPORT_LENGTH + Constants.VIEWPORT_SLACK, Constants.VIEWPORT_WIDTH + Constants.VIEWPORT_SLACK)
         
-        self.__pen_color = QColor(0, 0, 0)
-        
     def draw(self, obj_list: List[SGIObject]):
         self.__obj_list = obj_list
         
-        
         self.paint()
-    
-    def __getAngleWithOrigin(self, p: Position3D) -> float:
-        cosine = p.axisY / np.linalg.norm([p.axisX, p.axisY])
-        angle = np.rad2deg(np.arccos(cosine))
-        
-        return angle
     
     def __draw_grid(self, painter: QPainter):
         # Draw grid lines
@@ -58,26 +47,23 @@ class Canvas(QLabel):
 
             painter.drawLine(slack, y, Constants.VIEWPORT_LENGTH + slack, y)
         
-        
         # Draw point of the center of the window
         pen.setWidth(2)
-        pen.setColor(QColor(0, 0, 255))
+        pen.setColor(QColor(0, 125, 125))
         painter.setPen(pen)
         
-        centerPoint = WorldHandler.getHandler().objectHandler.windowCenterPPC
+        windowCenterPoint = WorldHandler.getHandler().objectHandler.windowCenterPPC
         slack = Constants.VIEWPORT_SLACK // 2
         
-        centerPoint.axisX += slack 
-        centerPoint.axisY += slack 
+        windowCenterPoint.axisX += slack 
+        windowCenterPoint.axisY += slack 
 
-        painter.drawPoint(centerPoint.axisX, centerPoint.axisY)
-        painter.drawLine(centerPoint.axisX - 5, centerPoint.axisY, centerPoint.axisX + 5, centerPoint.axisY)
-        painter.drawLine(centerPoint.axisX, centerPoint.axisY - 5, centerPoint.axisX, centerPoint.axisY + 5)
+        painter.drawPoint(windowCenterPoint.axisX, windowCenterPoint.axisY)
+        painter.drawLine(windowCenterPoint.axisX - 5, windowCenterPoint.axisY, windowCenterPoint.axisX + 5, windowCenterPoint.axisY)
+        painter.drawLine(windowCenterPoint.axisX, windowCenterPoint.axisY - 5, windowCenterPoint.axisX, windowCenterPoint.axisY + 5)
 
-        #print(f'Center Point Desenhado na Viewport: {centerPoint.axisX}, {centerPoint.axisY}')
-        
         # Window points
-        window = WorldHandler.getHandler().objectHandler.windowPosPPC
+        window = WorldHandler.getHandler().objectHandler.windowPositionsPPC
         pen.setColor(QColor(0, 255, 0))
         painter.setPen(pen)
         pen.setWidth(2)
@@ -86,7 +72,6 @@ class Canvas(QLabel):
         painter.drawPoint(window[1].axisX, window[1].axisY)
         painter.drawPoint(window[2].axisX, window[2].axisY)
         painter.drawPoint(window[3].axisX, window[3].axisY)
-        
         
         pen.setColor(QColor(255, 0, 0))
         painter.setPen(pen)
