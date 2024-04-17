@@ -22,6 +22,8 @@ class ObjectWindowFactory:
             return self.__createLineWindow()
         elif obj == "Wireframe":
             return self.__createWireframeWindow()
+        elif obj == "Curva":
+            return self.__createCurveWindow()
     
     def __rgbHorizontalBoxes(self, layout: QVBoxLayout):
         color_label = QLabel("Cor:")
@@ -231,6 +233,60 @@ class ObjectWindowFactory:
         confirm_button = Button("Confirmar criação", lambda: (WorldHandler.getHandler().objectHandler.commitWireframeCreation(name_field.text(), 
                                                                                                                               (int(r_field.text()), int(g_field.text()), int(b_field.text())),
                                                                                                                               fill_checkbox.isChecked()), 
+                                                                window.close(), 
+                                                                self.__parent.update()))
+        layout.addWidget(confirm_button)
+            
+        window.show()
+        
+    def __createCurveWindow(self):
+        def addTempPoint(x, y, z):
+            print(f"Adicionou ponto: ({x}, {y}, {z})")
+            WorldHandler.getHandler().objectHandler.addTempPointCurve(Position3D(int(x), int(y), int(z)))
+        
+        window = QMainWindow(self.__parent)
+        window.setWindowTitle("Criar Curva")
+        window.setGeometry(self.__parent.geometry().center().x() - 150, self.__parent.geometry().center().y() - 100, 300, 200)
+        
+        central_widget = QWidget(window)
+        window.setCentralWidget(central_widget)
+        
+        layout = QVBoxLayout(central_widget)
+        
+        x_label = QLabel("Coordenada X:")
+        layout.addWidget(x_label)
+        
+        x_field = QLineEdit()
+        layout.addWidget(x_field)
+        
+        y_label = QLabel("Coordenada Y:")
+        layout.addWidget(y_label)
+        
+        y_field = QLineEdit()
+        layout.addWidget(y_field)
+        
+        z_label = QLabel("Coordenada Z:")
+        layout.addWidget(z_label)
+        
+        z_field = QLineEdit()
+        z_field.setText("0")
+        layout.addWidget(z_field)
+        
+        # Curve name
+        name_label = QLabel("Nome da curva:")
+        layout.addWidget(name_label)
+        
+        name_field = QLineEdit()
+        name_field.setText("Curva")
+        layout.addWidget(name_field)
+        
+        r_field, g_field, b_field = self.__rgbHorizontalBoxes(layout)
+
+        add_button = Button("Adicionar ponto à curva", lambda: (addTempPoint(x_field.text(), y_field.text(), z_field.text()), x_field.clear(), y_field.clear()))
+        layout.addWidget(add_button)
+        
+        confirm_button = Button("Confirmar criação", lambda: (WorldHandler.getHandler().objectHandler.commitCurveCreation(name_field.text(), 
+                                                                                                                              (int(r_field.text()), int(g_field.text()), int(b_field.text()))), 
                                                                 window.close(), 
                                                                 self.__parent.update()))
         layout.addWidget(confirm_button)

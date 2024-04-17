@@ -7,6 +7,7 @@ class ObjectsTypes(Enum):
     WIREFRAME = 2
     VIEWPORT = 3
     WINDOW = 4
+    CURVE = 5
     
 class RotationTypes(Enum):
     CENTER_WORLD = "Centro do mundo"

@@ -74,7 +74,13 @@ class WorldObjectsHandler:
 
         self.__world.addObject(point)
 
-        
+    def addTempPointCurve(self, position: Position3D) -> None:
+        pass
+    
+    # TODO: Don't create if len < 4
+    def commitCurveCreation(self, name: str = "Curva", color: tuple[int, int, int] = (0, 0, 0)) -> None:
+        pass
+    
     def addTempPointWireframe(self, position: Position3D) -> None:
         print(f'Ponto adicionado ao wireframe {position.axisX}, {position.axisY}, {position.axisZ}')
 

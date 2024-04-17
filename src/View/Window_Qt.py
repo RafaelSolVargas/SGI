@@ -46,7 +46,7 @@ class Window_Qt(QMainWindow):
         self.__sidebar.setLayout(QVBoxLayout(self.__sidebar))
         
         # TODO: Change to Enum or Object after model is implemented
-        self.__addSidebarObjBox("Objetos", ["Ponto", "Reta", "Wireframe"])
+        self.__addSidebarObjBox("Objetos", ["Ponto", "Linha", "Wireframe", "Curva"])
         self.__addSidebarWindowBox()
                 
         self.__console = Console(self)
@@ -181,7 +181,7 @@ class Window_Qt(QMainWindow):
     def __addSidebarObjBox(self, title: str, items: list):
         box = QGroupBox(title, self.__sidebar)
         box.setGeometry(0, 0, 180, 150)
-        box.setFixedSize(Constants.SIDEBAR_SIZE - 17, 350)
+        box.setFixedSize(Constants.SIDEBAR_SIZE - 17, 390)
         self.__sidebar.layout().addWidget(box)
         
         layout = QVBoxLayout(box)
