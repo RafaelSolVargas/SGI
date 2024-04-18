@@ -130,7 +130,6 @@ class CohenSutherlandStrategy(LineClippingStrategy):
         code1 = self.__compute_code(p1, win_bottom_left, win_top_left, win_top_right)
         code2 = self.__compute_code(p2, win_bottom_left, win_top_left, win_top_right)
         
-        print(f'Code 1: {int(code1):04b} | Code 2: {int(code2):04b}')
         # Fully inside
         if code1 == 0 and code2 == 0:
             return Line(Point.fromPosition(p1), Point.fromPosition(p2), line.name)
@@ -442,23 +441,17 @@ class Clipper:
         
         clipped_objs = []
         
-        #print(f'Clipping window with positions: {win_bottom_left}, {win_top_left}, {win_top_right}, {win_bottom_right}')
-        
         for obj in objs:
-            positions = obj.getPositions()
-
             temp = None
             
-            #print(f'Clipping object {obj.name}')
-            
-            # TODO: Add wireframe clipping when polygon algorithm is implemented
             if obj.type == ObjectsTypes.POINT:
                 temp = self.__clipPoint(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+
             elif obj.type == ObjectsTypes.LINE or (obj.type == ObjectsTypes.WIREFRAME and len(obj.getPositions()) == 2):
                 temp = self.__lineClippingStrategy.clip(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+
             elif obj.type == ObjectsTypes.WIREFRAME:
                 temp = self.__polygongClip.clip(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
-                #temp = obj
                 
             if temp is not None:
                 temp.setColor(obj.color)

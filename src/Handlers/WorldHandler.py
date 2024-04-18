@@ -1,13 +1,10 @@
 from Domain.Management.Viewport import ViewPort
 from Domain.Management.Window import Window
 from Domain.Management.World import World
-from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Enums import RotationTypes
 from Domain.Utils.Transforms import GenericTransform, Rotation, Translation
 from Handlers.WorldObjectsHandler import WorldObjectsHandler
 from Domain.Utils.Constants import Constants
-import math
-from copy import deepcopy
 
 
 class WorldHandler:

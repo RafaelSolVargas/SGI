@@ -1,15 +1,17 @@
 from copy import copy, deepcopy
 from typing import List
+from Domain.Management.CurvesPlotting import CurvesPlotter
 from Domain.Management.Viewport import ViewPort
 from Domain.Management.Window import Window
 from Domain.Management.World import World
+from Domain.Shapes.Curve import Curve
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
 from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
 from Domain.Utils.Transforms import Translation, Rotation
-from Domain.Utils.Enums import ClippingMethods, RotationTypes
+from Domain.Utils.Enums import ClippingMethods, ObjectsTypes, RotationTypes
 from Domain.Management.Clipping import Clipper, CohenSutherlandStrategy, LiangBarskyStrategy
 from Domain.Utils.Constants import Constants
 
@@ -19,6 +21,7 @@ class WorldObjectsHandler:
         self.__window: Window = window
         self.__world: World = world
         self.__tempWireframePoints: List[Point] = []
+        self.__tempCurvePoints: List[Point] = []
         self.__clipper = Clipper()
 
     def setClippingMethod(self, clippingMethod: ClippingMethods) -> None:
@@ -85,11 +88,23 @@ class WorldObjectsHandler:
         self.__world.addObject(point)
 
     def addTempPointCurve(self, position: Position3D) -> None:
-        pass
+        print(f'Ponto adicionado a curva {position.axisX}, {position.axisY}, {position.axisZ}')
+
+        point = Point(position.axisX, position.axisY, position.axisZ, "Ponto da curva")
+        
+        self.__tempCurvePoints.append(point)
     
-    # TODO: Don't create if len < 4
     def commitCurveCreation(self, name: str = "Curva", color: tuple[int, int, int] = (0, 0, 0)) -> None:
-        pass
+        if len(self.__tempWireframePoints) < 4:
+            return
+        
+        curve = Curve(name, copy(self.__tempCurvePoints), False)
+        curve.setColor(color)
+
+        self.__world.addObject(curve)
+
+        self.__tempCurvePoints.clear()
+
     
     def addTempPointWireframe(self, position: Position3D) -> None:
         print(f'Ponto adicionado ao wireframe {position.axisX}, {position.axisY}, {position.axisZ}')
@@ -122,7 +137,6 @@ class WorldObjectsHandler:
             
             # Translate object 
             translateTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ, objPositions)
-            #translateTransform = Translation(self.__window.centralPoint.axisX, self.__window.centralPoint.axisY, self.__window.centralPoint.axisZ, objPositions)
 
             # Execute the matrix calculus
             objFinalPositions = translateTransform.execute()
@@ -160,11 +174,24 @@ class WorldObjectsHandler:
 
         return pointTransformed
     
+    def __getWorldObjects(self) -> List[SGIObject]:
+        """Get the world objects, if any of them is a CURVE, generate the required points"""
+        objs: List[SGIObject] = [] 
+        for obj in self.__world.objects:
+            if (obj.type == ObjectsTypes.CURVE):
+                positionsToPlot = CurvesPlotter.generatePoints(obj, 0.1)
+                obj.setPositions(positionsToPlot)
+
+            objs.append(obj)
+
+        return objs
+
     def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
-        windowPosition, objs = self.__convertObjectToPPC(self.__world.objects)
+        worldObjects = self.__getWorldObjects()
+
+        windowPosition, objs = self.__convertObjectToPPC(worldObjects)
+
         clipped_objs = self.__clipper.clip(windowPosition, objs, self.__window.dimensions.length)
-        
-        print(windowPosition[0], windowPosition[1])
         
         objectsToShow: List[SGIObject] = []
         
@@ -181,8 +208,6 @@ class WorldObjectsHandler:
         
             objectsToShow.append(objCopy)
 
-        self.__windowPos = windowPosition
-        
         return objectsToShow
 
     
