@@ -30,4 +30,12 @@ class Curve(SGIObject):
         
         for i, pos in enumerate(positions):
             self.__points.append(Point(pos.axisX, pos.axisY, pos.axisZ, f'{self.name}_{i}'))
+            
+    @property
+    def centralPoint(self) -> Position3D:
+        x = sum([point.position.axisX for point in self.__points]) // len(self.__points)
+        y = sum([point.position.axisY for point in self.__points]) // len(self.__points)
+        z = sum([point.position.axisZ for point in self.__points]) // len(self.__points)
+        
+        return Position3D(x, y, z)
         

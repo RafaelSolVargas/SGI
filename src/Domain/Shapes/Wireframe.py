@@ -32,7 +32,6 @@ class WireFrame(SGIObject):
         for i, pos in enumerate(positions):
             self.__points.append(Point(pos.axisX, pos.axisY, pos.axisZ, f'{self.name}_{i}'))
         
-    # TODO: correct this method
     @property
     def centralPoint(self) -> Position3D:
         x = sum([point.position.axisX for point in self.__points]) // len(self.__points)

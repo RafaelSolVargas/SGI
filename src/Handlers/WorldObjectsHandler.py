@@ -96,6 +96,7 @@ class WorldObjectsHandler:
     
     def commitCurveCreation(self, name: str = "Curva", color: tuple[int, int, int] = (0, 0, 0)) -> None:
         if len(self.__tempWireframePoints) < 4:
+            print('Curva precisa de pelo menos 4 pontos para ser criada')
             return
         
         curve = Curve(name, copy(self.__tempCurvePoints), False)
@@ -137,7 +138,7 @@ class WorldObjectsHandler:
             
             # Calculate the points for this curve
             if (obj.type == ObjectsTypes.CURVE):
-                objPositions = CurvesPlotter.generatePoints(obj, 0.1)
+                objPositions = CurvesPlotter.generatePoints(obj, 0.01)
 
             # Translate object 
             translateTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ, objPositions)

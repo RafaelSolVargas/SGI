@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
 from Domain.Shapes.Wireframe import WireFrame
+from Domain.Shapes.Curve import Curve
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
 from Domain.Utils.Enums import ObjectsTypes
@@ -87,7 +88,10 @@ class CohenSutherlandStrategy(LineClippingStrategy):
         x0, y0 = p1.axisX, p1.axisY
         x1, y1 = p2.axisX, p2.axisY
         
-        m = (y1 - y0) / (x1 - x0)
+        if x1 != x0:
+            m = (y1 - y0) / (x1 - x0)
+        else:
+            m = 1
         
         if code & 8:
             y = win_top_left.axisY
@@ -235,7 +239,7 @@ class WeilerAthertonStrategy:
         
         return True
     
-    def clip(self, polygon: WireFrame, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> WireFrame:
+    def clip(self, polygon: WireFrame | Curve, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> WireFrame | Curve | None:
         # Deepcopy because we change Z coordinate
         positions = deepcopy(polygon.getPositions())
         
@@ -412,6 +416,9 @@ class WeilerAthertonStrategy:
                             if subject[n][1].axisX == x_cr and subject[n][1].axisY == y_cr:
                                 i = n
                                 break
+        
+        if polygon.type == ObjectsTypes.CURVE:
+            return Curve(polygon.name, [Point.fromPosition(p) for p in clipped if p != clipped[-1]])
         
         return WireFrame(polygon.name, [Point.fromPosition(p) for p in clipped])
                 

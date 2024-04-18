@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QLabel
 from PyQt5.QtGui import QPainter, QColor, QColor, QPixmap, QPolygonF
 from PyQt5.QtCore import QPointF, Qt
 from Domain.Shapes.Wireframe import WireFrame
+from Domain.Shapes.Curve import Curve
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
 from Domain.Shapes.SGIObject import SGIObject
@@ -157,9 +158,9 @@ class Canvas(QLabel):
             canvas.drawPolygon(QPolygonF([QPointF(x.axisX, x.axisY) for x in positions]))
 
     @classmethod
-    def __paintCurve(cls, canvas: QPainter, wireFrame: WireFrame):
+    def __paintCurve(cls, canvas: QPainter, curve: Curve):
         print(f'Pintando Curva')
-        positions = wireFrame.getPositions()
+        positions = curve.getPositions()
         
         if (len(positions) == 0):
             return
@@ -171,6 +172,6 @@ class Canvas(QLabel):
         if (len(positions) == 2):
             canvas.drawLine(positions[0].axisX, positions[0].axisY, positions[1].axisX, positions[1].axisY)
 
-        for n in range(-1, len(positions) - 1):
+        for n in range(0, len(positions) - 1):
             # Desenha a linha entre os pontos
             canvas.drawLine(positions[n].axisX, positions[n].axisY, positions[n + 1].axisX, positions[n + 1].axisY)
