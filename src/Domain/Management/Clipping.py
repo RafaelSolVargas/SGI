@@ -407,14 +407,11 @@ class WeilerAthertonStrategy:
                     on_polygon = True
                     
                     clipped.append(cr[i][1])
-                    #print(subject)
                     for n in range(len(subject)):
                         if type(subject[n]) is list:
                             if subject[n][1].axisX == x_cr and subject[n][1].axisY == y_cr:
                                 i = n
                                 break
-        
-        #print([(p.axisX, p.axisY, p.axisZ) for p in clipped])
         
         return WireFrame(polygon.name, [Point.fromPosition(p) for p in clipped])
                 
@@ -450,7 +447,7 @@ class Clipper:
             elif obj.type == ObjectsTypes.LINE or (obj.type == ObjectsTypes.WIREFRAME and len(obj.getPositions()) == 2):
                 temp = self.__lineClippingStrategy.clip(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
 
-            elif obj.type == ObjectsTypes.WIREFRAME:
+            elif obj.type == ObjectsTypes.WIREFRAME or obj.type == ObjectsTypes.CURVE:
                 temp = self.__polygongClip.clip(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
                 
             if temp is not None:

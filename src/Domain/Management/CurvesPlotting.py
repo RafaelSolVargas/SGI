@@ -32,15 +32,25 @@ class HermiteCurvePlotting(CurvesPlottingStrategy):
         r4 = objPositions[3]
 
         positionsToPlot: List[Position3D] = []
-        for t in range(0, 1, precision):
-            componentOne = p1.axisX * ((2 * t**3) - (3 * t**2) + 1) 
-            componentTwo = p4.axisX * (-(2 * t**3) + (3 * t**2)) 
-            componentThree = r1.axisX * ((t**3) - (2 * t**2) + t) 
-            componentFour = r4.axisX * ((t**3) - (t**2))
+        t = 0
+        while t <= 1:
+            componentXOne = p1.axisX * ((2 * t**3) - (3 * t**2) + 1) 
+            componentXTwo = p4.axisX * (-(2 * t**3) + (3 * t**2)) 
+            componentXThree = r1.axisX * ((t**3) - (2 * t**2) + t) 
+            componentXFour = r4.axisX * ((t**3) - (t**2))
 
-            positionX = componentOne + componentTwo + componentThree + componentFour
+            positionX = componentXOne + componentXTwo + componentXThree + componentXFour
 
-            positionsToPlot.append(Position3D(positionX, 1, 1))
+            componentYOne = p1.axisX * ((2 * t**3) - (3 * t**2) + 1) 
+            componentYTwo = p4.axisX * (-(2 * t**3) + (3 * t**2)) 
+            componentYThree = r1.axisX * ((t**3) - (2 * t**2) + t) 
+            componentYFour = r4.axisX * ((t**3) - (t**2))
+
+            positionY = componentYOne + componentYTwo + componentYThree + componentYFour
+
+            positionsToPlot.append(Position3D(positionX, positionY, 1))
+
+            t += precision
 
         return positionsToPlot
     

@@ -102,6 +102,8 @@ class Canvas(QLabel):
                 self.__paintLine(painter, obj)
             elif obj.type == ObjectsTypes.WIREFRAME:
                 self.__paintWireframe(painter, obj)
+            elif obj.type == ObjectsTypes.CURVE:
+                self.__paintCurve(painter, obj)
     
         painter.end()
         self.update()
@@ -153,3 +155,22 @@ class Canvas(QLabel):
             brush.setStyle(Qt.SolidPattern)  # Solid pattern
             canvas.setBrush(brush)
             canvas.drawPolygon(QPolygonF([QPointF(x.axisX, x.axisY) for x in positions]))
+
+    @classmethod
+    def __paintCurve(cls, canvas: QPainter, wireFrame: WireFrame):
+        print(f'Pintando Curva')
+        positions = wireFrame.getPositions()
+        
+        if (len(positions) == 0):
+            return
+
+        if (len(positions) == 1):
+            canvas.drawPoint(positions[0].axisX, positions[0].axisY)
+            return
+
+        if (len(positions) == 2):
+            canvas.drawLine(positions[0].axisX, positions[0].axisY, positions[1].axisX, positions[1].axisY)
+
+        for n in range(-1, len(positions) - 1):
+            # Desenha a linha entre os pontos
+            canvas.drawLine(positions[n].axisX, positions[n].axisY, positions[n + 1].axisX, positions[n + 1].axisY)

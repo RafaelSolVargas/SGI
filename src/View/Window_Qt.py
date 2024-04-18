@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QWheelEvent, QKeyEvent, QIcon
 from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget, QMainWindow, QVBoxLayout, QGroupBox, QListWidget, QHBoxLayout, QLineEdit, QFileDialog, QComboBox
 from PyQt5.QtCore import Qt, QSize
+from Domain.Shapes.Curve import Curve
 from Domain.Shapes.Line import Line
 from Domain.Shapes.Point import Point
 from Domain.Utils.Enums import ClippingMethods
@@ -40,6 +41,15 @@ class Window_Qt(QMainWindow):
                 # Read the .obj file and add it to the object handler
                 wireframe = DescriptorOBJ.readOBJFile(obj_file_path)
                 WorldHandler.getHandler().objectHandler.addObject(wireframe)
+
+        # Add a curve
+        curveP1 = Point(110, 30, 1)
+        curveP4 = Point(180, 30, 1)
+        curveR1 = Point(130, 50, 1)
+        curveR4 = Point(155, 50, 1)
+        curve = Curve("Curva Default", [curveP1, curveP4, curveR1, curveR4])
+
+        WorldHandler.getHandler().objectHandler.addObject(curve)
 
         self.__objWinFactory = ObjectWindowFactory(self)
         

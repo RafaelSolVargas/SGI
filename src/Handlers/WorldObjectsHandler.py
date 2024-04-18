@@ -135,6 +135,10 @@ class WorldObjectsHandler:
         for obj in objectToConvert:
             objPositions = obj.getPositions()
             
+            # Calculate the points for this curve
+            if (obj.type == ObjectsTypes.CURVE):
+                objPositions = CurvesPlotter.generatePoints(obj, 0.1)
+
             # Translate object 
             translateTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ, objPositions)
 
@@ -173,23 +177,9 @@ class WorldObjectsHandler:
         pointTransformed = Position3D(round(xVP), round(yVP), 1)
 
         return pointTransformed
-    
-    def __getWorldObjects(self) -> List[SGIObject]:
-        """Get the world objects, if any of them is a CURVE, generate the required points"""
-        objs: List[SGIObject] = [] 
-        for obj in self.__world.objects:
-            if (obj.type == ObjectsTypes.CURVE):
-                positionsToPlot = CurvesPlotter.generatePoints(obj, 0.1)
-                obj.setPositions(positionsToPlot)
-
-            objs.append(obj)
-
-        return objs
 
     def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
-        worldObjects = self.__getWorldObjects()
-
-        windowPosition, objs = self.__convertObjectToPPC(worldObjects)
+        windowPosition, objs = self.__convertObjectToPPC(self.__world.objects)
 
         clipped_objs = self.__clipper.clip(windowPosition, objs, self.__window.dimensions.length)
         
