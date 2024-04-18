@@ -138,7 +138,7 @@ class WorldObjectsHandler:
             
             # Calculate the points for this curve
             if (obj.type == ObjectsTypes.CURVE):
-                objPositions = CurvesPlotter.generatePoints(obj, 0.01)
+                objPositions = CurvesPlotter.generatePoints(obj, 0.1)
 
             # Translate object 
             translateTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ, objPositions)

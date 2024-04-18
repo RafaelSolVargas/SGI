@@ -418,7 +418,8 @@ class WeilerAthertonStrategy:
                                 break
         
         if polygon.type == ObjectsTypes.CURVE:
-            return Curve(polygon.name, [Point.fromPosition(p) for p in clipped if p != clipped[-1]])
+            print([(p.axisX, p.axisY) for p in clipped])
+            return Curve(polygon.name, [Point.fromPosition(p) for p in clipped if p != clipped[0] and p != clipped[-1]])
         
         return WireFrame(polygon.name, [Point.fromPosition(p) for p in clipped])
                 
@@ -454,8 +455,22 @@ class Clipper:
             elif obj.type == ObjectsTypes.LINE or (obj.type == ObjectsTypes.WIREFRAME and len(obj.getPositions()) == 2):
                 temp = self.__lineClippingStrategy.clip(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
 
-            elif obj.type == ObjectsTypes.WIREFRAME or obj.type == ObjectsTypes.CURVE:
+            elif obj.type == ObjectsTypes.WIREFRAME:
                 temp = self.__polygongClip.clip(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+                
+            elif obj.type == ObjectsTypes.CURVE:
+                curvePoints = []
+                
+                for i in range(0, len(obj.getPositions()) - 1):
+                    temp = self.__lineClippingStrategy.clip(Line(Point.fromPosition(obj.getPositions()[i]), Point.fromPosition(obj.getPositions()[i + 1]), obj.name), win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+                    
+                    if temp is None:
+                        continue
+                    
+                    curvePoints.append(Point.fromPosition(temp.getPositions()[0]))
+                    curvePoints.append(Point.fromPosition(temp.getPositions()[1]))
+                
+                temp = Curve(obj.name, curvePoints)
                 
             if temp is not None:
                 temp.setColor(obj.color)

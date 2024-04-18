@@ -6,10 +6,10 @@ from Domain.Shapes.Point import Point
 
 
 class Curve(SGIObject):
-    def __init__(self, name: str, positions: List[Point], filled: bool = False) -> None:
+    def __init__(self, name: str, positions: List[Point]) -> None:
         super().__init__(ObjectsTypes.CURVE, name, Dimensions3D(0, 0, 0), positions[0])
         self.__points = positions
-        self.__filled: bool = filled
+        self.__filled: bool = False
     
     @property
     def filled(self) -> bool:
