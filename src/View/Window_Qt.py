@@ -45,13 +45,13 @@ class Window_Qt(QMainWindow):
         # Add a curve
         curveP1 = Point(110, 30, 1)
         curveP4 = Point(180, 30, 1)
-        curveR1 = Point(130, 50, 1)
-        curveR4 = Point(155, 50, 1)
-        curveP5 = Point(180, 50, 1)
-        curveP6 = Point(110, 50, 1)
-        curveP7 = Point(110, 70, 1)
+        curveR1 = Point(150, 50, 1)
+        curveR4 = Point(180, 50, 1)
+        curveP5 = Point(200, 50, 1)
+        curveP6 = Point(220, 50, 1)
+        curveP7 = Point(220, 30, 1)
         curveP8 = Point(180, 70, 1)
-        curve = Curve("Curva Default", [curveP1, curveP4, curveR1, curveR4, curveP5, curveP6, curveP7, curveP8])
+        curve = Curve("Curva Default", [curveP1, curveP4, curveR1, curveR4, curveP5, curveP6, curveP7])
 
         WorldHandler.getHandler().objectHandler.addObject(curve)
 

@@ -8,6 +8,8 @@ from Domain.Shapes.SGIObject import SGIObject
 from Domain.Shapes.Point import Point
 from View.Button import Button
 from typing import List
+from Domain.Utils.Enums import CurvePlottingMethods
+from Domain.Management.CurvesPlotting import CurvesPlotter
 
 # Returns a function that creates a new window according to the object given
 class ObjectWindowFactory:
@@ -240,6 +242,10 @@ class ObjectWindowFactory:
         window.show()
         
     def __createCurveWindow(self):
+        def changeCurvePlottingMethod(method: str):
+            curvePlottingMethod: CurvePlottingMethods = CurvePlottingMethods.convertFromString(method)
+            CurvesPlotter.setStrategy(curvePlottingMethod)
+        
         def addTempPoint(x, y, z):
             print(f"Adicionou ponto: ({x}, {y}, {z})")
             WorldHandler.getHandler().objectHandler.addTempPointCurve(Position3D(int(x), int(y), int(z)))
@@ -281,12 +287,22 @@ class ObjectWindowFactory:
         layout.addWidget(name_field)
         
         r_field, g_field, b_field = self.__rgbHorizontalBoxes(layout)
+        
+        # Curve plotting strategy
+        strategy_label = QLabel("Tipo de curva:")
+        layout.addWidget(strategy_label)
+        
+        strategy_combo = QComboBox()
+        strategy_combo.addItem(CurvePlottingMethods.BEZIER.value)
+        strategy_combo.addItem(CurvePlottingMethods.BSPLINE.value)
+        layout.addWidget(strategy_combo)
 
         add_button = Button("Adicionar ponto à curva", lambda: (addTempPoint(x_field.text(), y_field.text(), z_field.text()), x_field.clear(), y_field.clear()))
         layout.addWidget(add_button)
         
         confirm_button = Button("Confirmar criação", lambda: (WorldHandler.getHandler().objectHandler.commitCurveCreation(name_field.text(), 
-                                                                                                                              (int(r_field.text()), int(g_field.text()), int(b_field.text()))), 
+                                                                                                                              (int(r_field.text()), int(g_field.text()), int(b_field.text()))),
+                                                                changeCurvePlottingMethod(strategy_combo.currentText()), 
                                                                 window.close(), 
                                                                 self.__parent.update()))
         layout.addWidget(confirm_button)
