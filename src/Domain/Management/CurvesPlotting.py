@@ -8,6 +8,7 @@ import numpy as np
 class CurvesPlotterStrategies(Enum):
     HERMITE = 0
     BEZIER = 1
+    BSPLINE = 2
 
 class CurvesPlottingStrategy(ABC):
     def __init__(self) -> None:
@@ -108,8 +109,90 @@ class BezierCurvePlotting(CurvesPlottingStrategy):
 
         return positionsToPlot
  
+class BSplineCurvePlotting(CurvesPlottingStrategy):
+    def __init__(self) -> None:
+        super().__init__() 
+    
+    def __BSplineMatrix(self):
+        return np.array([
+                [-1 / 6, 1 / 2, -1 / 2, 1 / 6],
+                [1 / 2, -1, 1 / 2, 0],
+                [-1 / 2, 0, 1 / 2, 0],
+                [1 / 6, 2 / 3, 1 / 6, 0],
+            ])
+    
+    def __computeParams(self, positions: List[Position3D], t: float) -> tuple[float, float]:
+        def calcDiffInit(delta: float, a: float, b: float, c: float, d: float) -> float:
+            delta_2 = delta**2
+            delta_3 = delta**3
+            return [
+                d,
+                a * delta_3 + b * delta_2 + c * delta,
+                6 * a * delta_3 + 2 * b * delta_2,
+                6 * a * delta_3,
+            ]
+        
+        GBS_x = []
+        GBS_y = []
+        
+        MBS = self.__BSplineMatrix()
+        
+        for pos in positions:
+            GBS_x.append(pos.axisX)
+            GBS_y.append(pos.axisY)
+            
+        GBS_x = np.array([GBS_x]).T
+        c_x = MBS.dot(GBS_x).T[0]
+        print(c_x)
+        diff_init_x = calcDiffInit(t, *c_x)
+        
+        GBS_y = np.array([GBS_y]).T
+        c_y = MBS.dot(GBS_y).T[0]
+        diff_init_y = calcDiffInit(t, *c_y)
+        
+        return diff_init_x, diff_init_y
+    
+    def generatePoints(self, curve: Curve, precision: float) -> List[Position3D]:
+        positionsToPlot: List[Position3D] = []
+        
+        min_points = 4
+        t = 0
+        
+        length = len(curve.getPositions())
+        
+        for i in range(length):
+            upper_bound = i + min_points
+            
+            if upper_bound > length:
+                break
+            
+            tmp = curve.getPositions()[i:upper_bound]
+            
+            delta_x, delta_y = self.__computeParams(tmp, precision)
+            
+            x = delta_x[0]
+            y = delta_y[0]
+            
+            positionsToPlot.append(Position3D(x, y, 1))
+            
+            while t <= 1:
+                x += delta_x[1]
+                delta_x[1] += delta_x[2]
+                delta_x[2] += delta_x[3]
+
+                y += delta_y[1]
+                delta_y[1] += delta_y[2]
+                delta_y[2] += delta_y[3]
+                
+                positionsToPlot.append(Position3D(x, y, 1))
+                
+                t += precision
+                
+        return positionsToPlot
+        
+    
 class CurvesPlotter:
-    __STRATEGY: CurvesPlottingStrategy = BezierCurvePlotting()
+    __STRATEGY: CurvesPlottingStrategy = BSplineCurvePlotting()
 
     @classmethod
     def setStrategy(cls, strategy: CurvesPlotterStrategies):
@@ -117,6 +200,8 @@ class CurvesPlotter:
             CurvesPlotter.__STRATEGY = HermiteCurvePlotting()
         elif strategy == CurvesPlotterStrategies.BEZIER:
             CurvesPlotter.__STRATEGY = BezierCurvePlotting()
+        elif strategy == CurvesPlotterStrategies.BSPLINE:
+            CurvesPlotter.__STRATEGY = BSplineCurvePlotting()
 
     @staticmethod
     def generatePoints(curve: Curve, precision: float) -> List[Position3D]:
