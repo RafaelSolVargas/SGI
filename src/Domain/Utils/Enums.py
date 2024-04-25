@@ -33,3 +33,15 @@ class ClippingMethods(Enum):
                 return enum_member
             
         raise ValueError(f"No such enum member with value {type_str}")
+    
+class CurvePlottingMethods(Enum):
+    BSPLINE = "BSpline"
+    BEZIER = "Bezier"
+
+    @classmethod
+    def convertFromString(cls, type_str: str) -> 'CurvePlottingMethods':
+        for enum_member in cls:
+            if enum_member.value == type_str:
+                return enum_member
+            
+        raise ValueError(f"No such enum member with value {type_str}")

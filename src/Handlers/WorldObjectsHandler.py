@@ -95,11 +95,11 @@ class WorldObjectsHandler:
         self.__tempCurvePoints.append(point)
     
     def commitCurveCreation(self, name: str = "Curva", color: tuple[int, int, int] = (0, 0, 0)) -> None:
-        if len(self.__tempWireframePoints) < 4:
+        if len(self.__tempCurvePoints) < 4:
             print('Curva precisa de pelo menos 4 pontos para ser criada')
             return
         
-        curve = Curve(name, copy(self.__tempCurvePoints), False)
+        curve = Curve(name, copy(self.__tempCurvePoints))
         curve.setColor(color)
 
         self.__world.addObject(curve)
