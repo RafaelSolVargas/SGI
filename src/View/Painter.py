@@ -10,6 +10,7 @@ from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Enums import ObjectsTypes
 from Domain.Utils.Constants import Constants
 from Handlers.WorldHandler import WorldHandler
+from Domain.Utils.Coordinates import Position3D
 
 class Canvas(QLabel):
     def __init__(self, parent=None):
@@ -130,12 +131,9 @@ class Canvas(QLabel):
         #print(f'Pintando linha de {line.pointOne.position.axisX}, {line.pointOne.position.axisY} para {line.pointTwo.position.axisX}, {line.pointTwo.position.axisY}')
         canvas.drawLine(line.pointOne.position.axisX, line.pointOne.position.axisY,
                         line.pointTwo.position.axisX, line.pointTwo.position.axisY)
-        
+    
     @classmethod
-    def __paintWireframe(cls, canvas: QPainter, wireFrame: WireFrame):
-        #print(f'Pintando wireframe')
-        positions = wireFrame.getPositions()
-        
+    def __drawWireframe(cls, canvas: QPainter, positions: list[Position3D], color: tuple[int, int, int], filled: bool = False):
         if (len(positions) == 0):
             return
 
@@ -150,12 +148,25 @@ class Canvas(QLabel):
             # Desenha a linha entre os pontos
             canvas.drawLine(positions[n].axisX, positions[n].axisY, positions[n + 1].axisX, positions[n + 1].axisY)
         
-        if wireFrame.filled:
+        if filled:
             brush = canvas.brush()
-            brush.setColor(QColor(wireFrame.color[0], wireFrame.color[1], wireFrame.color[2], 100))
+            brush.setColor(QColor(color[0], color[1], color[2], 100))
             brush.setStyle(Qt.SolidPattern)  # Solid pattern
             canvas.setBrush(brush)
             canvas.drawPolygon(QPolygonF([QPointF(x.axisX, x.axisY) for x in positions]))
+            
+    @classmethod
+    def __paintWireframe(cls, canvas: QPainter, wireFrame: WireFrame):
+        #print(f'Pintando wireframe')
+        positions = wireFrame.getPositions()
+        
+        if wireFrame.is3D():
+            for face in wireFrame.faces:
+                face_positions = [positions[x - 1] for x in face]
+                cls.__drawWireframe(canvas, face_positions, wireFrame.color, wireFrame.filled)
+        else:
+            cls.__drawWireframe(canvas, positions, wireFrame.color, wireFrame.filled)
+        
 
     @classmethod
     def __paintCurve(cls, canvas: QPainter, curve: Curve):

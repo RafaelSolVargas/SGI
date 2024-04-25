@@ -72,19 +72,31 @@ class Translation(Transform):
                             [self.__x, self.__y, self.__z, 1]])
         
 class Rotation(Transform):
-    def __init__(self, angle: float, type: RotationTypes, positions: list[Position3D] = []) -> None:
+    def __init__(self, angle: float, type: RotationTypes, positions: list[Position3D] = [], axis: str = "Z") -> None:
         super().__init__(positions)
         self.__type = type
         self.__angle = np.radians(angle)
+        self.__axis = axis
 
     def getName(self) -> str:
         return f"Rotation {self.__type}({self.__angle})"
 
     def matrix(self) -> np.ndarray:
-        return np.array([   [np.cos(self.__angle), -np.sin(self.__angle), 0, 0],
-                            [np.sin(self.__angle), np.cos(self.__angle), 0, 0],
-                            [0, 0, 1, 0],
-                            [0, 0, 0, 1]])
+        if self.__axis == "X":
+            return np.array([   [1, 0, 0, 0],
+                                [0, np.cos(self.__angle), -np.sin(self.__angle), 0],
+                                [0, np.sin(self.__angle), np.cos(self.__angle), 0],
+                                [0, 0, 0, 1]])
+        elif self.__axis == "Y":
+            return np.array([   [np.cos(self.__angle), 0, np.sin(self.__angle), 0],
+                                [0, 1, 0, 0],
+                                [-np.sin(self.__angle), 0, np.cos(self.__angle), 0],
+                                [0, 0, 0, 1]])
+        elif self.__axis == "Z":
+            return np.array([   [np.cos(self.__angle), -np.sin(self.__angle), 0, 0],
+                                [np.sin(self.__angle), np.cos(self.__angle), 0, 0],
+                                [0, 0, 1, 0],
+                                [0, 0, 0, 1]])
         
 class Scale(Transform):
     def __init__(self, x: float, y: float, z: float, positions: list[Position3D] = []) -> None:

@@ -33,7 +33,10 @@ class DescriptorOBJ:
                 faces.append([int(x) for x in line.split()[1::]])
             elif line[0] == "a":
                 break
-            
+        
+        if len(faces) > 0:
+            return WireFrame(name, positions, False, faces)
+        
         return WireFrame(name, positions)
     
     @staticmethod

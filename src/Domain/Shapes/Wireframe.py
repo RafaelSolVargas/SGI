@@ -6,10 +6,18 @@ from Domain.Shapes.Point import Point
 
 
 class WireFrame(SGIObject):
-    def __init__(self, name: str, positions: List[Point], filled: bool = False) -> None:
+    def __init__(self, name: str, positions: List[Point], filled: bool = False, faces: list[int] = None) -> None:
         super().__init__(ObjectsTypes.WIREFRAME, name, Dimensions3D(0, 0, 0), positions[0])
         self.__points = positions
         self.__filled: bool = filled
+        self.__faces = faces
+    
+    def is3D(self) -> bool:
+        return self.__faces is not None
+    
+    @property
+    def faces(self) -> list[int]:
+        return self.__faces
     
     @property
     def filled(self) -> bool:
