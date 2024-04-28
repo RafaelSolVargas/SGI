@@ -471,7 +471,7 @@ class Clipper:
                     curvePoints.append(Point.fromPosition(temp.getPositions()[1]))
                 
                 if len(curvePoints) > 0:
-                    temp = Curve(obj.name, curvePoints)
+                    temp = Curve(obj.name, curvePoints, obj.strategy)
                 
             if temp is not None:
                 temp.setColor(obj.color)

@@ -1,14 +1,10 @@
 from enum import Enum
 from Domain.Utils.Coordinates import Position3D
 from Domain.Shapes.Curve import Curve
+from Domain.Utils.Enums import CurvePlottingMethods
 from abc import ABC, abstractmethod
 from typing import List
 import numpy as np
-
-class CurvesPlotterStrategies(Enum):
-    HERMITE = 0
-    BEZIER = 1
-    BSPLINE = 2
 
 class CurvesPlottingStrategy(ABC):
     def __init__(self) -> None:
@@ -192,17 +188,13 @@ class BSplineCurvePlotting(CurvesPlottingStrategy):
         
     
 class CurvesPlotter:
-    __STRATEGY: CurvesPlottingStrategy = BSplineCurvePlotting()
-
     @classmethod
-    def setStrategy(cls, strategy: CurvesPlotterStrategies):
-        if strategy == CurvesPlotterStrategies.HERMITE:
-            CurvesPlotter.__STRATEGY = HermiteCurvePlotting()
-        elif strategy == CurvesPlotterStrategies.BEZIER:
-            CurvesPlotter.__STRATEGY = BezierCurvePlotting()
-        elif strategy == CurvesPlotterStrategies.BSPLINE:
-            CurvesPlotter.__STRATEGY = BSplineCurvePlotting()
+    def buildStrategy(cls, method: CurvePlottingMethods) -> CurvesPlottingStrategy:
+        if method == CurvePlottingMethods.BEZIER:
+            return BezierCurvePlotting()
+        elif method == CurvePlottingMethods.BSPLINE:
+            return BSplineCurvePlotting()
 
     @staticmethod
     def generatePoints(curve: Curve, precision: float) -> List[Position3D]:
-        return CurvesPlotter.__STRATEGY.generatePoints(curve, precision)
+        return CurvesPlotter.buildStrategy(curve.strategy).generatePoints(curve, precision)

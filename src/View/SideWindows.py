@@ -242,10 +242,6 @@ class ObjectWindowFactory:
         window.show()
         
     def __createCurveWindow(self):
-        def changeCurvePlottingMethod(method: str):
-            curvePlottingMethod: CurvePlottingMethods = CurvePlottingMethods.convertFromString(method)
-            CurvesPlotter.setStrategy(curvePlottingMethod)
-        
         def addTempPoint(x, y, z):
             print(f"Adicionou ponto: ({x}, {y}, {z})")
             WorldHandler.getHandler().objectHandler.addTempPointCurve(Position3D(int(x), int(y), int(z)))
@@ -301,8 +297,7 @@ class ObjectWindowFactory:
         layout.addWidget(add_button)
         
         confirm_button = Button("Confirmar criação", lambda: (WorldHandler.getHandler().objectHandler.commitCurveCreation(name_field.text(), 
-                                                                                                                              (int(r_field.text()), int(g_field.text()), int(b_field.text()))),
-                                                                changeCurvePlottingMethod(strategy_combo.currentText()), 
+                                                                                                                              (int(r_field.text()), int(g_field.text()), int(b_field.text())), CurvePlottingMethods.convertFromString(strategy_combo.currentText())),
                                                                 window.close(), 
                                                                 self.__parent.update()))
         layout.addWidget(confirm_button)

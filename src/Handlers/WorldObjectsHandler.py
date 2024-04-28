@@ -11,7 +11,7 @@ from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
 from Domain.Utils.Transforms import Translation, Rotation
-from Domain.Utils.Enums import ClippingMethods, ObjectsTypes, RotationTypes
+from Domain.Utils.Enums import ClippingMethods, ObjectsTypes, RotationTypes, CurvePlottingMethods
 from Domain.Management.Clipping import Clipper, CohenSutherlandStrategy, LiangBarskyStrategy
 from Domain.Utils.Constants import Constants
 
@@ -94,12 +94,12 @@ class WorldObjectsHandler:
         
         self.__tempCurvePoints.append(point)
     
-    def commitCurveCreation(self, name: str = "Curva", color: tuple[int, int, int] = (0, 0, 0)) -> None:
+    def commitCurveCreation(self, name: str = "Curva", color: tuple[int, int, int] = (0, 0, 0), strategy: CurvePlottingMethods = CurvePlottingMethods.BEZIER) -> None:
         if len(self.__tempCurvePoints) < 4:
             print('Curva precisa de pelo menos 4 pontos para ser criada')
             return
         
-        curve = Curve(name, copy(self.__tempCurvePoints))
+        curve = Curve(name, copy(self.__tempCurvePoints), strategy)
         curve.setColor(color)
 
         self.__world.addObject(curve)

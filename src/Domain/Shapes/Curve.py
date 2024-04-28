@@ -1,15 +1,20 @@
 from typing import List
 from Domain.Utils.Coordinates import Dimensions3D, Position3D
 from Domain.Shapes.SGIObject import SGIObject
-from Domain.Utils.Enums import ObjectsTypes
+from Domain.Utils.Enums import ObjectsTypes, CurvePlottingMethods
 from Domain.Shapes.Point import Point
 
 
 class Curve(SGIObject):
-    def __init__(self, name: str, positions: List[Point]) -> None:
+    def __init__(self, name: str, positions: List[Point], strategy: CurvePlottingMethods) -> None:
         super().__init__(ObjectsTypes.CURVE, name, Dimensions3D(0, 0, 0), positions[0])
         self.__points = positions
         self.__filled: bool = False
+        self.__strategy = strategy
+    
+    @property
+    def strategy(self) -> CurvePlottingMethods:
+        return self.__strategy
     
     @property
     def filled(self) -> bool:
@@ -18,7 +23,7 @@ class Curve(SGIObject):
     @filled.setter
     def filled(self, value: bool) -> None:
         self.__filled = value
-        
+    
     def addPoint(self, point: Point) -> None:
         self.__points.append(point)
         

@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QSize
 from Domain.Shapes.Curve import Curve
 from Domain.Shapes.Line import Line
 from Domain.Shapes.Point import Point
-from Domain.Utils.Enums import ClippingMethods
+from Domain.Utils.Enums import ClippingMethods, CurvePlottingMethods
 from View.Button import Button
 from View.Console import Console
 from View.ArrowButtonWidget import ArrowButtonWidget
@@ -51,7 +51,7 @@ class Window_Qt(QMainWindow):
         curveP6 = Point(220, 50, 1)
         curveP7 = Point(220, 30, 1)
         curveP8 = Point(180, 70, 1)
-        curve = Curve("Curva Default", [curveP1, curveP4, curveR1, curveR4, curveP5, curveP6, curveP7])
+        curve = Curve("Curva Default", [curveP1, curveP4, curveR1, curveR4, curveP5, curveP6, curveP7], strategy=CurvePlottingMethods.BSPLINE)
 
         WorldHandler.getHandler().objectHandler.addObject(curve)
 
