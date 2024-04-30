@@ -10,10 +10,11 @@ from Domain.Shapes.Line import Line
 from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
-from Domain.Utils.Transforms import Translation, Rotation
+from Domain.Utils.Transforms import Translation, Rotation, GenericTransform
 from Domain.Utils.Enums import ClippingMethods, ObjectsTypes, RotationTypes, CurvePlottingMethods
 from Domain.Management.Clipping import Clipper, CohenSutherlandStrategy, LiangBarskyStrategy
 from Domain.Utils.Constants import Constants
+import numpy as np
 
 
 class WorldObjectsHandler:
@@ -125,6 +126,59 @@ class WorldObjectsHandler:
         
         self.__tempWireframePoints.clear()
     
+    def __parallelProjection(self, inputObjects: List[SGIObject]) -> List[SGIObject]:
+        # Get the left bottom and left up positions from Window
+        windowPositions = deepcopy(self.__window.getPositions())
+       
+        objectToConvert = deepcopy(inputObjects)
+        
+        # VPR to origin
+        toOrigin = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
+        
+        operations = [toOrigin]
+        
+        # Get VPN
+        # TODO: validate
+        center = deepcopy(self.__window.centralPoint)
+        x = np.add(center.homogenous(), windowPositions[3].homogenous() - windowPositions[0].homogenous())
+        y = np.add(center.homogenous(), windowPositions[1].homogenous() - windowPositions[0].homogenous())
+        
+        x = x / np.linalg.norm(x)
+        y = y / np.linalg.norm(y)
+        
+        vpn = np.cross(x[:3], y[:3])
+        
+        # Angle between vpn, x and y
+        alpha = np.pi / 2 - np.arccos(np.clip(np.dot(vpn, [1, 0, 0]), windowPositions[0].axisX, windowPositions[2].axisX))
+        beta = np.pi / 4 - np.arccos(np.clip(np.dot(vpn, [0, 1, 0]), windowPositions[0].axisY, windowPositions[1].axisY))
+        
+        if alpha != 0 or beta != 0:
+            rotateX = Rotation(-alpha, "X")
+            rotateY = Rotation(-beta, "Y")
+            operations.append(rotateX)
+            operations.append(rotateY)
+        
+        # Apply the transform to a copy of each object
+        transformedObjects: List[SGIObject] = []
+        for obj in objectToConvert:
+            objPositions = obj.getPositions()
+            
+            # Calculate the points for this curve
+            if (obj.type == ObjectsTypes.CURVE):
+                objPositions = CurvesPlotter.generatePoints(obj, 0.1)
+                
+            finalTransform = GenericTransform(positions=objPositions)
+            finalTransform.add_transforms(operations)
+            
+            objFinalPositions = finalTransform.execute()
+            
+            objCopy = deepcopy(obj)
+            objCopy.setPositions(objFinalPositions)
+            
+            transformedObjects.append(objCopy)
+            
+        return transformedObjects
+         
     def __convertObjectToPPC(self, inputObjects: List[SGIObject]) -> tuple[Position3D, list[SGIObject]]:
         # Get the left bottom and left up positions from Window
         windowPositions = deepcopy(self.__window.getPositions())
@@ -180,7 +234,8 @@ class WorldObjectsHandler:
         return pointTransformed
 
     def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
-        windowPosition, objs = self.__convertObjectToPPC(self.__world.objects)
+        objs2d = self.__parallelProjection(self.__world.objects)
+        windowPosition, objs = self.__convertObjectToPPC(objs2d)
 
         clipped_objs = self.__clipper.clip(windowPosition, objs, self.__window.dimensions.length)
         

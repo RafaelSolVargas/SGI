@@ -3,6 +3,7 @@ from Domain.Utils.Coordinates import Dimensions3D, Position3D
 from Domain.Utils.Enums import ObjectsTypes
 from Domain.Utils.Constants import Constants
 from Domain.Utils.Transforms import Translation, Scale, GenericTransform
+import numpy as np
 
 class Window(SGIObject):
     ZOOM_MOVE: int = 10
