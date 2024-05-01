@@ -167,7 +167,7 @@ class WorldObjectsHandler:
             operations.append(rotateY)
         
         windowTransform = GenericTransform(positions=windowPositions)
-        windowTransform.add_transforms(operations)
+        windowTransform.add_transforms([])
         newWindowPositions = windowTransform.execute()
         
         # Apply the transform to a copy of each object
@@ -183,6 +183,7 @@ class WorldObjectsHandler:
             finalTransform.add_transforms(operations)
             
             objFinalPositions = finalTransform.execute()
+            objFinalPositions = [Position3D(p.axisX, p.axisY, 0) for p in objFinalPositions]
             
             objCopy = deepcopy(obj)
             objCopy.setPositions(objFinalPositions)

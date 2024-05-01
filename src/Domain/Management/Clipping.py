@@ -421,13 +421,58 @@ class WeilerAthertonStrategy:
             print([(p.axisX, p.axisY) for p in clipped])
             return Curve(polygon.name, [Point.fromPosition(p) for p in clipped if p != clipped[0] and p != clipped[-1]])
         
-        return WireFrame(polygon.name, [Point.fromPosition(p) for p in clipped], polygon.filled, polygon.faces)
+        return WireFrame(polygon.name, [Point.fromPosition(p) for p in clipped], polygon.filled)
                 
               
 class Clipper:
     def __init__(self) -> None:
         self.__lineClippingStrategy: LineClippingStrategy = CohenSutherlandStrategy()
         self.__polygongClip = WeilerAthertonStrategy()
+    
+    def __clipWireframe3D(self, wireframe: WireFrame, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> WireFrame:
+        all_inside = True
+        outside = []
+        for p in wireframe.getPositions():
+            if self.__clipPoint(Point.fromPosition(p), win_bottom_left, win_top_left, win_top_right, win_bottom_right) is None:
+                all_inside = False
+                outside.append(True)
+            else:
+                outside.append(False)
+            
+        if all(outside):
+            return None
+        
+        if all_inside:
+            return wireframe 
+        
+        positions = deepcopy(wireframe.getPositions())
+        faces = deepcopy(wireframe.faces)
+        
+        clipped_faces = []
+        clipped_positions = []
+        
+        for face in faces:
+            clipped_face = []
+            
+            for i in range(-1, len(face) - 1):
+                p1 = Point.fromPosition(positions[face[i] - 1])
+                p2 = Point.fromPosition(positions[face[i + 1] - 1])
+                
+                temp = LiangBarskyStrategy().clip(Line(p1, p2, wireframe.name), win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+                
+                if temp is None:
+                    continue
+                
+                clipped_positions.append(temp.getPositions()[0])
+                clipped_positions.append(temp.getPositions()[1])
+                
+                clipped_face.append(len(clipped_positions) - 1)
+                clipped_face.append(len(clipped_positions))
+                
+            if len(clipped_face) > 0:
+                clipped_faces.append(clipped_face)
+        
+        return WireFrame(wireframe.name, [Point.fromPosition(p) for p in clipped_positions], wireframe.filled, clipped_faces)
     
     def __clipPoint(self, point: Point, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> Point | None:
         if point.position.axisX >= win_bottom_left.axisX and point.position.axisX <= win_top_right.axisX and point.position.axisY >= win_bottom_left.axisY and point.position.axisY <= win_top_right.axisY:
@@ -456,7 +501,10 @@ class Clipper:
                 temp = self.__lineClippingStrategy.clip(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
 
             elif obj.type == ObjectsTypes.WIREFRAME:
-                temp = self.__polygongClip.clip(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+                if not obj.is3D():
+                    temp = self.__polygongClip.clip(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+                else:
+                    temp = self.__clipWireframe3D(obj, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
                 
             elif obj.type == ObjectsTypes.CURVE:
                 curvePoints = []
