@@ -418,10 +418,6 @@ class WeilerAthertonStrategy:
                                 i = n
                                 break
         
-        if polygon.type == ObjectsTypes.CURVE:
-            print([(p.axisX, p.axisY) for p in clipped])
-            return Curve(polygon.name, [Point.fromPosition(p) for p in clipped if p != clipped[0] and p != clipped[-1]])
-        
         return WireFrame(polygon.name, [Point.fromPosition(p) for p in clipped], polygon.filled)
                 
               
@@ -462,7 +458,7 @@ class Clipper:
                 clipped_faces.append(clipped_face)
         
         if len(clipped_positions) == 0:
-            return
+            return None
 
         return WireFrame(wireframe.name, [Point.fromPosition(p) for p in clipped_positions], wireframe.filled, clipped_faces, lines)
     

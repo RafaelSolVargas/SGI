@@ -24,6 +24,7 @@ class WorldObjectsHandler:
         self.__tempWireframePoints: List[Point] = []
         self.__tempCurvePoints: List[Point] = []
         self.__clipper = Clipper()
+        self.__debugWindowPos = []
 
     def setClippingMethod(self, clippingMethod: ClippingMethods) -> None:
         if clippingMethod == ClippingMethods.COHEN:
@@ -37,8 +38,8 @@ class WorldObjectsHandler:
     def windowPositionsPPC(self) -> List[Position3D]:
         arr = []
         
-        for position in self.__window.getPositions():
-            arr.append(self.__transformPositionToViewPort(position, self.__window.getPositions()))
+        for position in self.__debugWindowPos:
+            arr.append(self.__transformPositionToViewPort(position, self.__debugWindowPos))
             
         for position in arr:
             position.axisX += Constants.VIEWPORT_SLACK // 2
@@ -48,7 +49,11 @@ class WorldObjectsHandler:
     
     @property
     def windowCenterPPC(self) -> Position3D:
-        return self.__convertWorldPositionToPpcAndViewport(self.__window.centralPoint)
+        x_center = sum([p.axisX for p in self.__debugWindowPos]) / 4
+        y_center = sum([p.axisY for p in self.__debugWindowPos]) / 4
+        z_center = sum([p.axisZ for p in self.__debugWindowPos]) / 4
+        
+        return self.__transformPositionToViewPort(Position3D(x_center, y_center, z_center), self.__debugWindowPos)
 
     def __convertWorldPositionToPpcAndViewport(self, positionPPC: Position3D) -> Position3D: 
         # Creates a point to follow the method interface
@@ -140,8 +145,8 @@ class WorldObjectsHandler:
         # Get VPN
         # TODO: validate
         center = deepcopy(self.__window.centralPoint)
-        x = np.add(center.homogenous(), windowPositions[3].homogenous() - windowPositions[0].homogenous())
-        y = np.add(center.homogenous(), windowPositions[1].homogenous() - windowPositions[0].homogenous())
+        x = windowPositions[3].homogenous() - windowPositions[0].homogenous()
+        y = windowPositions[1].homogenous() - windowPositions[0].homogenous()
         
         x = x / np.linalg.norm(x)
         y = y / np.linalg.norm(y)
@@ -158,6 +163,7 @@ class WorldObjectsHandler:
         print(f"Window angles: {self.__window.angles}")
         print(f"Alpha: {alpha}, Beta: {beta}")
         
+        rotateX, rotateY = None, None
         if alpha != 0:
             rotateX = Rotation(-alpha, RotationTypes.CENTER_WORLD, axis="X")
             operations.append(rotateX)
@@ -195,6 +201,10 @@ class WorldObjectsHandler:
     def __convertObjectToPPC(self, inputObjects: List[SGIObject], windowPos: List[Position3D]) -> tuple[Position3D, list[SGIObject]]:
         # Get the left bottom and left up positions from Window
         windowPositions = deepcopy(windowPos)
+        
+        x_center = sum([p.axisX for p in windowPositions]) / 4
+        y_center = sum([p.axisY for p in windowPositions]) / 4
+        z_center = sum([p.axisZ for p in windowPositions]) / 4
        
         objectToConvert = deepcopy(inputObjects)
         
@@ -208,7 +218,7 @@ class WorldObjectsHandler:
                 objPositions = CurvesPlotter.generatePoints(obj, 0.1)
 
             # Translate object 
-            translateTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ, objPositions)
+            translateTransform = Translation(-x_center, -y_center, -z_center, objPositions)
 
             # Execute the matrix calculus
             objFinalPositions = translateTransform.execute()
@@ -220,10 +230,7 @@ class WorldObjectsHandler:
             transformedObjects.append(objCopy)
 
         # Translate the window
-        translateWindowTransform = Translation(-self.__window.centralPoint.axisX, 
-                                       -self.__window.centralPoint.axisY, 
-                                       -self.__window.centralPoint.axisZ, 
-                                       windowPositions)
+        translateWindowTransform = Translation(-x_center, -y_center, -z_center, windowPositions)
 
         newWindowsPositions = translateWindowTransform.execute()
 
@@ -250,6 +257,8 @@ class WorldObjectsHandler:
         windowPos, objs2d = self.__parallelProjection(self.__world.objects)
         #objs2d, windowPos = self.__world.objects, self.__window.getPositions()
         windowPosition, objs = self.__convertObjectToPPC(objs2d, windowPos)
+        
+        self.__debugWindowPos = windowPosition
 
         clipped_objs = self.__clipper.clip(windowPosition, objs, self.__window.dimensions.length)
         
