@@ -472,6 +472,9 @@ class Clipper:
             if len(clipped_face) > 0:
                 clipped_faces.append(clipped_face)
         
+        if len(clipped_positions) == 0:
+            return
+
         return WireFrame(wireframe.name, [Point.fromPosition(p) for p in clipped_positions], wireframe.filled, clipped_faces)
     
     def __clipPoint(self, point: Point, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> Point | None:
