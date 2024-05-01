@@ -55,7 +55,7 @@ class WorldObjectsHandler:
         point = Point(positionPPC.axisX, positionPPC.axisY, positionPPC.axisZ)
 
         # Convert to PPC
-        windowPositions, objectsConvertedToPPC = self.__convertObjectToPPC([point])
+        windowPositions, objectsConvertedToPPC = self.__convertObjectToPPC([point], self.__window.getPositions())
 
         # Extract the position again
         positionPPC = objectsConvertedToPPC[0].position
@@ -126,7 +126,7 @@ class WorldObjectsHandler:
         
         self.__tempWireframePoints.clear()
     
-    def __parallelProjection(self, inputObjects: List[SGIObject]) -> List[SGIObject]:
+    def __parallelProjection(self, inputObjects: List[SGIObject]) -> tuple[List[Position3D], List[SGIObject]]:
         # Get the left bottom and left up positions from Window
         windowPositions = deepcopy(self.__window.getPositions())
        
@@ -149,14 +149,26 @@ class WorldObjectsHandler:
         vpn = np.cross(x[:3], y[:3])
         
         # Angle between vpn, x and y
-        alpha = np.pi / 2 - np.arccos(np.clip(np.dot(vpn, [1, 0, 0]), windowPositions[0].axisX, windowPositions[2].axisX))
-        beta = np.pi / 4 - np.arccos(np.clip(np.dot(vpn, [0, 1, 0]), windowPositions[0].axisY, windowPositions[1].axisY))
+        alpha = np.pi / 2 - np.arccos(np.clip(np.dot(vpn, [1, 0, 0]), -1, 1))
+        beta = np.pi / 2 - np.arccos(np.clip(np.dot(vpn, [0, 1, 0]), -1, 1))
         
-        if alpha != 0 or beta != 0:
-            rotateX = Rotation(-alpha, "X")
-            rotateY = Rotation(-beta, "Y")
+        alpha = np.degrees(alpha)
+        beta = np.degrees(beta)
+        
+        print(f"Window angles: {self.__window.angles}")
+        print(f"Alpha: {alpha}, Beta: {beta}")
+        
+        if alpha != 0:
+            rotateX = Rotation(-alpha, RotationTypes.CENTER_WORLD, axis="X")
             operations.append(rotateX)
+        
+        if beta != 0:
+            rotateY = Rotation(-beta, RotationTypes.CENTER_WORLD, axis="Y")
             operations.append(rotateY)
+        
+        windowTransform = GenericTransform(positions=windowPositions)
+        windowTransform.add_transforms(operations)
+        newWindowPositions = windowTransform.execute()
         
         # Apply the transform to a copy of each object
         transformedObjects: List[SGIObject] = []
@@ -177,11 +189,11 @@ class WorldObjectsHandler:
             
             transformedObjects.append(objCopy)
             
-        return transformedObjects
+        return newWindowPositions, transformedObjects
          
-    def __convertObjectToPPC(self, inputObjects: List[SGIObject]) -> tuple[Position3D, list[SGIObject]]:
+    def __convertObjectToPPC(self, inputObjects: List[SGIObject], windowPos: List[Position3D]) -> tuple[Position3D, list[SGIObject]]:
         # Get the left bottom and left up positions from Window
-        windowPositions = deepcopy(self.__window.getPositions())
+        windowPositions = deepcopy(windowPos)
        
         objectToConvert = deepcopy(inputObjects)
         
@@ -215,7 +227,7 @@ class WorldObjectsHandler:
         newWindowsPositions = translateWindowTransform.execute()
 
         # Rotate the window
-        newWindowsPositions = Rotation(-self.__window.angle, RotationTypes.CENTER_WORLD, newWindowsPositions).execute()
+        newWindowsPositions = Rotation(-self.__window.angleZ, RotationTypes.CENTER_WORLD, newWindowsPositions).execute()
 
         # Return new window matrix and transformed objects
         return newWindowsPositions, transformedObjects
@@ -234,8 +246,9 @@ class WorldObjectsHandler:
         return pointTransformed
 
     def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
-        objs2d = self.__parallelProjection(self.__world.objects)
-        windowPosition, objs = self.__convertObjectToPPC(objs2d)
+        windowPos, objs2d = self.__parallelProjection(self.__world.objects)
+        #objs2d, windowPos = self.__world.objects, self.__window.getPositions()
+        windowPosition, objs = self.__convertObjectToPPC(objs2d, windowPos)
 
         clipped_objs = self.__clipper.clip(windowPosition, objs, self.__window.dimensions.length)
         

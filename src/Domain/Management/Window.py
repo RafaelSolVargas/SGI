@@ -17,20 +17,35 @@ class Window(SGIObject):
     def __init__(self, lenght: int, width: int, height: int) -> None:
         dimensions = Dimensions3D(lenght, width, height)
         
-        self.__angle = 0
+        self.__angle = {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+        }
         
         # Bottom left, top left, top right, bottom right
-        self.__positions = [Position3D(-Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 0), Position3D(-Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 0), Position3D(Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 0), Position3D(Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 0)]
+        self.__positions = [Position3D(-Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 1), Position3D(-Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 1), Position3D(Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 1), Position3D(Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 1)]
 
         super().__init__(ObjectsTypes.WINDOW, "Window", dimensions, self.__positions[0])
     
     @property
-    def angle(self) -> float:
+    def angles(self) -> dict[str, float]:
         return self.__angle
     
-    @angle.setter
-    def angle(self, value: float) -> None:
-        self.__angle = value
+    @property
+    def angleZ(self) -> float:
+        return self.__angle["Z"]
+    
+    @property
+    def angleY(self) -> float:
+        return self.__angle["Y"]
+
+    @property
+    def angleX(self) -> float:
+        return self.__angle["X"]
+    
+    def setAngle(self, angle: float, axis: str) -> None:
+        self.__angle[axis] = angle
     
     def getPositions(self) -> list[Position3D]:
         return self.__positions

@@ -51,7 +51,7 @@ class Window_Qt(QMainWindow):
         curveP6 = Point(220, 50, 1)
         curveP7 = Point(220, 30, 1)
         curveP8 = Point(180, 70, 1)
-        curve = Curve("Curva Default", [curveP1, curveP4, curveR1, curveR4, curveP5, curveP6, curveP7], strategy=CurvePlottingMethods.BSPLINE)
+        curve = Curve("Curva Default", [curveP1, curveP4, curveR1, curveR4, curveP5, curveP6, curveP7], strategy=CurvePlottingMethods.BEZIER)
 
         WorldHandler.getHandler().objectHandler.addObject(curve)
 
@@ -164,9 +164,19 @@ class Window_Qt(QMainWindow):
         rotate_window_box.setStyleSheet("border: transparent;")
         rotate_window_box.setGeometry(10, 100, 200, 200)
         
+        title_widget = QWidget()
+        title_widget.setLayout(QHBoxLayout())
+        rotate_window_box.layout().addWidget(title_widget)
+        
         rotate_window_label = QLabel("Rotacionar")
-        rotate_window_label.setAlignment(Qt.AlignCenter)
-        rotate_window_box.layout().addWidget(rotate_window_label)
+        title_widget.layout().addWidget(rotate_window_label)
+        rotation_axis_dropdown = QComboBox()
+        rotation_axis_dropdown.setMaximumSize(50, 25)
+        rotation_axis_dropdown.addItem("X")
+        rotation_axis_dropdown.addItem("Y")
+        rotation_axis_dropdown.addItem("Z")
+        rotation_axis_dropdown.setCurrentIndex(2)
+        title_widget.layout().addWidget(rotation_axis_dropdown)
 
         rotation_angle_input = QLineEdit()
         rotation_angle_widget = QWidget(rotate_window_box)
@@ -174,22 +184,23 @@ class Window_Qt(QMainWindow):
         rotation_angle_layout.addWidget(rotation_angle_input)
         rotation_angle_layout.addWidget(QLabel("°"))
         rotate_window_box.layout().addWidget(rotation_angle_widget)
+        
 
-        confirm_button = Button("Confirmar", lambda: (self.__rotateWindow(float(rotation_angle_input.text()))))
+        confirm_button = Button("Confirmar", lambda: (self.__rotateWindow(float(rotation_angle_input.text()), rotation_axis_dropdown.currentText())))
         rotate_window_box.layout().addWidget(confirm_button)
 
         # Adding the rotate windows with default value buttons
-        rotate_window_left_button = Button("", lambda: (self.__rotateWindow(float(45))))
-        rotate_window_left_button.setFixedHeight(35)
-        rotate_window_left_button.setFixedWidth(35)
-        rotate_window_left_button.setIconSize(QSize(35, 35))
+        rotate_window_left_button = Button("", lambda: (self.__rotateWindow(float(45), rotation_axis_dropdown.currentText())))
+        rotate_window_left_button.setFixedHeight(25)
+        rotate_window_left_button.setFixedWidth(25)
+        rotate_window_left_button.setIconSize(QSize(25, 25))
         rotate_window_left_button.setIcon(QIcon("View/Images/rotate_left.png"))
         rotation_angle_widget.layout().addWidget(rotate_window_left_button)
 
-        rotate_window_right_button = Button("", lambda: (self.__rotateWindow(float(-45))))
-        rotate_window_right_button.setFixedHeight(35)
-        rotate_window_right_button.setFixedWidth(35)
-        rotate_window_right_button.setIconSize(QSize(35, 35))
+        rotate_window_right_button = Button("", lambda: (self.__rotateWindow(float(-45), rotation_axis_dropdown.currentText())))
+        rotate_window_right_button.setFixedHeight(25)
+        rotate_window_right_button.setFixedWidth(25)
+        rotate_window_right_button.setIconSize(QSize(25, 25))
         rotate_window_right_button.setIcon(QIcon("View/Images/rotate_right.png"))
         rotation_angle_widget.layout().addWidget(rotate_window_right_button)
 
@@ -242,8 +253,8 @@ class Window_Qt(QMainWindow):
 
         WorldHandler.getHandler().objectHandler.setClippingMethod(clippingMethod)
 
-    def __rotateWindow(self, angle: float) -> None:
-        WorldHandler.getHandler().rotateWindow(angle)
+    def __rotateWindow(self, angle: float, axis: str = "Z") -> None:
+        WorldHandler.getHandler().rotateWindow(angle, axis)
         self.update()
     
     def __openTransformWindow(self, obj_list_widget: QListWidget) -> None:

@@ -421,7 +421,7 @@ class WeilerAthertonStrategy:
             print([(p.axisX, p.axisY) for p in clipped])
             return Curve(polygon.name, [Point.fromPosition(p) for p in clipped if p != clipped[0] and p != clipped[-1]])
         
-        return WireFrame(polygon.name, [Point.fromPosition(p) for p in clipped])
+        return WireFrame(polygon.name, [Point.fromPosition(p) for p in clipped], polygon.filled, polygon.faces)
                 
               
 class Clipper:

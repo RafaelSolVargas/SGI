@@ -35,11 +35,11 @@ class WorldHandler:
     def viewport(self):
         return self.__viewport
 
-    def rotateWindow(self, angle: float):
+    def rotateWindow(self, angle: float, axis: str) -> None:
         window_positions = self.__window.getPositions()
 
         windowTranslationTransform = Translation(-self.__window.centralPoint.axisX, -self.__window.centralPoint.axisY, -self.__window.centralPoint.axisZ)
-        windowRotationTransform = Rotation(angle, RotationTypes.CENTER_OBJECT)
+        windowRotationTransform = Rotation(angle, RotationTypes.CENTER_OBJECT, axis=axis)
         windowBackTranslationTransform = Translation(self.__window.centralPoint.axisX, self.__window.centralPoint.axisY, self.__window.centralPoint.axisZ)
         
         finalTransform = GenericTransform(positions=window_positions)
@@ -47,13 +47,15 @@ class WorldHandler:
         
         finalPositions = finalTransform.execute()
         self.__window.setPositions(finalPositions)
-        self.__window.angle += angle % 360
+        newAngle = (self.__window.angles[axis] + angle) % 360
+        self.__window.setAngle(newAngle, axis)
+        print(f"Window angle {axis}: {newAngle}")
         
         # Transform the objects of the world
         for obj in self.__world.objects:
             transform = GenericTransform(positions=obj.getPositions())
             
-            rotation = Rotation(-angle, RotationTypes.CENTER_OBJECT)
+            rotation = Rotation(-angle, RotationTypes.CENTER_OBJECT, axis=axis)
                        
             transform.add_transforms([windowTranslationTransform, rotation, windowBackTranslationTransform])
             obj.setPositions(transform.execute())
