@@ -157,13 +157,12 @@ class Canvas(QLabel):
             
     @classmethod
     def __paintWireframe(cls, canvas: QPainter, wireFrame: WireFrame):
-        #print(f'Pintando wireframe')
         positions = wireFrame.getPositions()
         
         if wireFrame.is3D():
-            for face in wireFrame.faces:
-                face_positions = [positions[x - 1] for x in face]
-                cls.__drawWireframe(canvas, face_positions, wireFrame.color, wireFrame.filled)
+            for line in wireFrame.lines3D:
+                canvas.drawLine(line.pointOne.position.axisX, line.pointOne.position.axisY, line.pointTwo.position.axisX, line.pointTwo.position.axisY)
+
         else:
             cls.__drawWireframe(canvas, positions, wireFrame.color, wireFrame.filled)
         

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
 from Domain.Shapes.Wireframe import WireFrame
@@ -430,26 +431,12 @@ class Clipper:
         self.__polygongClip = WeilerAthertonStrategy()
     
     def __clipWireframe3D(self, wireframe: WireFrame, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> WireFrame:
-        all_inside = True
-        outside = []
-        for p in wireframe.getPositions():
-            if self.__clipPoint(Point.fromPosition(p), win_bottom_left, win_top_left, win_top_right, win_bottom_right) is None:
-                all_inside = False
-                outside.append(True)
-            else:
-                outside.append(False)
-            
-        if all(outside):
-            return None
-        
-        if all_inside:
-            return wireframe 
-        
         positions = deepcopy(wireframe.getPositions())
         faces = deepcopy(wireframe.faces)
         
         clipped_faces = []
         clipped_positions = []
+        lines: List[Line] = []
         
         for face in faces:
             clipped_face = []
@@ -458,13 +445,15 @@ class Clipper:
                 p1 = Point.fromPosition(positions[face[i] - 1])
                 p2 = Point.fromPosition(positions[face[i + 1] - 1])
                 
-                temp = LiangBarskyStrategy().clip(Line(p1, p2, wireframe.name), win_bottom_left, win_top_left, win_top_right, win_bottom_right)
-                
-                if temp is None:
+                line = LiangBarskyStrategy().clip(Line(p1, p2, wireframe.name), win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+
+                if line is None:
                     continue
+
+                lines.append(line)
                 
-                clipped_positions.append(temp.getPositions()[0])
-                clipped_positions.append(temp.getPositions()[1])
+                clipped_positions.append(line.getPositions()[0])
+                clipped_positions.append(line.getPositions()[1])
                 
                 clipped_face.append(len(clipped_positions) - 1)
                 clipped_face.append(len(clipped_positions))
@@ -475,7 +464,7 @@ class Clipper:
         if len(clipped_positions) == 0:
             return
 
-        return WireFrame(wireframe.name, [Point.fromPosition(p) for p in clipped_positions], wireframe.filled, clipped_faces)
+        return WireFrame(wireframe.name, [Point.fromPosition(p) for p in clipped_positions], wireframe.filled, clipped_faces, lines)
     
     def __clipPoint(self, point: Point, win_bottom_left: Position3D, win_top_left: Position3D, win_top_right: Position3D, win_bottom_right: Position3D) -> Point | None:
         if point.position.axisX >= win_bottom_left.axisX and point.position.axisX <= win_top_right.axisX and point.position.axisY >= win_bottom_left.axisY and point.position.axisY <= win_top_right.axisY:

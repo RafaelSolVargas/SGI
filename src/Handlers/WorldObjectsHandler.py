@@ -216,7 +216,7 @@ class WorldObjectsHandler:
             # Create a new object with the new positions and add to the list
             objCopy = deepcopy(obj)
             objCopy.setPositions(objFinalPositions)
-            
+
             transformedObjects.append(objCopy)
 
         # Translate the window
@@ -266,6 +266,21 @@ class WorldObjectsHandler:
                 position.axisY = transformedPosition.axisY + Constants.VIEWPORT_SLACK // 2
                 position.axisZ = transformedPosition.axisZ
         
+            if objCopy.type == ObjectsTypes.WIREFRAME and objCopy.is3D():
+                for line in objCopy.lines3D:
+                    posOne = line.pointOne.position
+                    posTwo = line.pointTwo.position
+
+                    transformedPosOne = self.__transformPositionToViewPort(posOne, windowPosition)
+                    line.pointOne.position.axisX = transformedPosOne.axisX + Constants.VIEWPORT_SLACK // 2
+                    line.pointOne.position.axisY = transformedPosOne.axisY + Constants.VIEWPORT_SLACK // 2
+                    line.pointOne.position.axisZ = transformedPosOne.axisZ
+
+                    transformedPosTwo = self.__transformPositionToViewPort(posTwo, windowPosition)
+                    line.pointTwo.position.axisX = transformedPosTwo.axisX + Constants.VIEWPORT_SLACK // 2
+                    line.pointTwo.position.axisY = transformedPosTwo.axisY + Constants.VIEWPORT_SLACK // 2
+                    line.pointTwo.position.axisZ = transformedPosTwo.axisZ
+
             objectsToShow.append(objCopy)
 
         return objectsToShow
