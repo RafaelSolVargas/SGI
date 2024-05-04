@@ -173,7 +173,7 @@ class WorldObjectsHandler:
             operations.append(rotateY)
         
         windowTransform = GenericTransform(positions=windowPositions)
-        windowTransform.add_transforms([])
+        windowTransform.add_transforms([toOrigin])
         newWindowPositions = windowTransform.execute()
         
         # Apply the transform to a copy of each object
@@ -235,7 +235,10 @@ class WorldObjectsHandler:
         newWindowsPositions = translateWindowTransform.execute()
 
         # Rotate the window
-        newWindowsPositions = Rotation(-self.__window.angleZ, RotationTypes.CENTER_WORLD, newWindowsPositions).execute()
+        rotations = [Rotation(-angle, RotationTypes.CENTER_WORLD, axis=axis) for axis, angle in self.__window.angles.items()]
+        rotateWindowTransform = GenericTransform(positions=newWindowsPositions)
+        rotateWindowTransform.add_transforms(rotations)
+        newWindowsPositions = rotateWindowTransform.execute()
 
         # Return new window matrix and transformed objects
         return newWindowsPositions, transformedObjects
