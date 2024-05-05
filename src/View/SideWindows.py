@@ -9,7 +9,7 @@ from Domain.Shapes.Point import Point
 from View.Button import Button
 from typing import List
 from Domain.Utils.Enums import CurvePlottingMethods
-from Domain.Management.CurvesPlotting import CurvesPlotter
+import math
 
 # Returns a function that creates a new window according to the object given
 class ObjectWindowFactory:
@@ -505,6 +505,45 @@ class ObjectTransformWindow(QMainWindow):
             self.__rotation_point_input_box = self.RotationSpecificPointInputBox(self, "Ponto arbitrário", angle, axis, self.__rotation_specific_point_callback)
             self.__rotation_point_input_box.show()
             return
+         
+        elif (typeEnum == RotationTypes.OBJECT_AXIS):
+            # Utiliza o eixo de (0,0,0) até o centro do objeto
+            axisPoint = self.__obj.centralPoint
+                    
+            # Normaliza o vetor para obter a direção do eixo
+            axis_magnitude = (axisPoint.axisX**2 + axisPoint.axisY**2 + axisPoint.axisZ**2) ** 0.5
+            axis_direction = (axisPoint.axisX / axis_magnitude, axisPoint.axisY / axis_magnitude, axisPoint.axisZ / axis_magnitude)
+            
+            # Calcula os ângulos de rotação em torno dos eixos X, Y e Z com base na direção do eixo
+            angleOnAxisX = math.degrees(math.atan2(axis_direction[1], axis_direction[2]))
+            angleOnAxisZ = math.degrees(math.atan2(axis_direction[1], axis_direction[0]))
+            angleOnAxisY = math.degrees(math.atan2(axis_direction[0], axis_direction[2]))
+
+            # Transladar o mundo todo para o ponto fica no 0,0,0
+            translateToOrigin = Translation(-axisPoint.axisX, -axisPoint.axisY, -axisPoint.axisZ)
+            
+            # Rodar em torno do eixo X para trazer o objeto para o plano XY
+            # Decompõe o eixo para saber quanto deve ser passado ao eixo X
+            rotationToX = Rotation(-angleOnAxisX, RotationTypes.OBJECT_AXIS, self.__obj.getPositions(), "X")
+
+            # Rodar em torno do eixo Z para que o objeto fique no plano ZY
+            # Decompõe o eixo para saber quanto deve ser passado ao eixo Z
+            rotationToZ = Rotation(-angleOnAxisZ, RotationTypes.OBJECT_AXIS, self.__obj.getPositions(), "Z")
+
+            # Dessa forma o eixo arbitrário irá ficar alinhado com o eixo Y
+            # Rotacionar o angulo original em torno de Y
+            rotationInY = Rotation(angleOnAxisY, RotationTypes.OBJECT_AXIS, self.__obj.getPositions(), "Z")
+            
+            # Desfaz rotação em Z            
+            rotationBackZ = Rotation(angleOnAxisZ, RotationTypes.OBJECT_AXIS, self.__obj.getPositions(), "Z")
+
+            # Desfaz rotação em X
+            rotationBackX = Rotation(angleOnAxisX, RotationTypes.OBJECT_AXIS, self.__obj.getPositions(), "X")
+
+            # Desfaz a translação
+            translateBack = Translation(axisPoint.axisX, axisPoint.axisY, axisPoint.axisZ)
+
+            transform.add_transforms([translateToOrigin, rotationToX, rotationToZ, rotationInY, rotationBackZ, rotationBackX, translateBack])
 
         self.__transforms.append(transform)
         self.__update_transform_list()
