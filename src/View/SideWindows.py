@@ -508,7 +508,9 @@ class ObjectTransformWindow(QMainWindow):
          
         elif (typeEnum == RotationTypes.OBJECT_AXIS):
             # Utiliza o eixo de (0,0,0) até o centro do objeto
-            axisPoint = self.__obj.centralPoint
+            axisPoint = self.__obj.centralPoint.homogenous() - self.__obj.getPositions()[0].homogenous()
+            axisPoint = Position3D(axisPoint[0], axisPoint[1], axisPoint[2])
+            #axisPoint = self.__obj.centralPoint
                     
             # Normaliza o vetor para obter a direção do eixo
             axis_magnitude = (axisPoint.axisX**2 + axisPoint.axisY**2 + axisPoint.axisZ**2) ** 0.5

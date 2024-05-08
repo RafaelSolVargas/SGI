@@ -131,6 +131,87 @@ class WorldObjectsHandler:
         
         self.__tempWireframePoints.clear()
     
+    def __perspectiveProjection(self, inputObjects: List[SGIObject]) -> tuple[List[Position3D], List[SGIObject]]:
+        # Get the left bottom and left up positions from Window
+        windowPositions = deepcopy(self.__window.getPositions())
+        objectToConvert = deepcopy(inputObjects)
+        center = self.__window.centralPoint
+        
+        # Get VPN
+        vpn = Window.getVPN(windowPositions)
+        
+        # Get COP
+        cop = self.__window.getCOP()
+        
+        # Scale factor
+        d = center.axisZ - cop.axisZ
+        #d = np.linalg.norm(cop.homogenous()[:3] - vpn)
+        print("D: ", d)
+        
+        toOrigin = Translation(-cop.axisX, -cop.axisY, -cop.axisZ)
+        operations = [toOrigin]
+        print("COP: ", cop)
+        
+        newWindowPositions = Translation(-cop.axisX, -cop.axisY, -cop.axisZ, windowPositions).execute()
+        #newWindowPositions = windowPositions
+        
+        # Angle between vpn, x and y
+        alpha = np.pi / 2 - np.arccos(np.clip(np.dot(vpn, [1, 0, 0]), -1.0, 1.0))
+        beta = np.pi / 2 - np.arccos(np.clip(np.dot(vpn, [0, 1, 0]), -1.0, 1.0))
+        
+        alpha = np.degrees(alpha)
+        beta = np.degrees(beta)
+        
+        print(f"Window angles: {self.__window.angles}")
+        print(f"Alpha: {alpha}, Beta: {beta}")
+        
+        rotateX, rotateY = None, None
+        if alpha != 0:
+            rotateX = Rotation(-alpha, RotationTypes.CENTER_OBJECT, axis="X")
+            operations.append(rotateX)
+        
+        if beta != 0:
+            rotateY = Rotation(-beta, RotationTypes.CENTER_OBJECT, axis="Y")
+            operations.append(rotateY)
+        
+        perspectiveMatrix = np.eye(4)
+        perspectiveMatrix[3][3] = 0
+        perspectiveMatrix[3][2] = 1 / d
+        
+        print(f"Perspective matrix: {perspectiveMatrix}")
+        perspectiveTransform = GenericTransform(matrix=perspectiveMatrix)
+        operations.append(perspectiveTransform)
+        
+        # Apply the transform to a copy of each object
+        transformedObjects: List[SGIObject] = []
+        for obj in objectToConvert:
+            objPositions = obj.getPositions()
+            
+            # Calculate the points for this curve
+            if (obj.type == ObjectsTypes.CURVE):
+                objPositions = CurvesPlotter.generatePoints(obj, 0.1)
+            
+            
+            finalTransform = GenericTransform(positions=objPositions)
+            finalTransform.add_transforms(operations)
+            print("Final Perspective transform: ", finalTransform.matrix())
+            
+            objFinalPositions = finalTransform.execute()
+            
+            """ for pos in objFinalPositions:
+                pos.axisZ += 1
+                
+                pos.axisX = pos.axisX * d / (pos.axisZ)
+                pos.axisY = pos.axisY * d / (pos.axisZ)
+                pos.axisZ = 1 """
+            
+            objCopy = deepcopy(obj)
+            objCopy.setPositions(objFinalPositions)
+            
+            transformedObjects.append(objCopy)
+            
+        return newWindowPositions, transformedObjects
+    
     def __parallelProjection(self, inputObjects: List[SGIObject]) -> tuple[List[Position3D], List[SGIObject]]:
         # Get the left bottom and left up positions from Window
         windowPositions = deepcopy(self.__window.getPositions())
@@ -143,15 +224,7 @@ class WorldObjectsHandler:
         operations = [toOrigin]
         
         # Get VPN
-        # TODO: validate
-        center = deepcopy(self.__window.centralPoint)
-        x = windowPositions[3].homogenous() - windowPositions[0].homogenous()
-        y = windowPositions[1].homogenous() - windowPositions[0].homogenous()
-        
-        x = x / np.linalg.norm(x)
-        y = y / np.linalg.norm(y)
-        
-        vpn = np.cross(x[:3], y[:3])
+        vpn = Window.getVPN(windowPositions)
         
         # Angle between vpn, x and y
         alpha = np.pi / 2 - np.arccos(np.clip(np.dot(vpn, [1, 0, 0]), -1, 1))
@@ -257,7 +330,7 @@ class WorldObjectsHandler:
         return pointTransformed
 
     def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
-        windowPos, objs2d = self.__parallelProjection(self.__world.objects)
+        windowPos, objs2d = self.__perspectiveProjection(self.__world.objects)
         #objs2d, windowPos = self.__world.objects, self.__window.getPositions()
         windowPosition, objs = self.__convertObjectToPPC(objs2d, windowPos)
         

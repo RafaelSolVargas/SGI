@@ -28,6 +28,24 @@ class Window(SGIObject):
 
         super().__init__(ObjectsTypes.WINDOW, "Window", dimensions, self.__positions[0])
     
+    @staticmethod
+    def getVPN(positions: list[Position3D]) -> np.ndarray:
+        bottomLeft = positions[0]
+        topRight = positions[2]
+        
+        half_length = (topRight.axisX - bottomLeft.axisX) / 2 + bottomLeft.axisX
+        half_width = (topRight.axisY - bottomLeft.axisY) / 2 + bottomLeft.axisY
+        half_height = (topRight.axisZ - bottomLeft.axisZ) / 2 + bottomLeft.axisZ
+        center = np.array([half_length, half_width, half_height, 0])
+        
+        x = np.add(center, positions[3].homogenous() - positions[0].homogenous())
+        y = np.add(center, positions[1].homogenous() - positions[0].homogenous())
+        
+        x = x / np.linalg.norm(x)
+        y = y / np.linalg.norm(y)
+        
+        return np.cross(x[:3], y[:3])
+    
     @property
     def angles(self) -> dict[str, float]:
         return self.__angle
@@ -70,7 +88,16 @@ class Window(SGIObject):
         print('LT: ', self.__positions[1])
         print('RT: ', self.__positions[2])
         print('RB: ', self.__positions[3])
+    
+    def getCOP(self) -> Position3D:
+        """
+        Center of Projection
+        """
+        vpn = Window.getVPN(self.__positions)
 
+        cop = vpn * -100
+        return Position3D(cop[0], cop[1], cop[2])
+    
     @property
     def Xmin(self) -> float:
         return self.__positions[0].axisX

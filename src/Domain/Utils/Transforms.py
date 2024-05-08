@@ -22,7 +22,7 @@ class Transform(ABC):
         #print(f"Matrix: {matrix}, shape: {matrix.shape}")
         #print(f"Element types: {matrix.dtype}")
         
-        result = pos @ matrix
+        result = matrix @ pos 
         
         #print(f"Result: {result}, shape: {result.shape}")
         
@@ -135,4 +135,4 @@ class GenericTransform(Transform):
     
     def add_transforms(self, transforms: list[Transform]) -> None:
         for transform in transforms:
-            self.__matrix = self.__matrix @ transform.matrix()
+            self.__matrix = transform.matrix() @ self.__matrix
