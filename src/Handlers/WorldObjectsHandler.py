@@ -144,8 +144,8 @@ class WorldObjectsHandler:
         
         newWindowPositions = Translation(-cop.axisX, -cop.axisY, -cop.axisZ, windowPositions).execute()
         
-        x = self.__window.dimensions.length
-        y = self.__window.dimensions.width
+        x = self.__window.dimensions.length / 2 + cop.axisX
+        y = self.__window.dimensions.width / 2 + cop.axisY
         d = 1000
         perspectiveMatrix = np.asarray([
             [1, 0, -x/d, 0],
