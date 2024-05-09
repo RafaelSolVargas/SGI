@@ -38,13 +38,15 @@ class Window(SGIObject):
         half_height = (topRight.axisZ - bottomLeft.axisZ) / 2 + bottomLeft.axisZ
         center = np.array([half_length, half_width, half_height, 0])
         
-        x = np.add(center, positions[3].homogenous() - positions[0].homogenous())
+        x = np.add(center, positions[2].homogenous() - positions[1].homogenous())
         y = np.add(center, positions[1].homogenous() - positions[0].homogenous())
         
         x = x / np.linalg.norm(x)
         y = y / np.linalg.norm(y)
+        vpn = np.cross(x[:3], y[:3])
+        vpn = vpn / np.linalg.norm(vpn)
         
-        return np.cross(x[:3], y[:3])
+        return vpn
     
     @property
     def angles(self) -> dict[str, float]:
@@ -95,7 +97,7 @@ class Window(SGIObject):
         """
         vpn = Window.getVPN(self.__positions)
 
-        cop = vpn * -100
+        cop = vpn * -1500
         return Position3D(cop[0], cop[1], cop[2])
     
     @property

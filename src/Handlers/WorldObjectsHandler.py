@@ -135,48 +135,24 @@ class WorldObjectsHandler:
         # Get the left bottom and left up positions from Window
         windowPositions = deepcopy(self.__window.getPositions())
         objectToConvert = deepcopy(inputObjects)
-        center = self.__window.centralPoint
-        
-        # Get VPN
-        vpn = Window.getVPN(windowPositions)
         
         # Get COP
         cop = self.__window.getCOP()
         
-        # Scale factor
-        d = center.axisZ - cop.axisZ
-        #d = np.linalg.norm(cop.homogenous()[:3] - vpn)
-        print("D: ", d)
-        
         toOrigin = Translation(-cop.axisX, -cop.axisY, -cop.axisZ)
         operations = [toOrigin]
-        print("COP: ", cop)
         
         newWindowPositions = Translation(-cop.axisX, -cop.axisY, -cop.axisZ, windowPositions).execute()
-        #newWindowPositions = windowPositions
         
-        # Angle between vpn, x and y
-        alpha = np.pi / 2 - np.arccos(np.clip(np.dot(vpn, [1, 0, 0]), -1.0, 1.0))
-        beta = np.pi / 2 - np.arccos(np.clip(np.dot(vpn, [0, 1, 0]), -1.0, 1.0))
-        
-        alpha = np.degrees(alpha)
-        beta = np.degrees(beta)
-        
-        print(f"Window angles: {self.__window.angles}")
-        print(f"Alpha: {alpha}, Beta: {beta}")
-        
-        rotateX, rotateY = None, None
-        if alpha != 0:
-            rotateX = Rotation(-alpha, RotationTypes.CENTER_OBJECT, axis="X")
-            operations.append(rotateX)
-        
-        if beta != 0:
-            rotateY = Rotation(-beta, RotationTypes.CENTER_OBJECT, axis="Y")
-            operations.append(rotateY)
-        
-        perspectiveMatrix = np.eye(4)
-        perspectiveMatrix[3][3] = 0
-        perspectiveMatrix[3][2] = 1 / d
+        x = self.__window.dimensions.length
+        y = self.__window.dimensions.width
+        d = 1000
+        perspectiveMatrix = np.asarray([
+            [1, 0, -x/d, 0],
+            [0, 1, -y/d, 0],
+            [0, 0, 0, 0],
+            [0, 0, -1/d, 1]
+        ])
         
         print(f"Perspective matrix: {perspectiveMatrix}")
         perspectiveTransform = GenericTransform(matrix=perspectiveMatrix)
@@ -194,16 +170,9 @@ class WorldObjectsHandler:
             
             finalTransform = GenericTransform(positions=objPositions)
             finalTransform.add_transforms(operations)
-            print("Final Perspective transform: ", finalTransform.matrix())
+            #print("Final Perspective transform: ", finalTransform.matrix())
             
             objFinalPositions = finalTransform.execute()
-            
-            """ for pos in objFinalPositions:
-                pos.axisZ += 1
-                
-                pos.axisX = pos.axisX * d / (pos.axisZ)
-                pos.axisY = pos.axisY * d / (pos.axisZ)
-                pos.axisZ = 1 """
             
             objCopy = deepcopy(obj)
             objCopy.setPositions(objFinalPositions)
