@@ -24,7 +24,11 @@ class Window(SGIObject):
         }
         
         # Bottom left, top left, top right, bottom right
-        self.__positions = [Position3D(-Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 1), Position3D(-Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 1), Position3D(Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 1), Position3D(Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 1)]
+        self.__positions = [Position3D(-Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 1), 
+                            Position3D(-Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 1), 
+                            Position3D(Constants.VIEWPORT_LENGTH / 2, Constants.VIEWPORT_WIDTH / 2, 1), 
+                            Position3D(Constants.VIEWPORT_LENGTH / 2, -Constants.VIEWPORT_WIDTH / 2, 1)]
+
 
         super().__init__(ObjectsTypes.WINDOW, "Window", dimensions, self.__positions[0])
     
@@ -121,23 +125,27 @@ class Window(SGIObject):
         """
         Decrease the dimensions from the window keeping the central point        
         """
+        print("Starting Zoom In")
+        self.dimensions.printDimensions()
+        [x.printPosition() for x in self.__positions]
         centralPoint = self.centralPoint
         
         translate = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
-        scale = Scale(1 - self.__SCALE, 1 - self.__SCALE, 1)
+        scale = Scale(1 - self.__SCALE, 1 - self.__SCALE, 1 + self.__SCALE)
         translate_back = Translation(centralPoint.axisX, centralPoint.axisY, centralPoint.axisZ)
         
         final_transform = GenericTransform(positions=self.__positions)
         final_transform.add_transforms([translate, scale, translate_back])
         self.__positions = final_transform.execute()
         
-        novoPontoCentral = self.centralPoint
+        self.dimensions.printDimensions()
 
         self.dimensions.length = abs(self.__positions[3].axisX - self.__positions[0].axisX)
         self.dimensions.width = abs(self.__positions[1].axisY - self.__positions[0].axisY)
 
-        print(f'ZOOM OUT - Ponto anterior: ({centralPoint.axisX}, {centralPoint.axisY}, {centralPoint.axisZ})')
-        print(f'ZOOM OUT - Novo ponto: ({novoPontoCentral.axisX}, {novoPontoCentral.axisY}, {novoPontoCentral.axisZ})')
+        [x.printPosition() for x in self.__positions]
+
+        self.dimensions.printDimensions()
         
     
     def zoomOut(self) -> None:
@@ -146,21 +154,25 @@ class Window(SGIObject):
         """
         centralPoint = self.centralPoint
 
+        print("Starting Zoom Out")
+        [x.printPosition() for x in self.__positions]
+
         translate = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
-        scale = Scale(1 + self.__SCALE, 1 + self.__SCALE, 1)
+        scale = Scale(1 + self.__SCALE, 1 + self.__SCALE, 1 + self.__SCALE)
         translate_back = Translation(centralPoint.axisX, centralPoint.axisY, centralPoint.axisZ)
         
         final_transform = GenericTransform(positions=self.__positions)
         final_transform.add_transforms([translate, scale, translate_back])
         self.__positions = final_transform.execute()
 
-        novoPontoCentral = self.centralPoint
+        self.dimensions.printDimensions()
 
         self.dimensions.length = abs(self.__positions[3].axisX - self.__positions[0].axisX)
         self.dimensions.width = abs(self.__positions[1].axisY - self.__positions[0].axisY)
 
-        print(f'ZOOM OUT - Ponto anterior: ({centralPoint.axisX}, {centralPoint.axisY}, {centralPoint.axisZ})')
-        print(f'ZOOM OUT - Novo ponto: ({novoPontoCentral.axisX}, {novoPontoCentral.axisY}, {novoPontoCentral.axisZ})')
+        [x.printPosition() for x in self.__positions]
+        self.dimensions.printDimensions()
+
 
     def moveUp(self) -> None:
         for position in self.__positions:

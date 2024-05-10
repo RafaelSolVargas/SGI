@@ -202,8 +202,8 @@ class WorldObjectsHandler:
         alpha = np.degrees(alpha)
         beta = np.degrees(beta)
         
-        print(f"Window angles: {self.__window.angles}")
-        print(f"Alpha: {alpha}, Beta: {beta}")
+        #print(f"Window angles: {self.__window.angles}")
+        #print(f"Alpha: {alpha}, Beta: {beta}")
         
         rotateX, rotateY = None, None
         if alpha != 0:
@@ -299,7 +299,7 @@ class WorldObjectsHandler:
         return pointTransformed
 
     def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
-        windowPos, objs2d = self.__perspectiveProjection(self.__world.objects)
+        windowPos, objs2d = self.__parallelProjection(self.__world.objects)
         #objs2d, windowPos = self.__world.objects, self.__window.getPositions()
         windowPosition, objs = self.__convertObjectToPPC(objs2d, windowPos)
         
@@ -338,8 +338,6 @@ class WorldObjectsHandler:
             objectsToShow.append(objCopy)
 
         return objectsToShow
-
-    
     def getObjectByName(self, name: str) -> SGIObject:
         for obj in self.__world.objects:
             if obj.name == name:

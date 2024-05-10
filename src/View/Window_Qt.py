@@ -53,7 +53,7 @@ class Window_Qt(QMainWindow):
         curveP8 = Point(180, 70, 1)
         curve = Curve("Curva Default", [curveP1, curveP4, curveR1, curveR4, curveP5, curveP6, curveP7], strategy=CurvePlottingMethods.BEZIER)
 
-        WorldHandler.getHandler().objectHandler.addObject(curve)
+        # WorldHandler.getHandler().objectHandler.addObject(curve)
 
         self.__objWinFactory = ObjectWindowFactory(self)
         
@@ -172,9 +172,9 @@ class Window_Qt(QMainWindow):
         title_widget.layout().addWidget(rotate_window_label)
         rotation_axis_dropdown = QComboBox()
         rotation_axis_dropdown.setMaximumSize(50, 25)
-        rotation_axis_dropdown.addItem("X")
         rotation_axis_dropdown.addItem("Y")
         rotation_axis_dropdown.addItem("Z")
+        rotation_axis_dropdown.addItem("X")
         rotation_axis_dropdown.setCurrentIndex(2)
         title_widget.layout().addWidget(rotation_axis_dropdown)
 

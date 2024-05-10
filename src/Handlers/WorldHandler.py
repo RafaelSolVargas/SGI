@@ -50,6 +50,9 @@ class WorldHandler:
         newAngle = (self.__window.angles[axis] + angle) % 360
         self.__window.setAngle(newAngle, axis)
         print(f"Window angle {axis}: {newAngle}")
+
+        self.__window.printPositions()
+        self.__window.dimensions.printDimensions()
         
         # Transform the objects of the world
         for obj in self.__world.objects:
