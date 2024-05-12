@@ -141,14 +141,32 @@ class Window(SGIObject):
         
         self.dimensions.printDimensions()
 
-        self.dimensions.length = abs(self.__positions[3].axisX - self.__positions[0].axisX)
-        self.dimensions.width = abs(self.__positions[1].axisY - self.__positions[0].axisY)
+        self.recalculateDimensionsWithPositions()
 
         [x.printPosition() for x in self.__positions]
 
         self.dimensions.printDimensions()
         
+
+    def recalculateDimensionsWithPositions(self):
+        self.dimensions.length = abs(self.distanceBetweenPoints(self.__positions[0], self.__positions[3]))
+        self.dimensions.width = abs(self.distanceBetweenPoints(self.__positions[1], self.__positions[0]))
     
+    def distanceBetweenPoints(self, point1, point2):
+        # Extrai as coordenadas dos pontos
+        x1, y1, z1 = point1.axisX, point1.axisY, point1.axisZ
+        x2, y2, z2 = point2.axisX, point2.axisY, point2.axisZ
+        
+        # Calcula a diferença entre as coordenadas em cada dimensão
+        diff_x = x2 - x1
+        diff_y = y2 - y1
+        diff_z = z2 - z1
+        
+        # Calcula a distância euclidiana
+        distance = math.sqrt(diff_x**2 + diff_y**2 + diff_z**2)
+        
+        return int(distance)
+
     def zoomOut(self) -> None:
         """
         Increase the dimensions from the window keeping the central point        
@@ -168,9 +186,8 @@ class Window(SGIObject):
 
         self.dimensions.printDimensions()
 
-        self.dimensions.length = abs(self.__positions[3].axisX - self.__positions[0].axisX)
-        self.dimensions.width = abs(self.__positions[1].axisY - self.__positions[0].axisY)
-
+        self.recalculateDimensionsWithPositions()
+        
         [x.printPosition() for x in self.__positions]
         self.dimensions.printDimensions()
 
@@ -213,6 +230,7 @@ class Window(SGIObject):
             position.axisZ += int(self.ZOOM_MOVE * up_vector[2])
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
         self.printPositions()
+        self.dimensions.printDimensions()
 
     def moveDown(self) -> None:
         up_vector = self.get_up_vector()
@@ -222,21 +240,24 @@ class Window(SGIObject):
             position.axisZ -= int(self.ZOOM_MOVE * up_vector[2])
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
         self.printPositions()
+        self.dimensions.printDimensions()
     
     def moveLeft(self) -> None:
-        left_vector = self.get_left_vector()
-        for position in self.__positions:
-            position.axisX -= int(self.ZOOM_MOVE * left_vector[0])
-            position.axisY -= int(self.ZOOM_MOVE * left_vector[1])
-            position.axisZ -= int(self.ZOOM_MOVE * left_vector[2])
-        self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
-        self.printPositions()
-        
-    def moveRight(self) -> None:
         left_vector = self.get_left_vector()
         for position in self.__positions:
             position.axisX += int(self.ZOOM_MOVE * left_vector[0])
             position.axisY += int(self.ZOOM_MOVE * left_vector[1])
             position.axisZ += int(self.ZOOM_MOVE * left_vector[2])
+        self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
+        self.printPositions()
+        self.dimensions.printDimensions()
+        
+    def moveRight(self) -> None:
+        left_vector = self.get_left_vector()
+        for position in self.__positions:
+            position.axisX -= int(self.ZOOM_MOVE * left_vector[0])
+            position.axisY -= int(self.ZOOM_MOVE * left_vector[1])
+            position.axisZ -= int(self.ZOOM_MOVE * left_vector[2])
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))       
         self.printPositions()
+        self.dimensions.printDimensions()

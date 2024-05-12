@@ -289,33 +289,15 @@ class WorldObjectsHandler:
     def __transformPositionToViewPort(self, position: Position3D, window_pos: Position3D) -> Position3D:
         xW = position.axisX
 
-        length = self.distance_between_points(window_pos[0], window_pos[3])
-        width = self.distance_between_points(window_pos[0], window_pos[1])
-
-        xVP = ((xW - window_pos[0].axisX) / (length)) * (Constants.VIEWPORT_LENGTH)
+        xVP = ((xW - window_pos[0].axisX) / (self.__window.dimensions.length)) * (Constants.VIEWPORT_LENGTH)
 
         yW = position.axisY
 
-        yVP = (1 - ((yW - window_pos[0].axisY) / (width))) * (Constants.VIEWPORT_WIDTH)
+        yVP = (1 - ((yW - window_pos[0].axisY) / (self.__window.dimensions.width))) * (Constants.VIEWPORT_WIDTH)
         
         pointTransformed = Position3D(round(xVP), round(yVP), 1)
 
         return pointTransformed
-
-    def distance_between_points(self, point1, point2):
-        # Extrai as coordenadas dos pontos
-        x1, y1, z1 = point1.axisX, point1.axisY, point1.axisZ
-        x2, y2, z2 = point2.axisX, point2.axisY, point2.axisZ
-        
-        # Calcula a diferença entre as coordenadas em cada dimensão
-        diff_x = x2 - x1
-        diff_y = y2 - y1
-        diff_z = z2 - z1
-        
-        # Calcula a distância euclidiana
-        distance = math.sqrt(diff_x**2 + diff_y**2 + diff_z**2)
-        
-        return int(distance)
 
     def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
         windowPos, objs2d = self.__parallelProjection(self.__world.objects)

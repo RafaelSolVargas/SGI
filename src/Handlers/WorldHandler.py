@@ -53,6 +53,7 @@ class WorldHandler:
 
         self.__window.printPositions()
         self.__window.dimensions.printDimensions()
+        self.__window.recalculateDimensionsWithPositions()
         
         # Transform the objects of the world
         for obj in self.__world.objects:
