@@ -508,6 +508,8 @@ class Clipper:
                 
                 if len(curvePoints) > 0:
                     temp = Curve(obj.name, curvePoints, obj.strategy)
+            elif obj.type == ObjectsTypes.SURFACE:
+                temp = obj
                 
             if temp is not None:
                 temp.setColor(obj.color)

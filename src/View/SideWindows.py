@@ -26,6 +26,8 @@ class ObjectWindowFactory:
             return self.__createWireframeWindow()
         elif obj == "Curva":
             return self.__createCurveWindow()
+        elif obj == "Superfície":
+            return self.__createSurfaceWindow()
     
     def __rgbHorizontalBoxes(self, layout: QVBoxLayout):
         color_label = QLabel("Cor:")
@@ -304,7 +306,50 @@ class ObjectWindowFactory:
             
         window.show()
         
+    def __createSurfaceWindow(self):
+        def parsePoints(input: str) -> List[Position3D]:
+            control_points = []
+            rows = input.split(';')
+            for row in rows:
+                points = row.split(',')
+                points = [tuple(map(int, p.strip('()').split(','))) for p in points]
+                control_points.append(points)
+            
+            control_positions = []
+            for points in control_points:
+                x1, y1, z1 = points[0][0], points[1][0], points[2][0]
+                x2, y2, z2 = points[3][0], points[4][0], points[5][0]
+                x3, y3, z3 = points[6][0], points[7][0], points[8][0]
+                x4, y4, z4 = points[9][0], points[10][0], points[11][0]
+                
+                control_positions += [Position3D(x1, y1, z1), Position3D(x2, y2, z2), Position3D(x3, y3, z3), Position3D(x4, y4, z4)]   
+            
+            return control_positions
         
+        window = QMainWindow(self.__parent)
+        window.setWindowTitle("Criar Superfície")
+        window.setGeometry(self.__parent.geometry().center().x() - 150, self.__parent.geometry().center().y() - 100, 500, 150)
+        
+        central_widget = QWidget(window)
+        window.setCentralWidget(central_widget)
+        
+        layout = QVBoxLayout(central_widget)
+        
+        # Label
+        # Example: (0,0,0),(20,0,0),(40,0,0),(60,0,0);(0,20,20),(20,20,20),(40,20,20),(60,20,20);(0,40,40),(20,40,40),(40,40,40),(60,40,40);(0,60,60),(20,60,60),(40,60,60),(60,60,60)
+        label = QLabel("Insira os pontos de controle separdos por ';' no formato \n(x_11,y_11,z_11),(x_12,y_12,z_12),...;(x_21,y_21,z_21),(x_22,y_22,z_22),...;...(x_ij,y_ij,z_ij):")
+        layout.addWidget(label)
+        
+        # Text field
+        text_field = QLineEdit()
+        layout.addWidget(text_field)
+        
+        # Confirm button
+        confirm_button = Button("Confirmar", lambda: (WorldHandler.getHandler().objectHandler.addSurface(parsePoints(text_field.text())), window.close(), self.__parent.update()))
+        layout.addWidget(confirm_button)
+        
+        window.show()
+
 class ObjectTransformWindow(QMainWindow):
     class TransformBox(QGroupBox):
         def __init__(self, parent: QWidget, name: str, transform_callback: callable = lambda: None):

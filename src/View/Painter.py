@@ -104,7 +104,7 @@ class Canvas(QLabel):
                 self.__paintLine(painter, obj)
             elif obj.type == ObjectsTypes.WIREFRAME:
                 self.__paintWireframe(painter, obj)
-            elif obj.type == ObjectsTypes.CURVE:
+            elif obj.type == ObjectsTypes.CURVE or obj.type == ObjectsTypes.SURFACE:
                 self.__paintCurve(painter, obj)
     
         painter.end()

@@ -9,6 +9,7 @@ from Domain.Shapes.Curve import Curve
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
 from Domain.Shapes.Wireframe import WireFrame
+from Domain.Shapes.Surface import Surface
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Position3D
 from Domain.Utils.Transforms import Translation, Rotation, GenericTransform
@@ -93,6 +94,14 @@ class WorldObjectsHandler:
         point.setColor(color)
 
         self.__world.addObject(point)
+        
+    def addSurface(self, positions: List[Position3D], name: str = 'Superfície', color: tuple[int, int, int] = (0, 0, 0), fill: bool = False) -> None:
+        print(f'Superfície adicionada {name} com {len(positions)} pontos. Fill: {fill}')
+        
+        surface = Surface(name, [Point.fromPosition(p) for p in positions], fill)
+        surface.setColor(color)
+        
+        self.__world.addObject(surface)
 
     def addTempPointCurve(self, position: Position3D) -> None:
         print(f'Ponto adicionado a curva {position.axisX}, {position.axisY}, {position.axisZ}')
@@ -167,6 +176,8 @@ class WorldObjectsHandler:
             # Calculate the points for this curve
             if (obj.type == ObjectsTypes.CURVE):
                 objPositions = CurvesPlotter.generatePoints(obj, 0.1)
+            elif (obj.type == ObjectsTypes.SURFACE):
+                objPositions = obj.generatePositions(0.1)
             
             
             finalTransform = GenericTransform(positions=objPositions)
@@ -227,6 +238,8 @@ class WorldObjectsHandler:
             # Calculate the points for this curve
             if (obj.type == ObjectsTypes.CURVE):
                 objPositions = CurvesPlotter.generatePoints(obj, 0.1)
+            elif (obj.type == ObjectsTypes.SURFACE):
+                objPositions = obj.generatePositions(0.1)
                 
             finalTransform = GenericTransform(positions=objPositions)
             finalTransform.add_transforms(operations)
@@ -313,6 +326,7 @@ class WorldObjectsHandler:
         for obj in clipped_objs:
             # Creates a copy to not change the Domain value
             objCopy = deepcopy(obj)
+            print(f"Object {objCopy.name} has {len(objCopy.getPositions())} points")
 
             for position in objCopy.getPositions():
                 transformedPosition = self.__transformPositionToViewPort(position, windowPosition)

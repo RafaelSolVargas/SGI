@@ -70,7 +70,7 @@ class Window_Qt(QMainWindow):
         self.__sidebar.setLayout(QVBoxLayout(self.__sidebar))
         
         # TODO: Change to Enum or Object after model is implemented
-        self.__addSidebarObjBox("Objetos", ["Ponto", "Linha", "Wireframe", "Curva"])
+        self.__addSidebarObjBox("Objetos", ["Ponto", "Linha", "Wireframe", "Curva", "Superfície"])
         self.__addSidebarWindowBox()
                 
         self.__console = Console(self)
@@ -121,7 +121,8 @@ class Window_Qt(QMainWindow):
         for obj in obj_list:
             if obj.name == "XXXDEFAULTLINEXXX":
                 continue
-
+            
+            print(f"Adding {obj.name} to list")
             self.__object_list_widget.addItem(f"{obj.name} ({obj.type.name})")
         
         self.__canvas.draw(obj_list)
