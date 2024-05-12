@@ -131,7 +131,7 @@ class Window(SGIObject):
         centralPoint = self.centralPoint
         
         translate = Translation(-centralPoint.axisX, -centralPoint.axisY, -centralPoint.axisZ)
-        scale = Scale(1 - self.__SCALE, 1 - self.__SCALE, 1 + self.__SCALE)
+        scale = Scale(1 - self.__SCALE, 1 - self.__SCALE, 1 - self.__SCALE)
         translate_back = Translation(centralPoint.axisX, centralPoint.axisY, centralPoint.axisZ)
         
         final_transform = GenericTransform(positions=self.__positions)
@@ -178,19 +178,23 @@ class Window(SGIObject):
         for position in self.__positions:
             position.axisY += self.ZOOM_MOVE
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
-    
+        self.printPositions()
+
     def moveDown(self) -> None:
         for position in self.__positions:
             position.axisY -= self.ZOOM_MOVE
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
+        self.printPositions()
     
     def moveLeft(self) -> None:
         for position in self.__positions:
             position.axisX -= self.ZOOM_MOVE
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
+        self.printPositions()
         
     def moveRight(self) -> None:
         for position in self.__positions:
             position.axisX += self.ZOOM_MOVE
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))       
+        self.printPositions()
     
