@@ -1,3 +1,4 @@
+import math
 from Domain.Shapes.SGIObject import SGIObject
 from Domain.Utils.Coordinates import Dimensions3D, Position3D
 from Domain.Utils.Enums import ObjectsTypes
@@ -173,28 +174,69 @@ class Window(SGIObject):
         [x.printPosition() for x in self.__positions]
         self.dimensions.printDimensions()
 
+    def get_left_vector(self):
+        """
+        Retorna o vetor de direção que representa a direção para a esquerda da janela,
+        considerando a rotação atual.
+        """
+        # Supondo que self.angleX, self.angleY e self.angleZ representam os ângulos de rotação
+        # da janela em torno dos eixos X, Y e Z, respectivamente.
+        # Você precisa converter esses ângulos para radianos para usar as funções trigonométricas.
+        angle_x_rad = math.radians(self.angleX)
+        angle_y_rad = math.radians(self.angleY)
+        angle_z_rad = math.radians(self.angleZ)
+        
+        # Calcula as componentes do vetor de direção
+        x_component = -math.cos(angle_y_rad) * math.cos(angle_z_rad)
+        y_component = math.sin(angle_z_rad)
+        z_component = math.sin(angle_y_rad) * math.cos(angle_z_rad)
+        
+        return (x_component, y_component, z_component)
+
+    def get_up_vector(self):
+        angle_x_rad = math.radians(self.angleX)
+        angle_y_rad = math.radians(self.angleY)
+        angle_z_rad = math.radians(self.angleZ)
+        
+        # Calcula as componentes do vetor de direção
+        x_component = math.sin(angle_y_rad) * math.cos(angle_z_rad)
+        y_component = math.cos(angle_x_rad) * math.cos(angle_z_rad) * math.cos(angle_y_rad) - math.sin(angle_x_rad) * math.sin(angle_z_rad)
+        z_component = math.cos(angle_x_rad) * math.sin(angle_z_rad) * math.cos(angle_y_rad) + math.sin(angle_x_rad) * math.cos(angle_z_rad)
+        
+        return (x_component, y_component, z_component)
 
     def moveUp(self) -> None:
+        up_vector = self.get_up_vector()
         for position in self.__positions:
-            position.axisY += self.ZOOM_MOVE
+            position.axisX += int(self.ZOOM_MOVE * up_vector[0])
+            position.axisY += int(self.ZOOM_MOVE * up_vector[1])
+            position.axisZ += int(self.ZOOM_MOVE * up_vector[2])
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
         self.printPositions()
 
     def moveDown(self) -> None:
+        up_vector = self.get_up_vector()
         for position in self.__positions:
-            position.axisY -= self.ZOOM_MOVE
+            position.axisX -= int(self.ZOOM_MOVE * up_vector[0])
+            position.axisY -= int(self.ZOOM_MOVE * up_vector[1])
+            position.axisZ -= int(self.ZOOM_MOVE * up_vector[2])
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
         self.printPositions()
     
     def moveLeft(self) -> None:
+        left_vector = self.get_left_vector()
         for position in self.__positions:
-            position.axisX -= self.ZOOM_MOVE
+            position.axisX -= int(self.ZOOM_MOVE * left_vector[0])
+            position.axisY -= int(self.ZOOM_MOVE * left_vector[1])
+            position.axisZ -= int(self.ZOOM_MOVE * left_vector[2])
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))
         self.printPositions()
         
     def moveRight(self) -> None:
+        left_vector = self.get_left_vector()
         for position in self.__positions:
-            position.axisX += self.ZOOM_MOVE
+            position.axisX += int(self.ZOOM_MOVE * left_vector[0])
+            position.axisY += int(self.ZOOM_MOVE * left_vector[1])
+            position.axisZ += int(self.ZOOM_MOVE * left_vector[2])
         self.setCentralPoint(self.dimensions.central_point(self.__positions[0]))       
         self.printPositions()
-    
