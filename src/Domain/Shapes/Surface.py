@@ -63,33 +63,37 @@ class Surface(SGIObject):
             [-3, 3, 0, 0],
             [1, 0, 0, 0]
         ])
-        print("X matrix", self.__X_matrix)
-        print("Y matrix", self.__Y_matrix)
-        print("Z matrix", self.__Z_matrix)
         
         while s <= 1:
+            S_matrix = np.array([1, s, s**2, s**3])
             while t <= 1:
-                S_matrix = np.array([s**3, s**2, s, 1])
-                T_matrix = np.array([t**3, t**2, t, 1])
-                
+                T_matrix = np.array([1, t, t**2, t**3])
                 x = S_matrix @ bezierMatrix @ self.__X_matrix @ bezierMatrix.T @ T_matrix.T
                 y = S_matrix @ bezierMatrix @ self.__Y_matrix @ bezierMatrix.T @ T_matrix.T
                 z = S_matrix @ bezierMatrix @ self.__Z_matrix @ bezierMatrix.T @ T_matrix.T
                 
                 positions.append(Position3D(x, y, z))
                 
-                s += step
                 t += step
-                
+            t = 0
+            s += step
+
         return positions
     
     def setPositions(self, positions: List[Position3D]) -> None:
-        self.__positions = [[pos.axisX, pos.axisY, pos.axisZ] for pos in positions]
-
+        self.__points = []
+        
+        for i, pos in enumerate(positions):
+            self.__points.append(Point(pos.axisX, pos.axisY, pos.axisZ, f'{self.name}_{i}'))
+            
+        self.__X_matrix = self.__geometryBezierMatrix('x')
+        self.__Y_matrix = self.__geometryBezierMatrix('y')
+        self.__Z_matrix = self.__geometryBezierMatrix('z')
+            
     @property
     def centralPoint(self) -> Position3D:
-        x = sum([point[0] for point in self.__positions]) // len(self.__positions)
-        y = sum([point[1] for point in self.__positions]) // len(self.__positions)
-        z = sum([point[2] for point in self.__positions]) // len(self.__positions)
-
+        x = sum([point.position.axisX for point in self.__points]) // len(self.__points)
+        y = sum([point.position.axisY for point in self.__points]) // len(self.__points)
+        z = sum([point.position.axisZ for point in self.__points]) // len(self.__points)
+        
         return Position3D(x, y, z)

@@ -104,8 +104,10 @@ class Canvas(QLabel):
                 self.__paintLine(painter, obj)
             elif obj.type == ObjectsTypes.WIREFRAME:
                 self.__paintWireframe(painter, obj)
-            elif obj.type == ObjectsTypes.CURVE or obj.type == ObjectsTypes.SURFACE:
+            elif obj.type == ObjectsTypes.CURVE:
                 self.__paintCurve(painter, obj)
+            elif obj.type == ObjectsTypes.SURFACE:
+                self.__paintSurface(painter, obj)
     
         painter.end()
         self.update()
@@ -185,3 +187,34 @@ class Canvas(QLabel):
         for n in range(0, len(positions) - 1):
             # Desenha a linha entre os pontos
             canvas.drawLine(positions[n].axisX, positions[n].axisY, positions[n + 1].axisX, positions[n + 1].axisY)
+            
+    @classmethod
+    def __paintSurface(cls, canvas: QPainter, surface):
+        print(f'Pintando Superfície')
+        positions = surface.getPositions()
+        
+        tuple_positions = [(x.axisX, x.axisY) for x in positions]
+        unique_positions = list(set(tuple_positions))
+        ordered_positions = sorted(unique_positions, key=lambda x: (x[1], x[0]))
+        
+        # Desenha as linhas horizontais
+        for i in range(0, len(ordered_positions), 4):
+            for j in range(0, 4):
+                if i + j >= len(ordered_positions):
+                    continue
+                
+                if i + j - 4 < 0:
+                    continue
+                
+                canvas.drawLine(ordered_positions[i + j][0], ordered_positions[i + j][1], ordered_positions[i + j - 4][0], ordered_positions[i + j - 4][1])
+                
+        # Desenha as linhas verticais
+        for i in range(0, 4):
+            for j in range(0, len(ordered_positions), 4):
+                if i + j >= len(ordered_positions):
+                    continue
+                
+                if i + j - 1 < 0:
+                    continue
+                
+                canvas.drawLine(ordered_positions[i + j][0], ordered_positions[i + j][1], ordered_positions[i + j - 1][0], ordered_positions[i + j - 1][1])

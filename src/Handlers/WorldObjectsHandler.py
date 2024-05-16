@@ -240,7 +240,8 @@ class WorldObjectsHandler:
                 objPositions = CurvesPlotter.generatePoints(obj, 0.1)
             elif (obj.type == ObjectsTypes.SURFACE):
                 objPositions = obj.generatePositions(0.1)
-                
+                print(f"Object {obj.name} has {len(objPositions)} points")
+                print([f"{p.axisX}, {p.axisY}, {p.axisZ}" for p in objPositions])
             finalTransform = GenericTransform(positions=objPositions)
             finalTransform.add_transforms(operations)
             
@@ -272,6 +273,8 @@ class WorldObjectsHandler:
             # Calculate the points for this curve
             if (obj.type == ObjectsTypes.CURVE):
                 objPositions = CurvesPlotter.generatePoints(obj, 0.1)
+            elif (obj.type == ObjectsTypes.SURFACE):
+                objPositions = obj.generatePositions(0.1)
 
             # Translate object 
             translateTransform = Translation(-x_center, -y_center, -z_center, objPositions)
@@ -313,7 +316,7 @@ class WorldObjectsHandler:
         return pointTransformed
 
     def getObjectsTransformedToViewPortAndPPC(self) -> List[SGIObject]:
-        windowPos, objs2d = self.__parallelProjection(self.__world.objects)
+        windowPos, objs2d = self.__perspectiveProjection(self.__world.objects)
         #objs2d, windowPos = self.__world.objects, self.__window.getPositions()
         windowPosition, objs = self.__convertObjectToPPC(objs2d, windowPos)
         
