@@ -20,7 +20,7 @@ class ObjectWindowFactory:
     def __call__(self, obj: str):
         if obj == "Ponto":
             return self.__createPointWindow()
-        elif obj == "Reta":
+        elif obj == "Linha":
             return self.__createLineWindow()
         elif obj == "Wireframe":
             return self.__createWireframeWindow()
@@ -516,8 +516,12 @@ class ObjectTransformWindow(QMainWindow):
         transform.add_transforms(self.__transforms)
         
         final_positions = transform.execute()
+        
+        print(f"Initial positions: {[position.homogenous() for position in self.__obj.getPositions()]}")
                   
-        print(f"Final matrix for {[transform.getName() for transform in self.__transforms]}: {transform.matrix()}")    
+        print(f"Final matrix for {[transform.getName() for transform in self.__transforms]}: {transform.matrix()}") 
+        
+        print(f"Final positions: {[position.homogenous() for position in final_positions]}")  
 
         self.__obj.setPositions(final_positions)
 
@@ -527,8 +531,10 @@ class ObjectTransformWindow(QMainWindow):
 
     def __translation_callback(self, x: str, y: str, z: str) -> None:
         transform = Translation(float(x), float(y), float(z), self.__obj.getPositions())
-
-        self.__transforms.append(transform)
+        
+        transposed = GenericTransform(transform.matrix().T, name="Translation")
+        
+        self.__transforms.append(transposed)
         self.__update_transform_list()
 
     def __rotation_callback(self, angle: str, type_str: str, axis: str) -> None:
