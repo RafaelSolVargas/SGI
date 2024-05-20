@@ -2,6 +2,7 @@ from typing import List
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtGui import QPainter, QColor, QColor, QPixmap, QPolygonF
 from PyQt5.QtCore import QPointF, Qt
+from Domain.Shapes.Surface import Surface
 from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.Curve import Curve
 from Domain.Shapes.Point import Point
@@ -189,32 +190,43 @@ class Canvas(QLabel):
             canvas.drawLine(positions[n].axisX, positions[n].axisY, positions[n + 1].axisX, positions[n + 1].axisY)
             
     @classmethod
-    def __paintSurface(cls, canvas: QPainter, surface):
+    def __paintSurface(cls, canvas: QPainter, surface: Surface):
         print(f'Pintando Superfície')
-        positions = surface.getPositions()
+        positions: List[Position3D] = surface.getPositions()
         
-        tuple_positions = [(x.axisX, x.axisY) for x in positions]
-        unique_positions = list(set(tuple_positions))
-        ordered_positions = sorted(unique_positions, key=lambda x: (x[1], x[0]))
+        surfaceSquareSize = int(len(positions) ** 0.5)  # Assuming positions form a perfect square grid of size N x N
         
-        # Desenha as linhas horizontais
-        for i in range(0, len(ordered_positions), 4):
-            for j in range(0, 4):
-                if i + j >= len(ordered_positions):
-                    continue
+        def draw_line(p1: Position3D, p2: Position3D):
+            canvas.drawLine(p1.axisX, p1.axisY, p2.axisX, p2.axisY)
+        
+        for i in range(surfaceSquareSize):
+            for j in range(surfaceSquareSize):
+                index = i * surfaceSquareSize + j
+                print(index, end=' ')
+                current = positions[index]
                 
-                if i + j - 4 < 0:
-                    continue
+                # Draw line to the right neighbor
+                if j < surfaceSquareSize - 1:
+                    print('R', end='')
+                    right_neighbor = positions[index + 1]
+                    draw_line(current, right_neighbor)
                 
-                canvas.drawLine(ordered_positions[i + j][0], ordered_positions[i + j][1], ordered_positions[i + j - 4][0], ordered_positions[i + j - 4][1])
+                # Draw line to the bottom neighbor
+                if i < surfaceSquareSize - 1:
+                    print('B', end='')
+                    bottom_neighbor = positions[index + surfaceSquareSize]
+                    draw_line(current, bottom_neighbor)
                 
-        # Desenha as linhas verticais
-        for i in range(0, 4):
-            for j in range(0, len(ordered_positions), 4):
-                if i + j >= len(ordered_positions):
-                    continue
+                # Draw line to the top neighbor
+                if i > 0:
+                    print('T', end='')
+                    top_neighbor = positions[index - surfaceSquareSize]
+                    draw_line(current, top_neighbor)
                 
-                if i + j - 1 < 0:
-                    continue
+                # Draw line to the left neighbor
+                if j > 0:
+                    print('L', end='')
+                    left_neighbor = positions[index - 1]
+                    draw_line(current, left_neighbor)
                 
-                canvas.drawLine(ordered_positions[i + j][0], ordered_positions[i + j][1], ordered_positions[i + j - 1][0], ordered_positions[i + j - 1][1])
+                print()

@@ -81,7 +81,7 @@ class Surface(SGIObject):
         return positions
     
     def setPositions(self, positions: List[Position3D]) -> None:
-        self.__points = []
+        self.__points: List[Point] = []
         
         for i, pos in enumerate(positions):
             self.__points.append(Point(pos.axisX, pos.axisY, pos.axisZ, f'{self.name}_{i}'))

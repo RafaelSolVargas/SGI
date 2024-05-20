@@ -270,12 +270,6 @@ class WorldObjectsHandler:
         for obj in objectToConvert:
             objPositions = obj.getPositions()
             
-            # Calculate the points for this curve
-            if (obj.type == ObjectsTypes.CURVE):
-                objPositions = CurvesPlotter.generatePoints(obj, 0.1)
-            elif (obj.type == ObjectsTypes.SURFACE):
-                objPositions = obj.generatePositions(0.1)
-
             # Translate object 
             translateTransform = Translation(-x_center, -y_center, -z_center, objPositions)
 
@@ -296,6 +290,7 @@ class WorldObjectsHandler:
         # Rotate the window
         rotations = [Rotation(-angle, RotationTypes.CENTER_WORLD, axis=axis) for axis, angle in self.__window.angles.items()]
         rotateWindowTransform = GenericTransform(positions=newWindowsPositions)
+
         rotateWindowTransform.add_transforms(rotations)
         newWindowsPositions = rotateWindowTransform.execute()
 
@@ -356,6 +351,7 @@ class WorldObjectsHandler:
             objectsToShow.append(objCopy)
 
         return objectsToShow
+    
     def getObjectByName(self, name: str) -> SGIObject:
         for obj in self.__world.objects:
             if obj.name == name:
