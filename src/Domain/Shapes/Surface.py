@@ -1,3 +1,4 @@
+from Domain.Shapes.Line import Line
 from Domain.Shapes.SGIObject import SGIObject
 from typing import List
 from Domain.Utils.Coordinates import Dimensions3D, Position3D
@@ -10,7 +11,8 @@ class Surface(SGIObject):
         super().__init__(ObjectsTypes.SURFACE, name, Dimensions3D(0, 0, 0), positions[0])
         self.__points = positions
         self.__filled = filled
-        
+        self.__lines: List[Line] = []
+
         self.__X_matrix = self.__geometryBezierMatrix('x')
         self.__Y_matrix = self.__geometryBezierMatrix('y')
         self.__Z_matrix = self.__geometryBezierMatrix('z')
@@ -48,6 +50,12 @@ class Surface(SGIObject):
                 matrix.append(row)
                 
         return np.array(matrix)
+    
+    def getLinesToDraw(self) -> List[Line]:
+        return self.__lines
+    
+    def setLinesToDraw(self, lines: List[Line]) -> None:
+        self.__lines = lines
     
     def getPositions(self) -> List[Position3D]:
         return [x.position for x in self.__points]

@@ -169,7 +169,6 @@ class Canvas(QLabel):
         else:
             cls.__drawWireframe(canvas, positions, wireFrame.color, wireFrame.filled)
         
-
     @classmethod
     def __paintCurve(cls, canvas: QPainter, curve: Curve):
         print(f'Pintando Curva')
@@ -192,41 +191,6 @@ class Canvas(QLabel):
     @classmethod
     def __paintSurface(cls, canvas: QPainter, surface: Surface):
         print(f'Pintando Superfície')
-        positions: List[Position3D] = surface.getPositions()
-        
-        surfaceSquareSize = int(len(positions) ** 0.5)  # Assuming positions form a perfect square grid of size N x N
-        
-        def draw_line(p1: Position3D, p2: Position3D):
-            canvas.drawLine(p1.axisX, p1.axisY, p2.axisX, p2.axisY)
-        
-        for i in range(surfaceSquareSize):
-            for j in range(surfaceSquareSize):
-                index = i * surfaceSquareSize + j
-                print(index, end=' ')
-                current = positions[index]
-                
-                # Draw line to the right neighbor
-                if j < surfaceSquareSize - 1:
-                    print('R', end='')
-                    right_neighbor = positions[index + 1]
-                    draw_line(current, right_neighbor)
-                
-                # Draw line to the bottom neighbor
-                if i < surfaceSquareSize - 1:
-                    print('B', end='')
-                    bottom_neighbor = positions[index + surfaceSquareSize]
-                    draw_line(current, bottom_neighbor)
-                
-                # Draw line to the top neighbor
-                if i > 0:
-                    print('T', end='')
-                    top_neighbor = positions[index - surfaceSquareSize]
-                    draw_line(current, top_neighbor)
-                
-                # Draw line to the left neighbor
-                if j > 0:
-                    print('L', end='')
-                    left_neighbor = positions[index - 1]
-                    draw_line(current, left_neighbor)
-                
-                print()
+        for line in surface.getLinesToDraw():
+            canvas.drawLine(line.pointOne.position.axisX, line.pointOne.position.axisY, line.pointTwo.position.axisX, line.pointTwo.position.axisY)
+            

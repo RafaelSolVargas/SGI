@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from Domain.Shapes.Point import Point
 from Domain.Shapes.Line import Line
+from Domain.Shapes.Surface import Surface
 from Domain.Shapes.Wireframe import WireFrame
 from Domain.Shapes.Curve import Curve
 from Domain.Shapes.SGIObject import SGIObject
@@ -508,8 +509,51 @@ class Clipper:
                 
                 if len(curvePoints) > 0:
                     temp = Curve(obj.name, curvePoints, obj.strategy)
+
+            # Read the points of the surface and determine the lines that will be created, then create the lines and clip then
+            # Stores the lines within the object to be used by the painter
             elif obj.type == ObjectsTypes.SURFACE:
-                temp = obj
+                positions: List[Position3D] = obj.getPositions()
+                
+                objCopy: Surface = obj
+                lines: List[Line] = []                
+
+                surfaceSquareSize = int(len(positions) ** 0.5)  # Assuming positions form a perfect square grid of size N x N
+                for i in range(surfaceSquareSize):
+                    for j in range(surfaceSquareSize):
+                        index = i * surfaceSquareSize + j
+                        print(index, end=' ')
+                        current = positions[index]
+                        
+                        # Draw line to the right neighbor
+                        if j < surfaceSquareSize - 1:
+                            print('R', end='')
+                            right_neighbor = positions[index + 1]
+                            # Create a line
+                            line = Line(Point.fromPosition(current), Point.fromPosition(right_neighbor), obj.name)
+                            # Clip it
+                            line = self.__lineClippingStrategy.clip(line, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+                            # Store
+                            if line is not None:
+                                lines.append(line)
+                        
+                        # Draw line to the bottom neighbor
+                        if i < surfaceSquareSize - 1:
+                            print('B', end='')
+                            bottom_neighbor = positions[index + surfaceSquareSize]
+                            # Create a line
+                            line = Line(Point.fromPosition(current), Point.fromPosition(bottom_neighbor), obj.name)
+                            # Clip it
+                            line = self.__lineClippingStrategy.clip(line, win_bottom_left, win_top_left, win_top_right, win_bottom_right)
+                            # Store
+                            if line is not None:
+                                lines.append(line)
+
+                objCopy.setLinesToDraw(lines)
+                temp = objCopy
+                # If no line passed the clip, then removes the Surface
+                if len(lines) == 0:
+                    temp = None
                 
             if temp is not None:
                 temp.setColor(obj.color)

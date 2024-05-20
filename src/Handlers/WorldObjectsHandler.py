@@ -348,6 +348,21 @@ class WorldObjectsHandler:
                     line.pointTwo.position.axisY = transformedPosTwo.axisY + Constants.VIEWPORT_SLACK // 2
                     line.pointTwo.position.axisZ = transformedPosTwo.axisZ
 
+            if objCopy.type == ObjectsTypes.SURFACE:
+                for line in objCopy.getLinesToDraw():
+                    posOne = line.pointOne.position
+                    posTwo = line.pointTwo.position
+
+                    transformedPosOne = self.__transformPositionToViewPort(posOne, windowPosition)
+                    line.pointOne.position.axisX = transformedPosOne.axisX + Constants.VIEWPORT_SLACK // 2
+                    line.pointOne.position.axisY = transformedPosOne.axisY + Constants.VIEWPORT_SLACK // 2
+                    line.pointOne.position.axisZ = transformedPosOne.axisZ
+
+                    transformedPosTwo = self.__transformPositionToViewPort(posTwo, windowPosition)
+                    line.pointTwo.position.axisX = transformedPosTwo.axisX + Constants.VIEWPORT_SLACK // 2
+                    line.pointTwo.position.axisY = transformedPosTwo.axisY + Constants.VIEWPORT_SLACK // 2
+                    line.pointTwo.position.axisZ = transformedPosTwo.axisZ
+
             objectsToShow.append(objCopy)
 
         return objectsToShow
